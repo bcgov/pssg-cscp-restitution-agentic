@@ -87,5 +87,5 @@ jobs:
       - name: Upload scan results
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: trivy-$APP_NAME-$IMAGE_NAME-image-scan.sarif
+          sarif_file: trivy-${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}-image-scan.sarif
           category: trivy-built-image-scan-results
