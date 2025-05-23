@@ -77,7 +77,7 @@ jobs:
       - name: Trivy scan for restitution api image
         continue-on-error: true
         run: |
-          trivy image restitution-api.tar \
+          trivy image --input restitution-api.tar \
             --severity HIGH,CRITICAL \
             --ignore-unfixed \
             --exit-code 1 \
