@@ -64,3 +64,24 @@ jobs:
           push: true
           tags: |
             ${{ env.IMAGE_REGISTRY }}/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}:dev
+
+      - name: Install Trivy
+        run: |
+          wget -qO- https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | bash
+          echo "$(pwd)/bin" >> $GITHUB_PATH
+
+      - name: Trivy scan for restitution api image
+        continue-on-error: true
+        run: |
+          trivy image ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:dev \
+            --severity HIGH,CRITICAL \
+            --ignore-unfixed \
+            --exit-code 1 \
+            --format sarif \
+            --output trivy-restitution-api-image-scan.sarif
+
+      - name: Upload scan results
+        uses: github/codeql-action/upload-sarif@v3
+        with:
+          sarif_file: trivy-restitution-api-image-scan.sarif
+          category: trivy-built-image-scan-results
