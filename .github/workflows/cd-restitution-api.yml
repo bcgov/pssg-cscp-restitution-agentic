@@ -77,15 +77,15 @@ jobs:
       - name: Trivy scan for restitution api image
         continue-on-error: true
         run: |
-          trivy image --input restitution-api.tar \
+          trivy image --input "$APP_NAME-$IMAGE_NAME.tar" \
             --severity HIGH,CRITICAL \
             --ignore-unfixed \
             --exit-code 1 \
             --format sarif \
-            --output trivy-restitution-api-image-scan.sarif
+            --output trivy-$APP_NAME-$IMAGE_NAME-image-scan.sarif
 
       - name: Upload scan results
         uses: github/codeql-action/upload-sarif@v3
         with:
-          sarif_file: trivy-restitution-api-image-scan.sarif
+          sarif_file: trivy-$APP_NAME-$IMAGE_NAME-image-scan.sarif
           category: trivy-built-image-scan-results
