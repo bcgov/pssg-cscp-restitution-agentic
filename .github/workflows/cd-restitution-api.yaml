@@ -65,6 +65,10 @@ jobs:
           tags: |
             ${{ env.IMAGE_REGISTRY }}/${{ env.APP_NAME }}-${{ env.IMAGE_NAME }}:dev
 
+      - name: Save image as tarball for Trivy
+        run: |
+          docker save "$IMAGE_REGISTRY/$APP_NAME-$IMAGE_NAME:dev" -o "$APP_NAME-$IMAGE_NAME.tar"
+
       - name: Install Trivy
         run: |
           wget -qO- https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | bash
@@ -73,7 +77,7 @@ jobs:
       - name: Trivy scan for restitution api image
         continue-on-error: true
         run: |
-          trivy image ${{ env.IMAGE_REGISTRY }}/${{ env.IMAGE_NAME }}:dev \
+          trivy image restitution-api.tar \
             --severity HIGH,CRITICAL \
             --ignore-unfixed \
             --exit-code 1 \
