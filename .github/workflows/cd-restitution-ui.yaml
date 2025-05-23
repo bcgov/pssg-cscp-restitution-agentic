@@ -67,10 +67,8 @@ jobs:
         run: |
           docker save "$IMAGE_REGISTRY/$APP_NAME-$IMAGE_NAME:dev" -o "$APP_NAME-$IMAGE_NAME.tar"
 
-      - name: Install Trivy
-        run: |
-          wget -qO- https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | bash
-          echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: Setup Trivy
+        uses: aquasecurity/trivy-action@master
 
       - name: Trivy scan for restitution ui image
         continue-on-error: true
