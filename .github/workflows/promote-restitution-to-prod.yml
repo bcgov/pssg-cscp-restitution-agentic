@@ -1,5 +1,5 @@
 # ======================================================================================
-#  Last Updated: 2025-07-16
+#  Last Updated: 2025-07-24
 #
 #  Description:
 #  Promotes an image by re-tagging it within the OpenShift ImageStream.
@@ -7,7 +7,7 @@
 #
 # ======================================================================================
 
-name: Promote Restitution to Prod
+name: Promote VSD to Prod
 
 # --- TRIGGERS -----------------------------------------------------------------------
 on:
@@ -15,96 +15,84 @@ on:
   workflow_dispatch:
     inputs:
       source_tag:
-        description: 'The source tag to promote (e.g., test, or a specific version tag)'
+        description: "The source tag to promote (e.g., test, or a specific version tag)"
         required: false
-        default: 'test'
+        default: "development"
+
+# --- ENVIRONMENT VARIABLES (Preserving original structure) -------------------------
 
 # --- ENVIRONMENT VARIABLES (Preserving original structure) -------------------------
 env:
   IMAGE_REGISTRY: ${{ vars.OCP4_REGISTRY }}
   NAMESPACE: ${{ secrets.OCP4_NAMESPACE }}
   SOURCE_TAG: ${{ github.event.inputs.source_tag }}
-  TARGET_TAG: 'prod'
-  BACKUP_TAG: 'prod-backup'
+  TARGET_TAG: "prod"
+  BACKUP_TAG: "prod-backup"
 
 # --- JOBS ---------------------------------------------------------------------------
 jobs:
-  promote-image:
-    name: Promote cpu-spa to Prod
-    # This job runs in a controlled environment with protection rules.
+  promote-images:
+    name: Promote ${{ matrix.image_name }} to Prod
     environment: promote-environment
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
-        IMAGE_NAME: [restitution-ui, restitution-api] 
+        image_name: ["restitution-ui", "restitution-api"]
+
+    env:
+      IMAGE_NAME: ${{ matrix.image_name }}
+      IMAGE_REGISTRY: ${{ vars.OCP4_REGISTRY }}
+      NAMESPACE: ${{ secrets.OCP4_NAMESPACE }}
+      SOURCE_TAG: ${{ github.event.inputs.source_tag }}
+      TARGET_TAG: "prod"
+      BACKUP_TAG: "prod-backup"
 
     steps:
-      # ------------------------------------------------------------------------------------
-      #  Step 1: Install oc CLI
-      #  Purpose: Use the native OpenShift CLI for reliable in-cluster operations.
-      # ------------------------------------------------------------------------------------
       - name: Install OpenShift CLI
         run: |
           curl -LO "https://mirror.openshift.com/pub/openshift-v4/clients/ocp/stable/openshift-client-linux.tar.gz"
           tar -xzf openshift-client-linux.tar.gz
           sudo mv oc /usr/local/bin/
 
-      # ------------------------------------------------------------------------------------
-      #  Step 2: Login to OpenShift
-      # ------------------------------------------------------------------------------------
       - name: Login to OpenShift
         run: |
           oc login --token="${{ secrets.OCP4_PASSWORD }}" --server="${{ secrets.OPENSHIFT_SERVER }}"
 
-      # ------------------------------------------------------------------------------------
-      #  Step 3: Backup Current 'prod' Image
-      #  Purpose: Before promoting, we tag the current 'prod' as 'prod-backup'.
-      # ------------------------------------------------------------------------------------
-      - name: Backup Current 'prod' Image
+      - name: Backup Current 'test' Image
         run: |
-          # This check prevents an error if the 'prod' tag doesn't exist yet
-          if oc get imagestreamtag ${{ matrix.IMAGE_NAME }}:${{ env.TARGET_TAG }} -n ${{ env.NAMESPACE }} &>/dev/null; then
-            echo "Backing up current '${{ env.TARGET_TAG }}' image to '${{ env.BACKUP_TAG }}' for ${{ matrix.IMAGE_NAME }}..."
-            oc tag ${{ env.NAMESPACE }}/${{ matrix.IMAGE_NAME }}:${{ env.TARGET_TAG }} ${{ env.NAMESPACE }}/${{ matrix.IMAGE_NAME }}:${{ env.BACKUP_TAG }}
+          if oc get imagestreamtag ${{ env.IMAGE_NAME }}:${{ env.TARGET_TAG }} -n ${{ env.NAMESPACE }} &>/dev/null; then
+            echo "Backing up current '${{ env.TARGET_TAG }}' image to '${{ env.BACKUP_TAG }}'..."
+            oc tag ${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ env.TARGET_TAG }} ${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ env.BACKUP_TAG }}
             echo "Backup successful."
           else
-            echo "No existing '${{ env.TARGET_TAG }}' tag found for ${{ matrix.IMAGE_NAME }}. Skipping backup."
+            echo "No existing '${{ env.TARGET_TAG }}' tag found. Skipping backup."
           fi
 
-      # ------------------------------------------------------------------------------------
-      #  Step 4: Promote by Tagging
-      #  Purpose: This is the core promotion step. It points the 'prod' tag to the
-      #           same image digest as the source tag.
-      # ------------------------------------------------------------------------------------
       - name: Promote Source Image to 'prod'
         run: |
-          echo "Promoting '${{ env.SOURCE_TAG }}' to '${{ env.TARGET_TAG }}' for ${{ matrix.IMAGE_NAME }}..."
-          oc tag ${{ env.NAMESPACE }}/${{ matrix.IMAGE_NAME }}:${{ env.SOURCE_TAG }} ${{ env.NAMESPACE }}/${{ matrix.IMAGE_NAME }}:${{ env.TARGET_TAG }}
+          echo "Promoting '${{ env.SOURCE_TAG }}' to '${{ env.TARGET_TAG }}' for image '${{ env.IMAGE_NAME }}' using 'oc tag'..."
+          oc tag ${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ env.SOURCE_TAG }} ${{ env.NAMESPACE }}/${{ env.IMAGE_NAME }}:${{ env.TARGET_TAG }}
           echo "Promotion successful."
 
-      # ------------------------------------------------------------------------------------
-      #  Step 5: Validate Promotion by Comparing Image Digests
-      # ------------------------------------------------------------------------------------
       - name: Validate Promotion by Comparing Image Digests
         run: |
-          echo "Validating promotion for ${{ matrix.IMAGE_NAME }}..."
-          sleep 5 # Giving the ImageStream a moment to update
+          echo "Validating promotion for image '${{ env.IMAGE_NAME }}'..."
+          sleep 5
 
-          SOURCE_SHA=$(oc get imagestreamtag ${{ matrix.IMAGE_NAME }}:${{ env.SOURCE_TAG }} -n ${{ env.NAMESPACE }} -o jsonpath='{.image.dockerImageReference}' | sed 's/.*@//')
-          PROD_SHA=$(oc get imagestreamtag ${{ matrix.IMAGE_NAME }}:${{ env.TARGET_TAG }} -n ${{ env.NAMESPACE }} -o jsonpath='{.image.dockerImageReference}' | sed 's/.*@//')
+          SOURCE_SHA=$(oc get imagestreamtag ${{ env.IMAGE_NAME }}:${{ env.SOURCE_TAG }} -n ${{ env.NAMESPACE }} -o jsonpath='{.image.dockerImageReference}' | sed 's/.*@//')
+          PROD_SHA=$(oc get imagestreamtag ${{ env.IMAGE_NAME }}:${{ env.TARGET_TAG }} -n ${{ env.NAMESPACE }} -o jsonpath='{.image.dockerImageReference}' | sed 's/.*@//')
 
           echo "Source Digest: $SOURCE_SHA"
           echo "Prod Digest:   $PROD_SHA"
 
           if [[ -z "$SOURCE_SHA" ]]; then
-            echo "::error::Could not find source digest for tag '${{ env.SOURCE_TAG }}' on ${{ matrix.IMAGE_NAME }}."
+            echo "::error::Could not find source digest for tag '${{ env.SOURCE_TAG }}' for image '${{ env.IMAGE_NAME }}'."
             exit 1
           fi
 
           if [[ "$SOURCE_SHA" == "$PROD_SHA" ]]; then
-            echo "Validation successful for ${{ matrix.IMAGE_NAME }}! Digests match perfectly."
+            echo "Validation successful! Digests match perfectly."
           else
-            echo "::error::Image digests do not match after promotion for ${{ matrix.IMAGE_NAME }}."
+            echo "::error::Image digests do not match after promotion for image '${{ env.IMAGE_NAME }}'."
             exit 1
           fi
