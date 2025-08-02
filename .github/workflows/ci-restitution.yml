@@ -160,3 +160,4 @@ jobs:
         if: always()
         with:
           sarif_file: "trivy-results-restitution.sarif"
+          category: "trivy-scan"
