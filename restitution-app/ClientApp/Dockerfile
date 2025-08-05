@@ -39,8 +39,8 @@
 #                                                                                                 #
 # ##################################################################################################
 # Create build image layer
-FROM node:22-alpine AS build
-# upgraded from 8.9.4
+FROM node:8.9.4 AS build
+# upgraded from 8.9.4 node:22-alpine
 
 # Install python3, make, and g++ for node-gyp/node-sass
 #RUN apk add --no-cache python3 make g++

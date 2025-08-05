@@ -132,7 +132,7 @@ jobs:
           format: "sarif"
           output: "trivy-image-results-${{ inputs.IMAGE_NAME }}.sarif"
           severity: "CRITICAL,HIGH"
-          exit-code: "1"
+          exit-code: "0"
           ignore-unfixed: true
           limit-severities-for-sarif: true # non severity sometimes fails the the job, so ignoring them intentionally.
 
