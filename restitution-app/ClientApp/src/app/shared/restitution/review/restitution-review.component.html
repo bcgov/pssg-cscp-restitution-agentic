@@ -303,9 +303,9 @@
             <p>
                 <label class="inline-label inline-checkbox-label">
                     <input type="checkbox" [checked]="form.get('restitutionInformation.declaredAndSigned').value === true" disabled="disabled" />
-                    <span>I submit this application in support of a claim for benefits available to Victims under the
-                        Crime Victim Assistance Act, and declare the information provided in this application for
-                        benefits is true and correct.</span>
+                    <span *ngIf="formType.val === ResitutionForm.Victim.val">By signing this form, I am applying to the Restitution Program for assistance in the facilitation of my restitution order and I confirm that I am the individual named on this form (or the parent/guardian/legal representative of the victim named on this form). Where applicable, I give permission to the Restitution Program to release information to the Victim Designate I have named above.</span>
+                    <span *ngIf="formType.val === ResitutionForm.Offender.val">By signing this form, I am applying to the Restitution Program for assistance in the facilitation of my restitution payments and I confirm that I am the individual named on this form.</span>
+                    <span *ngIf="formType.val === ResitutionForm.VictimEntity.val">By signing this form, I confirm that I have signing authority for the subject of the above noted restitution order and I am applying to the Restitution Program for assistance in the facilitation of the restitution order. Where applicable, I give permission to the Restitution Program to release information to the contacts I have named above.</span>
                 </label>
             </p>
         </div>
