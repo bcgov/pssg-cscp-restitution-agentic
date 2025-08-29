@@ -40,6 +40,8 @@
 # ##################################################################################################
 # Create build image layer
 FROM node:14-alpine AS build
+# Updated to Node 14 with CSP 'unsafe-eval' for now configured in Caddyfile for Angular JIT compilation.
+# for future enable AOT compilation
 
 # Install python3, make, and g++ for node-gyp/node-sass
 #RUN apk add --no-cache python3 make g++
@@ -53,7 +55,7 @@ ARG BUILD_VERSION
 COPY ./restitution-app/ClientApp ./restitution-app/ClientApp
 WORKDIR /restitution-app/ClientApp
 
-# Installing dependencies with npm ci for faster, deterministic builds instead of  RUN npm install
+# Installing dependencies with npm ci for faster, deterministic builds
 RUN npm ci
 
 # Adding Node.js memory optimization for large Angular builds, not needed for this build size
