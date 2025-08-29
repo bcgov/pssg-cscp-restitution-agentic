@@ -1,0 +1,74 @@
+# Version control
+.git/
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+*.md
+
+# Compliance and licensing (not needed in container)
+COMPLIANCE.yaml
+LICENSE
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS specific files
+.DS_Store
+Thumbs.db
+
+# Node.js dependencies and build artifacts
+node_modules/
+npm-debug.log*
+*.tgz
+.angular/
+
+# .NET build artifacts
+bin/
+obj/
+*.user
+*.suo
+*.userprefs
+
+# Environment and config files (keep specific ones needed for Docker build)
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Test coverage and test files
+coverage/
+**/e2e/
+**/*.spec.ts
+**/*.spec.js
+karma.conf.js
+protractor.conf.js
+
+# Logs
+logs/
+*.log
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Temporary files
+tmp/
+temp/
+
+# CI/CD
+.github/
+
+# OpenShift specific (exclude from general Docker builds)
+openshift/
+
+# Source control and build configs that aren't needed in container
+src/bc/

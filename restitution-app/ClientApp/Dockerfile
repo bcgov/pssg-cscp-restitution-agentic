@@ -39,8 +39,7 @@
 #                                                                                                 #
 # ##################################################################################################
 # Create build image layer
-FROM node:8.9.4 AS build
-# upgraded from 8.9.4 node:22-alpine
+FROM node:14-alpine AS build
 
 # Install python3, make, and g++ for node-gyp/node-sass
 #RUN apk add --no-cache python3 make g++
@@ -54,8 +53,16 @@ ARG BUILD_VERSION
 COPY ./restitution-app/ClientApp ./restitution-app/ClientApp
 WORKDIR /restitution-app/ClientApp
 
-RUN npm install
-RUN npm run build -- --base-href /restwebforms --prod
+# Installing dependencies with npm ci for faster, deterministic builds instead of  RUN npm install
+RUN npm ci
+
+# Adding Node.js memory optimization for large Angular builds, not needed for this build size
+#ENV NODE_OPTIONS="--max-old-space-size=8192"
+
+# Build Angular app
+RUN npm run build
+# removed --base-href /restwebforms --prod from npm run build, as it is already defined in package.json which executes
+# ng build --base-href /restwebforms --prod
 
 # Create runtime image layer, copy build image contents into this image
 FROM caddy:2.10.0-alpine AS final

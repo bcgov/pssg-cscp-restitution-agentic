@@ -67,8 +67,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "8.x"
-          # app uses node 8, due to code ql version issue, scanning with 22, however application has to be updated to latest version.
+          node-version: "14.x"
 
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
@@ -87,14 +86,14 @@ jobs:
 
       - name: Build Angular Application
         working-directory: restitution-app/ClientApp
-        run: npm run build -- --configuration production
+        run: npm run build
 
       # ---- Build .NET API ----
       - name: Restore .NET Dependencies
         run: dotnet restore restitution-app/restitution-app.csproj
 
       - name: Build .NET Application
-        run: dotnet build restitution-app/restitution-app.csproj --no-restore --configuration Release
+        run: dotnet publish restitution-app/restitution-app.csproj -c Release -o /tmp/publish --no-restore --verbosity minimal
 
       - name: Perform CodeQL Analysis (C#)
         uses: github/codeql-action/analyze@v3

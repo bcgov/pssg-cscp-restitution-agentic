@@ -48,25 +48,16 @@ ARG BUILD_IMAGE_NAME
 ARG BUILD_VERSION
 WORKDIR /app
 
-# --- Build Stage (SDK) ---
+# --- Build Stage (SDK) & Publish Stage ---
 FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_IMAGE_NAME
 ARG BUILD_VERSION
 
 COPY . .
 
-# Restore as distinct layers
-RUN dotnet restore ./restitution-app/
-RUN dotnet build "restitution-app/restitution-app.csproj" -c Release -o /app/build
-
-# --- Publish Stage ---
-FROM build AS publish
-ARG BUILD_IMAGE_NAME
-ARG BUILD_VERSION
-COPY . .
-
-# Build and publish a release
-RUN dotnet publish ./restitution-app -c Release -o /app/publish
+# Restore .NET dependencies
+RUN dotnet restore ./restitution-app/restitution-app.csproj
+RUN dotnet publish ./restitution-app/restitution-app.csproj -c Release -o /app/publish --no-restore --verbosity minimal
 
 # --- Final Runtime Image ---
 FROM base AS final
@@ -90,7 +81,7 @@ RUN echo "BUILD_VERSION='$BUILD_VERSION'" && if [ -z "$BUILD_VERSION" ]; then ec
 RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
 
 # 2. Copy published app from build stage as root
-COPY --from=publish /app/publish ./
+COPY --from=build /app/publish ./
 
 # 3. Set ownership of all app files to appuser:appgroup (key for security!)
 RUN chown -R appuser:appgroup /app
