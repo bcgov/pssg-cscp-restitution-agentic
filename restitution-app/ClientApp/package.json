@@ -5,10 +5,9 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve --host 0.0.0.0 --proxy-config proxy.config.json",
-    "build": "ng build --extract-css --base-href /restwebforms/ --deploy-url /restwebforms/",
-    "builduat": "ng build --extract-css --base-href /uat/restwebforms/ --deploy-url /uat/restwebforms/",
-    "buildprod": "ng build --extract-css --base-href /restwebforms/ --deploy-url /restwebforms/",
-    "watch": "ng build --watch --extract-css --base-href /restwebforms/ --deploy-url /restwebforms/",
+    "build": "ng build --prod --base-href /restwebforms/ --deploy-url /restwebforms/",
+    "builduat": "ng build --prod --base-href /uat/restwebforms/ --deploy-url /uat/restwebforms/",
+    "watch": "ng build --watch --base-href /restwebforms/ --deploy-url /restwebforms/",
     "build:ssr": "npm run build -- --app=ssr --output-hashing=media",
     "test": "ng test",
     "lint": "ng lint",
