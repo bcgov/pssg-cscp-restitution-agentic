@@ -70,6 +70,9 @@ import { RestitutionReviewComponent } from './shared/restitution/review/restitut
 import { RestitutionSuccessComponent } from './shared/restitution/success/restitution-success.component';
 import { MessageDialog } from './shared/dialogs/message-dialog/message.dialog';
 import { RestitutionAddressComponent } from './shared/restitution-address/address.component';
+import { GenderSelectorComponent } from './shared/gender-selector/gender-selector.component';
+import { RaceSelectorComponent } from './shared/race-selector/race-selector.component';
+import { FeatureEnabledDirective } from './directives/feature-enabled.directive';
 
 @NgModule({
   declarations: [
@@ -92,7 +95,11 @@ import { RestitutionAddressComponent } from './shared/restitution-address/addres
     RestitutionReviewComponent,
     RestitutionSuccessComponent,
     SignPadDialog,
-    ToolTipTriggerComponent
+    ToolTipTriggerComponent,
+    GenderSelectorComponent,
+    RaceSelectorComponent,
+    FeatureEnabledDirective,
+
   ],
   imports: [
     AppRoutingModule,

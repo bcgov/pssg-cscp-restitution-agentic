@@ -1,0 +1,21 @@
+<div [formGroup]="form">
+  <app-field label="Primary Race/Ethnicity" [required]="false" [valid]="isMyControlValid(form.get('primaryRaceEthnicity'))" errorMessage="Please select an option">
+    <select class="form-control" formControlName="primaryRaceEthnicity">
+      <span *ngFor="let enum of raceEthnicityList">
+        <option [value]="enum.val">{{enum.name}}</option>
+      </span>
+    </select>
+  </app-field>
+  <app-field *ngIf="isPersonIndigenous" label="Indigenous" [required]="false" errorMessage="Please select an option">
+      <select class="form-control" formControlName="indigenousStatus">
+        <span *ngFor="let enum of indigenousStatusList">
+          <option [value]="enum.val">{{enum.name}}</option>
+        </span>
+      </select>
+  </app-field>
+  <app-field *ngIf="form.get('primaryRaceEthnicity').value == otherRaceEthnicityValue" label="Other Race/Ethnicity" [required]="false" errorMessage="Please emter your gender" [disabled]="isDisabled">
+      <label class="inline-label">
+        <input type="text" name="raceEthnicity" formControlName="otherPrimaryRaceEthnicity">
+      </label>
+  </app-field>
+</div>

@@ -30,6 +30,22 @@ export class RestitutionReviewComponent extends FormBase implements OnInit {
   PAGES = RESTITUTION_PAGES;
   applicant_type: string = '';
 
+  get showIndigenous(){
+    return this.form.get('restitutionInformation.primaryRaceEthnicity').value == this.enumHelper.CRMRaceEthnicity.Indigenous.val || this.form.get('restitutionInformation.indigenousStatus').value != null;
+  }
+
+  get showOtherRace(){
+    return this.form.get('restitutionInformation.primaryRaceEthnicity').value == this.enumHelper.CRMRaceEthnicity.Other.val;
+  }
+
+  get showOtherPronoun(){
+    return this.form.get('restitutionInformation.pronouns').value == this.enumHelper.CRMPronoun.Other.val;
+  }
+
+    get showOtherGender(){
+    return this.form.get('restitutionInformation.gender').value == this.enumHelper.CRMGender.SelfDescribe.val;
+  }
+
   constructor(private controlContainer: ControlContainer, private fb: FormBuilder) {
     super();
   }

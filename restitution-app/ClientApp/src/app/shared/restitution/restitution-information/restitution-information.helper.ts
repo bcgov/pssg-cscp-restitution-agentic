@@ -53,7 +53,12 @@ export class RestitutionInfoHelper {
 
       birthDate: ['', [Validators.required]],
       gender: [null],
-      indigenousStatus: [null, [Validators.required, Validators.min(100000000), Validators.max(100000004)]],
+      otherGender: [''],
+      pronouns: [null],
+      otherPronoun: [''],
+      primaryRaceEthnicity:[null],
+      otherPrimaryRaceEthnicity:[null],
+      indigenousStatus: [null],
 
       authorizeDesignate: ['', Validators.required],
       designate: fb.array([]),

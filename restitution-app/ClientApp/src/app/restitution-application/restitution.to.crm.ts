@@ -60,6 +60,11 @@ function getCRMApplication(application: iRestitutionApplication) {
       vsd_otherfirstname: application.RestitutionInformation.otherFirstName,
       vsd_otherlastname: application.RestitutionInformation.otherLastName,
       vsd_applicantsgendercode: application.RestitutionInformation.gender,
+      vsd_genderidentitytext: application.RestitutionInformation.otherGender,
+      vsd_primaryraceethnicity: application.RestitutionInformation.primaryRaceEthnicity,
+      vsd_primaryraceethnicitytext: application.RestitutionInformation.otherPrimaryRaceEthnicity,
+      vsd_pronouns: application.RestitutionInformation.pronouns,
+      vsd_pronountext: application.RestitutionInformation.otherPronoun,
       vsd_applicantsbirthdate: application.RestitutionInformation.birthDate,
       vsd_indigenous: application.RestitutionInformation.indigenousStatus,
       vsd_applicantssignature: application.RestitutionInformation.signature,
@@ -79,7 +84,7 @@ function getCRMApplication(application: iRestitutionApplication) {
       vsd_voicemailoption: null,
       vsd_contacttitle: '',
       //NOTE: VS-6380 This field was remapped from contact entity as per business ask.
-      vsd_offendercustodylocation: ''
+      vsd_offendercustodylocation: '',
     };
   } else {
     crm_application = {
@@ -110,7 +115,12 @@ function getCRMApplication(application: iRestitutionApplication) {
       vsd_applicantsprimarycountry: '',
       vsd_voicemailoption: null,
       vsd_applicantssignature: application.RestitutionInformation.signature,
-      vsd_offendercustodylocation: ''
+      vsd_offendercustodylocation: '',
+      vsd_primaryraceethnicity: application.RestitutionInformation.primaryRaceEthnicity,
+      vsd_pronouns: application.RestitutionInformation.pronouns,
+      vsd_pronountext: application.RestitutionInformation.otherPronoun,
+      vsd_primaryraceethnicitytext: application.RestitutionInformation.otherPrimaryRaceEthnicity,
+      vsd_genderidentitytext: application.RestitutionInformation.otherGender
     };
   }
 
