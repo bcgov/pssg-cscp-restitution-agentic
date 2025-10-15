@@ -97,7 +97,7 @@
         </app-field>
       </div>
     </div> 
-    <app-gender-selector featureEnabled="useUpdatedComplianceFields" [form]="form" ></app-gender-selector>
+    <app-gender-selector [isDisabled]="isDisabled" featureEnabled="useUpdatedComplianceFields" [form]="form" ></app-gender-selector>
 
 
     <ng-template #genderMToolTip>Persons whose current gender is male. This includes cisgender and transgender persons who are male.</ng-template>
@@ -118,7 +118,7 @@
         </app-field>
       </div>
     </div>
-    <app-race-selector featureEnabled="useUpdatedComplianceFields" [form]="form"></app-race-selector>
+    <app-race-selector [isDisabled]="isDisabled" featureEnabled="useUpdatedComplianceFields" [form]="form"></app-race-selector>
 
         <ng-container>
           <div class="row">

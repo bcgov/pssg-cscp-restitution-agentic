@@ -14,6 +14,7 @@ export class GenderSelectorComponent extends FormBase implements OnInit {
   }
   @Input() form: FormGroup;
   @Input() formControlName: string;
+  @Input() isDisabled: boolean;
   enumHelper = new EnumHelper();
   selfDescribeValue = this.enumHelper.CRMGender.SelfDescribe.val;
   otherPronounValue = this.enumHelper.CRMPronoun.Other.val;

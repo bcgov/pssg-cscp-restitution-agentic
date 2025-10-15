@@ -11,6 +11,7 @@ import { EnumHelper } from '../enums-list';
 export class RaceSelectorComponent extends FormBase implements OnInit {
   @Input() form: FormGroup;
   @Input() formControlName: string;
+  @Input() isDisabled: boolean;
   enumHelper = new EnumHelper();
   otherRaceEthnicityValue = this.enumHelper.CRMRaceEthnicity.Other.val;
 

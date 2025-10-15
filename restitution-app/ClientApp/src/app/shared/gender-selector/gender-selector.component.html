@@ -1,5 +1,4 @@
 <div [formGroup]="form">
-  <!-- <div class="row"> -->
     <div class="row">
   <app-field class=" col-md-12" label="Gender" [required]="false" errorMessage="Please select your gender" [disabled]="isDisabled">
     
@@ -9,7 +8,6 @@
           <span>{{gender.name}}</span>
         </label>
     </span> 
-    <!-- </div> -->
   </app-field>
   </div>
   <div class="row">
@@ -18,17 +16,14 @@
         <input type="text" name="gender" formControlName="otherGender">
       </label>
   </app-field></div>
-  <!-- </div> -->
   <div class="row">
     <app-field class="col-md-12"  label="Pronouns" [required]="false" [valid]="isMyControlValid(form.get('pronouns'))" errorMessage="Please select your pronoun" [disabled]="isDisabled">
-    <!-- <div class="row"> -->
       <span *ngFor="let pronoun of pronounList">
         <label class="inline-label">
             <input type="radio" [value]="pronoun.val" name="pronouns" formControlName="pronouns">
                 <span>{{pronoun.name}}</span>
         </label>
       </span>
-    <!-- </div> -->
     </app-field>
   </div>
   <div class="row">
@@ -36,6 +31,6 @@
         <label class="inline-label">
           <input type="text" name="otherPronoun" formControlName="otherPronoun">
         </label>
-    </app-field></div>
-  <!-- </div> -->
+    </app-field>
+  </div>
 </div>
