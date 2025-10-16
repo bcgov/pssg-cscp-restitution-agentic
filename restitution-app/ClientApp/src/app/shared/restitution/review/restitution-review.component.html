@@ -50,15 +50,36 @@
             </tr>
             <tr>
               <th>Gender</th>
-              <td>{{ enumHelper.Gender[valueForEnum('restitutionInformation.gender')] }} </td>
+              <td>{{ getOptionSetNameFromVal(enumHelper.CRMGender, valueOrEmpty('restitutionInformation.gender')) }}</td>
+            </tr>
+            <ng-container *featureEnabled="useUpdatedComplianceFields">
+            <tr *ngIf="showOtherGender">
+              <th>Other Gender</th>
+              <td>{{ form.get('restitutionInformation.otherGender')?.value }} </td>
+            </tr>
+            <tr >
+              <th>Pronoun</th>
+              <td>{{ getOptionSetNameFromVal(enumHelper.CRMPronoun, valueOrEmpty('restitutionInformation.pronouns')) }} </td>
+            </tr>
+            <tr *ngIf="showOtherPronoun">
+            <th>Other Pronoun </th>
+              <td>{{ form.get('restitutionInformation.otherPronoun')?.value }} </td>
             </tr>
             <tr>
-              <th>Do you identify as an Indigenous person?</th>
+              <th>Primary Race/Ethnicity</th>
+              <td>{{ getOptionSetNameFromVal(enumHelper.CRMRaceEthnicity, valueOrEmpty('restitutionInformation.primaryRaceEthnicity')) }}</td>
+            </tr>  
+            <tr *ngIf="showOtherRace"> 
+             <th>Other Race/Ethnicity </th>
+              <td>{{ form.get('restitutionInformation.otherPrimaryRaceEthnicity')?.value }} </td>
+            </tr>   
+            </ng-container>  
+            <tr *ngIf="showIndigenous">
+              <th>Indigenous</th>
               <td>{{ getOptionSetNameFromVal(enumHelper.IndigenousStatus, valueOrEmpty('restitutionInformation.indigenousStatus')) }}</td>
             </tr>
           </tbody>
         </table>
-
         <ng-container *ngIf="formType.val === ResitutionForm.Victim.val">
             <ng-container *ngIf="form.get('restitutionInformation.authorizeDesignate').value === CRMMultiBoolean.True">
                 <div *ngFor="let item of form.get('restitutionInformation.designate')['controls']; let i = index">

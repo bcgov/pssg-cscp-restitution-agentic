@@ -11,7 +11,7 @@ export const MY_FORMATS = {
 };
 
 export class EnumHelper {
-  public Gender = {
+  public GenderOptions = {
     0: '--',
     100000000: 'M',
     100000001: 'F',
@@ -156,9 +156,35 @@ export class EnumHelper {
   };
 
   public CRMGender = {
-    Male: <IOptionSetVal>{ val: 100000000, name: 'M' },
-    Female: <IOptionSetVal>{ val: 100000001, name: 'F' },
-    X: <IOptionSetVal>{ val: 100000002, name: 'X' }
+    Male: <IOptionSetVal>{ val: 100000000, name: 'Man/Boy (M)' },
+    Female: <IOptionSetVal>{ val: 100000001, name: 'Woman/Girl (F)' },
+    NonBinary: <IOptionSetVal>{ val: 100000002, name: 'Non-Binary (X)' },
+    PreferNotToAnswer: <IOptionSetVal>{ val: 100000003, name: 'Prefer not to answer (U)' },
+    SelfDescribe: <IOptionSetVal>{ val: 100000004, name: 'Prefer to self-describe' }
+  };
+
+  public CRMPronoun = {
+    SheHerHers: <IOptionSetVal>{ val: 100000001, name: 'She/Her/Hers' },
+    HeHimHis: <IOptionSetVal>{ val: 100000000, name: 'He/Him/His' },
+    TheyThemTheirs: <IOptionSetVal>{ val: 100000002, name: 'They/Them/Theirs' },
+    Other: <IOptionSetVal>{ val: 100000003, name: 'Other' },
+  }
+
+  public CRMRaceEthnicity: { [key: string]: IOptionSetVal } = {
+    Black: <IOptionSetVal>{ val: 100000000, name: 'Black' },
+    Chinese: <IOptionSetVal>{ val: 100000001, name: 'Chinese' },
+    Japanese: <IOptionSetVal>{ val: 100000002, name: 'Japanese' },
+    Korean: <IOptionSetVal>{ val: 100000003, name: 'Korean' },
+    Filipino: <IOptionSetVal>{ val: 100000004, name: 'Filipino' },
+    SoutheastAsian: <IOptionSetVal>{ val: 100000005, name: 'Southeast Asian' },
+    LatinAmerican: <IOptionSetVal>{ val: 100000006, name: 'Latin American' },
+    Arab: <IOptionSetVal>{ val: 100000007, name: 'Arab' },
+    WestAsian: <IOptionSetVal>{ val: 100000008, name: 'West Asian' },
+    SouthAsian: <IOptionSetVal>{ val: 100000009, name: 'South Asian' },
+    White: <IOptionSetVal>{ val: 100000009, name: 'White' },
+    Other: <IOptionSetVal>{ val: 100000011, name: 'Other' },
+    Multiple: <IOptionSetVal>{ val: 100000012, name: 'Multiple' },
+    Indigenous: <IOptionSetVal>{ val: 100000013, name: 'Indigenous' },
   };
 
   public ContactMethods = {

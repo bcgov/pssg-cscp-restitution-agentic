@@ -13,6 +13,12 @@ export interface iCRMApplication {
   vsd_otherfirstname?: string;
   vsd_otherlastname?: string;
   vsd_applicantsgendercode: number;
+  vsd_genderidentitytext: string;
+  vsd_primaryraceethnicity: number;
+  vsd_primaryraceethnicitytext: string;
+  vsd_pronouns: number;
+  vsd_pronountext: string;
+
   vsd_applicantsbirthdate: Date;
   vsd_indigenous: number;
 

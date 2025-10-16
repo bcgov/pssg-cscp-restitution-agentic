@@ -40,17 +40,13 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
                     OutageEndDate = configuration.GetValue<string>(
                         "CONFIGURATION_OUTAGEINFORMATION_ENDDATE"
                     ),
+                    FeatureFlags = new FeatureFlagConfiguration
+                    {
+                        UseUpdatedComplianceFields = !string.IsNullOrEmpty(
+                            configuration["FEATURE_UPDATED_COMPLIANCE_FIELDS"]
+                        ),
+                    },
                 };
-
-                if (
-                    string.IsNullOrEmpty(config.OutageMessage)
-                    || string.IsNullOrEmpty(config.OutageStartDate)
-                    || string.IsNullOrEmpty(config.OutageEndDate)
-                )
-                {
-                    return Ok();
-                }
-                ;
 
                 return Ok(config);
             }
@@ -68,4 +64,10 @@ public class Configuration
     public string OutageMessage { get; set; }
     public string OutageStartDate { get; set; }
     public string OutageEndDate { get; set; }
+    public FeatureFlagConfiguration FeatureFlags { get; set; }
 };
+
+public class FeatureFlagConfiguration
+{
+    public bool UseUpdatedComplianceFields { get; set; }
+}

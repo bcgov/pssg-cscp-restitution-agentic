@@ -6,6 +6,10 @@ export interface iRestitutionApplication {
   RestitutionInformation: RestitutionInformation;
 }
 export interface RestitutionInformation {
+  primaryRaceEthnicity: number;
+  pronouns: number;
+  otherPronoun: string;
+  otherPrimaryRaceEthnicity: string;
   firstName: string;
   middleName: string;
   lastName: string;
@@ -14,6 +18,7 @@ export interface RestitutionInformation {
   otherLastName: string;
   birthDate: Date;
   gender: number;
+  otherGender: string;
   indigenousStatus: number;
   authorizeDesignate: boolean;
   designate: iDesignate[];
