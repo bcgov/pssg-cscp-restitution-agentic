@@ -32,7 +32,7 @@ export class RestitutionInfoHelper {
           country: [{ value: 'Canada', disabled: false }, [Validators.required]]
         }),
         attentionTo: [''],
-        preferredMethodOfContact: [null, [Validators.min(1), Validators.max(100000002)]], // Phone = 2, Email = 1, Mail = 4, Alternate Mail = 100000002
+        preferredMethodOfContact: [null, [Validators.required, Validators.min(1), Validators.max(100000002)]], // Phone = 2, Email = 1, Mail = 4, Alternate Mail = 100000002
         smsPreferred: [null],
         phoneNumber: ['', [Validators.minLength(10), Validators.maxLength(15)]],
         alternatePhoneNumber: [''],
@@ -123,13 +123,13 @@ export class RestitutionInfoHelper {
   createEntityContact(fb: FormBuilder, form_type: IOptionSetVal): FormGroup {
     let group = {
       firstName: [''],
-      lastName: ['']
+      lastName: ['', [Validators.required]]
     };
     if (form_type.val === ResitutionForm.VictimEntity.val) {
       group['relationship'] = [''];
       group['contactTitle'] = ['', [Validators.minLength(1), Validators.maxLength(50)]];
       group['isPrimaryContact'] = [CRMMultiBoolean.False];
-      group['preferredMethodOfContact'] = [null, [Validators.min(1), Validators.max(100000002)]]; // Phone = 2, Email = 1, Mail = 4, Alternate Mail = 100000002
+      group['preferredMethodOfContact'] = [null, [Validators.required, Validators.min(1), Validators.max(100000002)]]; // Phone = 2, Email = 1, Mail = 4, Alternate Mail = 100000002
       group['smsPreferred'] = [null];
       group['phoneNumber'] = ['', [Validators.minLength(10), Validators.maxLength(15)]];
       group['alternatePhoneNumber'] = [''];
