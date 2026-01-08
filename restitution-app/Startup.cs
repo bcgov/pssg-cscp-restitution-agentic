@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Gov.Cscp.VictimServices.Public.Services;
+using Gov.Cscp.VictimServices.Public.Utilities.Converters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.CookiePolicy;
@@ -88,6 +89,9 @@ namespace Gov.Cscp.VictimServices.Public
                         .Json
                         .ReferenceLoopHandling
                         .Ignore;
+
+                    // Convert empty strings to null
+                    opts.SerializerSettings.Converters.Add(new EmptyStringToNullConverter());
                 });
 
             // services.RegisterPermissionHandler();
