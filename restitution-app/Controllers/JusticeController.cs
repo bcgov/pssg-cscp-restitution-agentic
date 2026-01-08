@@ -41,8 +41,10 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
                 }
 
                 var endpointAction = "vsd_CreateRestitutionCase";
-                JsonSerializerSettings settings = new JsonSerializerSettings();
-                settings.NullValueHandling = NullValueHandling.Ignore;
+                JsonSerializerSettings settings = new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                };
                 var modelString = JsonConvert.SerializeObject(model, settings);
                 DynamicsResult result = await _dynamicsResultService.Post(
                     endpointAction,
