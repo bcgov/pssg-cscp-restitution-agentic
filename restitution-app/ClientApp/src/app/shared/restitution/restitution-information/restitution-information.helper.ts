@@ -56,8 +56,8 @@ export class RestitutionInfoHelper {
       otherGender: [''],
       pronouns: [null],
       otherPronoun: [''],
-      primaryRaceEthnicity:[null],
-      otherPrimaryRaceEthnicity:[null],
+      primaryRaceEthnicity: [null],
+      otherPrimaryRaceEthnicity: [null],
       indigenousStatus: [null],
 
       authorizeDesignate: ['', Validators.required],
@@ -123,7 +123,7 @@ export class RestitutionInfoHelper {
   createEntityContact(fb: FormBuilder, form_type: IOptionSetVal): FormGroup {
     let group = {
       firstName: [''],
-      lastName: ['', [Validators.required]]
+      lastName: ['']
     };
     if (form_type.val === ResitutionForm.VictimEntity.val) {
       group['relationship'] = [''];
