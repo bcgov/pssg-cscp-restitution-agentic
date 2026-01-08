@@ -214,6 +214,8 @@ function getCRMContactInfoCollection(application: iRestitutionApplication) {
 
   return ret;
 }
+
+// TODO: it might more efficient to split this function into dedicated functions for each application type
 function getCRMProviderCollection(application: iRestitutionApplication) {
   let ret: iCRMParticipant[] = [];
   let enumHelper = new EnumHelper();
@@ -226,11 +228,24 @@ function getCRMProviderCollection(application: iRestitutionApplication) {
     //add designate...
 
     var primaryContact = application.RestitutionInformation.contactInformation.entityContacts.filter(
+      // TODO: depending on app type it will be part of contact model or not
       (k) => k.isPrimaryContact == CRMMultiBoolean.True
     )[0];
     if (primaryContact == null || primaryContact == undefined) {
       primaryContact == application.RestitutionInformation.contactInformation.entityContacts[0];
     }
+
+    // application of a type Victim doesn't have mailing address or contacnt info for each contact
+    // use applicant mailing address and contact info instead
+    const mailingAddress =
+      application.ApplicationType.val === ResitutionForm.Victim.val
+        ? application.RestitutionInformation.contactInformation.mailingAddress
+        : null;
+    const contactInfo =
+      application.ApplicationType.val === ResitutionForm.Victim.val
+        ? application.RestitutionInformation.contactInformation
+        : null;
+
     application.RestitutionInformation.contactInformation.entityContacts.forEach((contact) => {
       let toAdd: iCRMParticipant = {
         vsd_firstname: designate.firstName,
@@ -238,24 +253,30 @@ function getCRMProviderCollection(application: iRestitutionApplication) {
         vsd_preferredname: designate.preferredName,
         //need crm field: designate.actOnBehalf,
         vsd_relationship1: 'Designate',
-
         //set contact info
-        vsd_addressline1: contact.mailingAddress.line1,
-        vsd_addressline2: contact.mailingAddress.line2,
-        vsd_city: contact.mailingAddress.city,
-        vsd_province: contact.mailingAddress.province,
-        vsd_postalcode: contact.mailingAddress.postalCode,
-        vsd_country: contact.mailingAddress.country,
-        vsd_phonenumber: contact.phoneNumber,
-        vsd_alternatephonenumber: contact.alternatePhoneNumber,
-        vsd_email: contact.email,
-        vsd_voicemailoptions: contact.leaveVoicemail,
-        vsd_preferredmethodofcontact: convertToParticipantMethodOfContact(contact.preferredMethodOfContact),
+        vsd_addressline1: mailingAddress ? mailingAddress.line1 : contact.mailingAddress.line1,
+        vsd_addressline2: mailingAddress ? mailingAddress.line2 : contact.mailingAddress.line2,
+        vsd_city: mailingAddress ? mailingAddress.city : contact.mailingAddress.city,
+        vsd_province: mailingAddress ? mailingAddress.province : contact.mailingAddress.province,
+        vsd_postalcode: mailingAddress ? mailingAddress.postalCode : contact.mailingAddress.postalCode,
+        vsd_country: mailingAddress ? mailingAddress.country : contact.mailingAddress.country,
+        vsd_phonenumber: contactInfo ? contactInfo.phoneNumber : contact.phoneNumber,
+        vsd_alternatephonenumber: contactInfo ? contactInfo.alternatePhoneNumber : contact.alternatePhoneNumber,
+        vsd_email: contactInfo ? contactInfo.email : contact.email,
+        vsd_voicemailoptions: contactInfo ? contactInfo.leaveVoicemail : contact.leaveVoicemail,
+        vsd_preferredmethodofcontact: convertToParticipantMethodOfContact(
+          contactInfo ? contactInfo.preferredMethodOfContact : contact.preferredMethodOfContact
+        ),
         vsd_isprimaryentitycontact: contact.isPrimaryContact,
         vsd_title: contact.contactTitle
       };
 
-      switch (primaryContact.preferredMethodOfContact) {
+      // TODO: depending on app type it will be part of contact model or not
+      const preferredMethodOfContact =
+        application.ApplicationType.val === ResitutionForm.Victim.val
+          ? contactInfo.preferredMethodOfContact
+          : primaryContact.preferredMethodOfContact;
+      switch (preferredMethodOfContact) {
         case enumHelper.ContactMethods.BLANK.val:
           toAdd.vsd_restcontactpreferenceforupdates = enumHelper.ParticipantRestitutionContactMethods.BLANK.val;
           break;
@@ -270,7 +291,12 @@ function getCRMProviderCollection(application: iRestitutionApplication) {
           break;
       }
 
-      if (primaryContact.smsPreferred == CRMBoolean.True) {
+      // TODO: depending on app type it will be part of contact model or not
+      const smsPreferred =
+        application.ApplicationType.val === ResitutionForm.Victim.val
+          ? contactInfo.smsPreferred
+          : primaryContact.smsPreferred;
+      if (smsPreferred == CRMBoolean.True) {
         toAdd.vsd_restcontactpreferenceforupdates = enumHelper.ParticipantRestitutionContactMethods.SMS.val;
       }
 
