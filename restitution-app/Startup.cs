@@ -90,8 +90,8 @@ namespace Gov.Cscp.VictimServices.Public
                         .ReferenceLoopHandling
                         .Ignore;
 
-                    // TODO: avoid converting whole incoming model, it may lead to NullValueHandling.Ignore removing expected properties
-                    // use  coverter on individual properties instead, for example int? type + optionset combo
+                    // avoid converting whole incoming model, it may lead to NullValueHandling.Ignore removing expected properties
+                    // use coverter on individual properties instead, for example int? type + optionset combo
                     // opts.SerializerSettings.Converters.Add(new EmptyStringToNullConverter());
                 });
 
