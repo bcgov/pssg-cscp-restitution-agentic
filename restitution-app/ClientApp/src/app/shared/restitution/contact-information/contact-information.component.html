@@ -62,7 +62,7 @@
             </app-field>
           </div>
           <div class="col-md-6">
-            <app-field label="Primary Phone Number (inc. area code)" [required]="item.get('preferredMethodOfContact').value == enum.ContactMethods.Phone.val || item.get('smsPreferred').value == CRMMultiBoolean.True" [valid]="isMyControlValid(item.get('phoneNumber'))" errorMessage="Please enter your phone number" [disabled]="isDisabled">
+            <app-field label="Primary Phone Number (inc. area code)" [required]="item.get('preferredMethodOfContact').value == enum.ContactMethods.Phone.val || item.get('smsPreferred').value == CRMBoolean.True" [valid]="isMyControlValid(item.get('phoneNumber'))" errorMessage="Please enter your phone number" [disabled]="isDisabled">
               <input class="form-control" mask='(000) 000 0000' type="text" formControlName="phoneNumber" *ngIf="form.get('mailingAddress.country').value === 'Canada' || form.get('mailingAddress.country').value === 'United States of America'; else phone_no_mask">
               <ng-template #phone_no_mask>
                 <input class="form-control" type="text" formControlName="phoneNumber" digitOnly>

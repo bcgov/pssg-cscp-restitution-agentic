@@ -4,6 +4,7 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Gov.Cscp.VictimServices.Public.Services;
+using Gov.Cscp.VictimServices.Public.Utilities.Converters;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.CookiePolicy;
@@ -88,6 +89,10 @@ namespace Gov.Cscp.VictimServices.Public
                         .Json
                         .ReferenceLoopHandling
                         .Ignore;
+
+                    // avoid converting whole incoming model, it may lead to NullValueHandling.Ignore removing expected properties
+                    // use coverter on individual properties instead, for example int? type + optionset combo
+                    // opts.SerializerSettings.Converters.Add(new EmptyStringToNullConverter());
                 });
 
             // services.RegisterPermissionHandler();

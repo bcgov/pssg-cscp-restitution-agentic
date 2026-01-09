@@ -174,8 +174,8 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
   submitApplication() {
     this.submitting = true;
     if (this.form.valid) {
-      let form = this.harvestForm();
-      let data = convertRestitutionToCRM(form);
+      let formValue = this.harvestForm();
+      let data = convertRestitutionToCRM(formValue);
       this.justiceDataService.submitRestitutionApplication(data).subscribe(
         (data) => {
           if (data['IsSuccess'] == true) {

@@ -17,7 +17,7 @@
   <ng-container *ngIf="formType.val === ResitutionForm.VictimEntity.val">
     <div class="row">
       <div class="col-md-6">
-        <app-field label="Entity Name" [required]="true" [valid]="isFieldValid('firstName')" errorMessage="Please enter your Entity name" [disabled]="isDisabled">
+        <app-field label="Entity Name" [required]="true" [valid]="isFieldValid('lastName')" errorMessage="Please enter your Entity name" [disabled]="isDisabled">
           <input class="form-control" type="text" formControlName="lastName" maxlength="100">
         </app-field>
       </div>
