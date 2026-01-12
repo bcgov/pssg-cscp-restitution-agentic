@@ -5,7 +5,7 @@ import {
   iCRMParticipant,
   iRestitutionCRM
 } from '../interfaces/dynamics/crm-restitution';
-import { iRestitutionApplication, iCourtFile, iDocument, iEntityContact } from '../interfaces/restitution.interface';
+import { iCourtFile, iDocument, iEntityContact, iRestitutionApplication } from '../interfaces/restitution.interface';
 import { CRMBoolean, CRMMultiBoolean, EnumHelper, ResitutionForm } from '../shared/enums-list';
 
 export function convertRestitutionToCRM(application: iRestitutionApplication) {
@@ -84,7 +84,7 @@ function getCRMApplication(application: iRestitutionApplication) {
       vsd_voicemailoption: null,
       vsd_contacttitle: '',
       //NOTE: VS-6380 This field was remapped from contact entity as per business ask.
-      vsd_offendercustodylocation: '',
+      vsd_offendercustodylocation: ''
     };
   } else {
     crm_application = {
@@ -238,11 +238,13 @@ function getCRMProviderCollection(application: iRestitutionApplication) {
     // application of a type Victim doesn't have mailing address or contacnt info for each contact
     // use applicant mailing address and contact info instead
     const mailingAddress =
-      application.ApplicationType.val === ResitutionForm.Victim.val
+      application.ApplicationType.val === ResitutionForm.Victim.val ||
+      application.ApplicationType.val === ResitutionForm.Offender.val
         ? application.RestitutionInformation.contactInformation.mailingAddress
         : null;
     const contactInfo =
-      application.ApplicationType.val === ResitutionForm.Victim.val
+      application.ApplicationType.val === ResitutionForm.Victim.val ||
+      application.ApplicationType.val === ResitutionForm.Offender.val
         ? application.RestitutionInformation.contactInformation
         : null;
 
@@ -273,7 +275,8 @@ function getCRMProviderCollection(application: iRestitutionApplication) {
 
       // TODO: depending on app type it will be part of contact model or not
       const preferredMethodOfContact =
-        application.ApplicationType.val === ResitutionForm.Victim.val
+        application.ApplicationType.val === ResitutionForm.Victim.val ||
+        application.ApplicationType.val === ResitutionForm.Offender.val
           ? contactInfo.preferredMethodOfContact
           : primaryContact.preferredMethodOfContact;
       switch (preferredMethodOfContact) {
@@ -293,7 +296,8 @@ function getCRMProviderCollection(application: iRestitutionApplication) {
 
       // TODO: depending on app type it will be part of contact model or not
       const smsPreferred =
-        application.ApplicationType.val === ResitutionForm.Victim.val
+        application.ApplicationType.val === ResitutionForm.Victim.val ||
+        application.ApplicationType.val === ResitutionForm.Offender.val
           ? contactInfo.smsPreferred
           : primaryContact.smsPreferred;
       if (smsPreferred == CRMBoolean.True) {
