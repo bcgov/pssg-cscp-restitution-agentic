@@ -92,7 +92,7 @@ namespace Gov.Cscp.VictimServices.Public
 
                     // avoid converting whole incoming model, it may lead to NullValueHandling.Ignore removing expected properties
                     // use coverter on individual properties instead, for example int? type + optionset combo
-                    // opts.SerializerSettings.Converters.Add(new EmptyStringToNullConverter());
+                    opts.SerializerSettings.Converters.Add(new EmptyStringToNullConverter());
                 });
 
             // services.RegisterPermissionHandler();
@@ -113,7 +113,6 @@ namespace Gov.Cscp.VictimServices.Public
                 options.MultipartBodyLengthLimit = 1073741824; // 1 GB
             });
 
-            // health checks
             // health checks
             services
                 .AddHealthChecks()
