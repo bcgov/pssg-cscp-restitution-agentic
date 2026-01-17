@@ -50,11 +50,9 @@ function getCRMApplication(application: iRestitutionApplication) {
   var crm_application: iCRMApplication;
   if (application.ApplicationType.val == ResitutionForm.VictimEntity.val) {
     crm_application = {
-      vsd_applicanttype:
-        application.ApplicationType.val == ResitutionForm.VictimEntity.val
-          ? ResitutionForm.Victim.val
-          : application.ApplicationType.val, //annoying handling for "victim entity"
-      vsd_applicantsfirstname: application.RestitutionInformation.firstName,
+      vsd_applicanttype: ResitutionForm.Victim.val,
+      // TODO: if VictimEntity use last name as first name as Dynamics still expects both, even when form collects only last name
+      vsd_applicantsfirstname: application.RestitutionInformation.lastName,
       vsd_applicantsmiddlename: application.RestitutionInformation.middleName,
       vsd_applicantslastname: application.RestitutionInformation.lastName,
       vsd_otherfirstname: application.RestitutionInformation.otherFirstName,
@@ -88,10 +86,7 @@ function getCRMApplication(application: iRestitutionApplication) {
     };
   } else {
     crm_application = {
-      vsd_applicanttype:
-        application.ApplicationType.val == ResitutionForm.VictimEntity.val
-          ? ResitutionForm.Victim.val
-          : application.ApplicationType.val, //annoying handling for "victim entity"
+      vsd_applicanttype: application.ApplicationType.val,
       vsd_applicantsfirstname: application.RestitutionInformation.firstName,
       vsd_applicantsmiddlename: application.RestitutionInformation.middleName,
       vsd_applicantslastname: application.RestitutionInformation.lastName,
