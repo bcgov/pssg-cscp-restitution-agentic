@@ -1,8 +1,7 @@
-// using Gov.Cscp.VictimServices.Public.Authorization;
 using System;
 using System.IO;
 using System.Net.Http;
-using System.Threading.Tasks;
+using System.Reflection;
 using Gov.Cscp.VictimServices.Public.Services;
 using Gov.Cscp.VictimServices.Public.Utilities.Converters;
 using Microsoft.AspNetCore.Authorization;
@@ -12,7 +11,6 @@ using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -22,6 +20,7 @@ using Microsoft.Extensions.Logging;
 using NWebsec.AspNetCore.Mvc;
 using NWebsec.AspNetCore.Mvc.Csp;
 using Serilog;
+using Serilog.Enrichers.Span;
 using Serilog.Exceptions;
 
 namespace Gov.Cscp.VictimServices.Public
@@ -46,7 +45,6 @@ namespace Gov.Cscp.VictimServices.Public
                 .AddHttpClient<IDynamicsResultService, DynamicsResultService>()
                 .AddHttpMessageHandler<TokenHandler>();
 
-            // Add a memory cache
             services.AddMemoryCache();
 
             // for security reasons, the following headers are set.
@@ -119,6 +117,20 @@ namespace Gov.Cscp.VictimServices.Public
                 .AddCheck("HTTP Endpoint", () => HealthCheckResult.Healthy("Ok"));
 
             services.AddSession();
+
+            // Add Swagger/OpenAPI
+            services.AddSwaggerGen(c =>
+            {
+                c.SwaggerDoc(
+                    "v1",
+                    new Microsoft.OpenApi.OpenApiInfo
+                    {
+                        Title = "Restitution API",
+                        Version = "v1",
+                        Description = "API for the Restitution Application",
+                    }
+                );
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -147,6 +159,17 @@ namespace Gov.Cscp.VictimServices.Public
 
             // health checks
             app.UseHealthChecks("/hc");
+
+            // Enable Swagger and Swagger UI only in development
+            if (env.IsDevelopment())
+            {
+                app.UseSwagger();
+                app.UseSwaggerUI(c =>
+                {
+                    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Restitution API v1");
+                    c.RoutePrefix = "swagger";
+                });
+            }
 
             app.Use(
                 async (ctx, next) =>
@@ -250,11 +273,19 @@ namespace Gov.Cscp.VictimServices.Public
                 Log.Logger = new LoggerConfiguration()
                     .Enrich.FromLogContext()
                     .Enrich.WithExceptionDetails()
-                    .WriteTo.Console()
+                    .Enrich.WithEnvironmentUserName()
+                    .Enrich.WithCorrelationId()
+                    .Enrich.WithCorrelationIdHeader()
+                    .Enrich.WithSpan()
+                    .Enrich.WithProperty(
+                        "version",
+                        Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "Unknown"
+                    )
+                    .Enrich.WithProperty("UTC_Timestamp", DateTime.UtcNow.ToString("o"))
                     .WriteTo.EventCollector(
                         splunkHost: Configuration["SPLUNK_COLLECTOR_URL"],
-                        sourceType: "portal",
                         eventCollectorToken: Configuration["SPLUNK_TOKEN"],
+                        sourceType: "restitution",
                         restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information,
 #pragma warning disable CA2000 // Dispose objects before losing scope
                         messageHandler: new HttpClientHandler()
@@ -271,11 +302,12 @@ namespace Gov.Cscp.VictimServices.Public
                         }
 #pragma warning restore CA2000 // Dispose objects before losing scope
                     )
+                    .WriteTo.Console()
                     .CreateLogger();
 
                 Serilog.Debugging.SelfLog.Enable(Console.Error);
 
-                Log.Logger.Information("CVAP Webforms Started");
+                Log.Logger.Information("Restitution Webforms Started");
             }
             else
             {

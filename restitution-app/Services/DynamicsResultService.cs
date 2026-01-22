@@ -80,9 +80,8 @@ namespace Gov.Cscp.VictimServices.Public.Services
                     new RequestFailedException(
                         $"Received a fail response from {endpointUrl}. Source = Restitution"
                     ),
-                    $"COAST resturned IsSuccess = False. \nSource = Restitution. \nError is:\n{result.result}\n\nJSON sent:{requestJson}",
-                    result.result,
-                    requestJson
+                    $"COAST resturned IsSuccess = False. \nSource = Restitution. \nError is:\n{result.result}\n\n",
+                    result.result
                 );
             }
 
@@ -92,9 +91,8 @@ namespace Gov.Cscp.VictimServices.Public.Services
                     new RequestFailedException(
                         $"Error calling API function {endpointUrl}. Source = Restitution"
                     ),
-                    $"Error calling API function {endpointUrl}. \nSource = Restitution. \nError is:\n{result.result}\n\nJSON sent:{requestJson}",
-                    result.result,
-                    requestJson
+                    $"Error calling API function {endpointUrl}. \nSource = Restitution. \nError is:\n{result.result}\n\n",
+                    result.result
                 );
             }
 
