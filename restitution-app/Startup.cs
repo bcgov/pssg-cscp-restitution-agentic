@@ -118,6 +118,8 @@ namespace Gov.Cscp.VictimServices.Public
 
             services.AddSession();
 
+            services.AddSerilog();
+
             // Add Swagger/OpenAPI
             services.AddSwaggerGen(c =>
             {
@@ -134,13 +136,9 @@ namespace Gov.Cscp.VictimServices.Public
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(
-            IApplicationBuilder app,
-            IWebHostEnvironment env,
-            ILoggerFactory loggerFactory
-        )
+        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            var log = loggerFactory.CreateLogger("Startup");
+            ConfigureLogging(env);
 
             string pathBase = Configuration["BASE_PATH"];
 
@@ -156,6 +154,19 @@ namespace Gov.Cscp.VictimServices.Public
             {
                 app.UseExceptionHandler("/Home/Error");
             }
+
+            app.UseSerilogRequestLogging(options =>
+            {
+                options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
+                {
+                    diagnosticContext.Set("RequestHost", httpContext.Request.Host.Value);
+                    diagnosticContext.Set("RequestScheme", httpContext.Request.Scheme);
+                    diagnosticContext.Set(
+                        "UserAgent",
+                        httpContext.Request.Headers["User-Agent"].ToString()
+                    );
+                };
+            });
 
             // health checks
             app.UseHealthChecks("/hc");
@@ -250,73 +261,78 @@ namespace Gov.Cscp.VictimServices.Public
             {
                 routes.MapRoute(name: "default", template: "{controller}/{action=Index}/{id?}");
             });
+        }
 
-            if (
-                !string.IsNullOrEmpty(Configuration["SPLUNK_COLLECTOR_URL"])
-                && !string.IsNullOrEmpty(Configuration["SPLUNK_TOKEN"])
-            )
+        private void ConfigureLogging(IWebHostEnvironment env)
+        {
+            var loggerConfiguration = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .Enrich.WithExceptionDetails()
+                .Enrich.WithMachineName()
+                .Enrich.WithProperty("app", "Restitution")
+                .Enrich.WithProperty("environment", env.EnvironmentName)
+                .Enrich.WithEnvironmentUserName()
+                .Enrich.WithCorrelationId()
+                .Enrich.WithSpan()
+                .Enrich.WithProperty(
+                    "version",
+                    Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "Unknown"
+                )
+                .Enrich.WithProperty("UTC_Timestamp", DateTime.UtcNow.ToString("o"));
+
+            // Set minimum level based on environment
+            if (env.IsDevelopment())
             {
-                Serilog.Sinks.Splunk.CustomFields fields = new Serilog.Sinks.Splunk.CustomFields();
-                if (!string.IsNullOrEmpty(Configuration["SPLUNK_CHANNEL"]))
-                {
-                    fields.CustomFieldList.Add(
-                        new Serilog.Sinks.Splunk.CustomField(
-                            "channel",
-                            Configuration["SPLUNK_CHANNEL"]
-                        )
-                    );
-                }
-                var splunkUri = new Uri(Configuration["SPLUNK_COLLECTOR_URL"]);
-                var upperSplunkHost = splunkUri.Host?.ToUpperInvariant() ?? string.Empty;
-
-                // Fix for bad SSL issues
-                Log.Logger = new LoggerConfiguration()
-                    .Enrich.FromLogContext()
-                    .Enrich.WithExceptionDetails()
-                    .Enrich.WithEnvironmentUserName()
-                    .Enrich.WithCorrelationId()
-                    .Enrich.WithCorrelationIdHeader()
-                    .Enrich.WithSpan()
-                    .Enrich.WithProperty(
-                        "version",
-                        Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "Unknown"
-                    )
-                    .Enrich.WithProperty("UTC_Timestamp", DateTime.UtcNow.ToString("o"))
-                    .WriteTo.EventCollector(
-                        splunkHost: Configuration["SPLUNK_COLLECTOR_URL"],
-                        eventCollectorToken: Configuration["SPLUNK_TOKEN"],
-                        sourceType: "restitution",
-                        restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information,
-#pragma warning disable CA2000 // Dispose objects before losing scope
-                        messageHandler: new HttpClientHandler()
-                        {
-                            ServerCertificateCustomValidationCallback = (
-                                message,
-                                cert,
-                                chain,
-                                errors
-                            ) =>
-                            {
-                                return true;
-                            },
-                        }
-#pragma warning restore CA2000 // Dispose objects before losing scope
-                    )
-                    .WriteTo.Console()
-                    .CreateLogger();
-
-                Serilog.Debugging.SelfLog.Enable(Console.Error);
-
-                Log.Logger.Information("Restitution Webforms Started");
+                loggerConfiguration.MinimumLevel.Debug();
             }
             else
             {
-                Log.Logger = new LoggerConfiguration()
-                    .Enrich.FromLogContext()
-                    .Enrich.WithExceptionDetails()
-                    .WriteTo.Console()
-                    .CreateLogger();
+                loggerConfiguration.MinimumLevel.Information();
             }
+
+            // Override for specific namespaces
+            loggerConfiguration
+                .MinimumLevel.Override("Microsoft", Serilog.Events.LogEventLevel.Warning)
+                .MinimumLevel.Override("System", Serilog.Events.LogEventLevel.Warning);
+
+            loggerConfiguration.WriteTo.Console();
+
+            var splunkCollectorUrl = Configuration["SPLUNK_COLLECTOR_URL"];
+            var splunkToken = Configuration["SPLUNK_TOKEN"];
+
+            if (!string.IsNullOrEmpty(splunkCollectorUrl) && !string.IsNullOrEmpty(splunkToken))
+            {
+                // Use proper certificate validation or provide custom validator
+                HttpClientHandler? handler = null;
+
+                if (env.IsDevelopment())
+                {
+                    handler = new HttpClientHandler
+                    {
+                        ServerCertificateCustomValidationCallback =
+                            HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
+                    };
+                }
+
+                loggerConfiguration.WriteTo.EventCollector(
+                    splunkHost: splunkCollectorUrl,
+                    eventCollectorToken: splunkToken,
+                    sourceType: "coast:restitution:api",
+                    restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information,
+                    messageHandler: handler,
+                    batchSizeLimit: 100,
+                    batchIntervalInSeconds: 2
+                );
+            }
+
+            Log.Logger = loggerConfiguration.CreateLogger();
+
+            Serilog.Debugging.SelfLog.Enable(msg =>
+            {
+                Console.Error.WriteLine($"Serilog Error: {msg}");
+            });
+
+            Log.Logger.Information("Restitution API Started");
         }
     }
 }
