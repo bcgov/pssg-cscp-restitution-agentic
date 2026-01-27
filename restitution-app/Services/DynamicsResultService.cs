@@ -78,10 +78,9 @@ namespace Gov.Cscp.VictimServices.Public.Services
             {
                 _logger.Information(
                     new RequestFailedException(
-                        $"Received a fail response from {endpointUrl}. Source = Restitution"
+                        "Received a fail response from COAST API. Source = Restitution"
                     ),
-                    $"COAST resturned IsSuccess = False. \nSource = Restitution. \nError is:\n{result.result}\n\n",
-                    result.result
+                    "COAST returned IsSuccess = False. Source = Restitution."
                 );
             }
 
@@ -89,10 +88,9 @@ namespace Gov.Cscp.VictimServices.Public.Services
             {
                 _logger.Error(
                     new RequestFailedException(
-                        $"Error calling API function {endpointUrl}. Source = Restitution"
+                        "Error calling COAST API function. Source = Restitution"
                     ),
-                    $"Error calling API function {endpointUrl}. \nSource = Restitution. \nError is:\n{result.result}\n\n",
-                    result.result
+                    $"Error calling COAST API function. Source = Restitution. Status Code: {_statusCode}."
                 );
             }
 
