@@ -208,7 +208,7 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
             this.router.navigate(['/restitution-success']);
           } else {
             this.submitting = false;
-            this.snackBar.open('Error submitting application. ' + data['message'], 'Fail', {
+            this.snackBar.open('Error submitting application. ' + data['message'], 'Close', {
               duration: 3500,
               panelClass: ['red-snackbar']
             });
@@ -219,7 +219,7 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
         },
         (error) => {
           this.submitting = false;
-          this.snackBar.open('Error submitting application', 'Fail', { duration: 3500, panelClass: ['red-snackbar'] });
+          this.snackBar.open('Error submitting application', 'Close', { duration: 3500, panelClass: ['red-snackbar'] });
           if (this.isIE) {
             alert('Encountered an error. Please use another browser as this may resolve the problem.');
           }
