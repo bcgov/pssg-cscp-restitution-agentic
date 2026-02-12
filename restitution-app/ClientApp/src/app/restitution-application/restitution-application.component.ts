@@ -1,21 +1,22 @@
-import { ActivatedRoute, Router } from '@angular/router';
-import { ApplicationType, IOptionSetVal, MY_FORMATS } from '../shared/enums-list';
-import { CancelDialog } from '../shared/dialogs/cancel/cancel.dialog';
-import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
-import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
-import { FormBase } from '../shared/form-base';
-import { FormBuilder, FormGroup, FormArray } from '@angular/forms';
-import { JusticeApplicationDataService } from '../services/justice-application-data.service';
-import { LookupService } from '../services/lookup.service';
-import { MatSnackBar, MatDialog, MatVerticalStepper } from '@angular/material';
-import { MomentDateAdapter } from '@angular/material-moment-adapter';
-import { RestitutionInfoHelper } from '../shared/restitution/restitution-information/restitution-information.helper';
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
-import { StateService } from '../services/state.service';
+import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { MatDialog, MatSnackBar, MatVerticalStepper } from '@angular/material';
+import { MomentDateAdapter } from '@angular/material-moment-adapter';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { ActivatedRoute, Router } from '@angular/router';
 import { config } from '../../config';
 import { iLookupData } from '../interfaces/lookup-data.interface';
-import { convertRestitutionToCRM } from './restitution.to.crm';
 import { iRestitutionApplication } from '../interfaces/restitution.interface';
+import { JusticeApplicationDataService } from '../services/justice-application-data.service';
+import { LookupService } from '../services/lookup.service';
+import { StateService } from '../services/state.service';
+import { CancelDialog } from '../shared/dialogs/cancel/cancel.dialog';
+import { ApplicationType, IOptionSetVal, MY_FORMATS } from '../shared/enums-list';
+import { FormBase } from '../shared/form-base';
+import { RestitutionInfoHelper } from '../shared/restitution/restitution-information/restitution-information.helper';
+import { ServiceNotAvailableComponent } from '../shared/service-not-available.component';
+import { convertRestitutionToCRM } from './restitution.to.crm';
 
 export enum RESTITUTION_PAGES {
   OVERVIEW,
@@ -87,45 +88,66 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
 
     promise_array.push(
       new Promise<void>((resolve, reject) => {
-        this.lookupService.getCountries().subscribe((res) => {
-          this.lookupData.countries = res.value;
-          if (this.lookupData.countries) {
-            this.lookupData.countries.sort((a, b) => a.vsd_name.localeCompare(b.vsd_name));
+        this.lookupService.getCountries().subscribe(
+          (res) => {
+            this.lookupData.countries = res.value;
+            if (this.lookupData.countries) {
+              this.lookupData.countries.sort((a, b) => a.vsd_name.localeCompare(b.vsd_name));
+            }
+            resolve();
+          },
+          (error) => {
+            reject(error);
           }
-          resolve();
-        });
+        );
       })
     );
 
     promise_array.push(
       new Promise<void>((resolve, reject) => {
-        this.lookupService.getProvinces().subscribe((res) => {
-          this.lookupData.provinces = res.value;
-          if (this.lookupData.provinces) {
-            this.lookupData.provinces.sort((a, b) => a.vsd_name.localeCompare(b.vsd_name));
+        this.lookupService.getProvinces().subscribe(
+          (res) => {
+            this.lookupData.provinces = res.value;
+            if (this.lookupData.provinces) {
+              this.lookupData.provinces.sort((a, b) => a.vsd_name.localeCompare(b.vsd_name));
+            }
+            resolve();
+          },
+          (error) => {
+            reject(error);
           }
-          resolve();
-        });
+        );
       })
     );
 
     promise_array.push(
       new Promise<void>((resolve, reject) => {
-        this.lookupService.getCitiesByProvince(config.canada_crm_id, config.bc_crm_id).subscribe((res) => {
-          this.lookupData.cities = res.value;
-          if (this.lookupData.cities) {
-            this.lookupData.cities.sort((a, b) => a.vsd_name.localeCompare(b.vsd_name));
+        this.lookupService.getCitiesByProvince(config.canada_crm_id, config.bc_crm_id).subscribe(
+          (res) => {
+            this.lookupData.cities = res.value;
+            if (this.lookupData.cities) {
+              this.lookupData.cities.sort((a, b) => a.vsd_name.localeCompare(b.vsd_name));
+            }
+            resolve();
+          },
+          (error) => {
+            reject(error);
           }
-          resolve();
-        });
+        );
       })
     );
 
-    Promise.all(promise_array).then((res) => {
-      this.didLoad = true;
-      console.log('Lookup data');
-      console.log(this.lookupData);
-    });
+    Promise.all(promise_array)
+      .then((res) => {
+        this.didLoad = true;
+      })
+      .catch((err) => {
+        this.snackBar.openFromComponent(ServiceNotAvailableComponent, {
+          panelClass: ['red-snackbar'],
+          horizontalPosition: 'center',
+          verticalPosition: 'top'
+        });
+      });
   }
 
   cloneForm(data, FORM: IOptionSetVal = this.FORM_TYPE): FormGroup {
@@ -172,6 +194,8 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
   }
 
   submitApplication() {
+    this.markAsTouched();
+
     this.submitting = true;
     if (this.form.valid) {
       let formValue = this.harvestForm();
@@ -184,7 +208,7 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
             this.router.navigate(['/restitution-success']);
           } else {
             this.submitting = false;
-            this.snackBar.open('Error submitting application. ' + data['message'], 'Fail', {
+            this.snackBar.open('Error submitting application. ' + data['message'], 'Close', {
               duration: 3500,
               panelClass: ['red-snackbar']
             });
@@ -195,7 +219,7 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
         },
         (error) => {
           this.submitting = false;
-          this.snackBar.open('Error submitting application', 'Fail', { duration: 3500, panelClass: ['red-snackbar'] });
+          this.snackBar.open('Error submitting application', 'Close', { duration: 3500, panelClass: ['red-snackbar'] });
           if (this.isIE) {
             alert('Encountered an error. Please use another browser as this may resolve the problem.');
           }

@@ -78,7 +78,7 @@
                             <button (click)="printApplication();" class="btn btn-primary print-button" [class.is-disabled]="submitting" *ngIf="stepper.selectedIndex == PAGES.REVIEW">PRINT PDF</button>
                         </div>
                         <div class="submit-grid" [class.disabled-wrapper]="submitting">
-                            <button (click)="markAsTouched(); submitApplication();" class="btn btn-primary" [class.is-disabled]="submitting" *ngIf="stepper.selectedIndex == PAGES.REVIEW">SUBMIT APPLICATION <i class="fas fa-chevron-right"></i></button>
+                            <button (click)="submitApplication();" class="btn btn-primary" [class.is-disabled]="submitting" *ngIf="stepper.selectedIndex == PAGES.REVIEW">SUBMIT APPLICATION <i class="fas fa-chevron-right"></i></button>
                         </div>
                     </span>
                 </section>
