@@ -1,11 +1,9 @@
-import { Component, OnInit, Renderer2 } from '@angular/core';
+import { Component, isDevMode, OnInit, Renderer2 } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import { isDevMode } from '@angular/core';
-import { ConfigService } from './services/config.service';
-import { Configuration } from './interfaces/configuration.interface';
-import 'rxjs/add/operator/filter';
 import * as moment from 'moment-timezone';
 import { environment } from '../environments/environment';
+import { Configuration } from './interfaces/configuration.interface';
+import { ConfigService } from './services/config.service';
 
 @Component({
   selector: 'app-root',
