@@ -36,7 +36,7 @@ export enum RESTITUTION_PAGES {
   ]
 })
 export class RestitutionApplicationComponent extends FormBase implements OnInit {
-  @ViewChild('stepper') restitutionStepper: MatVerticalStepper;
+  @ViewChild('stepper', { static: false }) restitutionStepper: MatVerticalStepper;
   FORM_TYPE: IOptionSetVal = { val: -1, name: '' };
   ApplicationType = ApplicationType;
   isIE: boolean = false;

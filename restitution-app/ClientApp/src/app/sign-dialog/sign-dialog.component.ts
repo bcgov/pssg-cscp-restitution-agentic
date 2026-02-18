@@ -14,7 +14,7 @@ export class SignPadDialog implements OnInit {
   CRM_HEIGHT = 125;
   CRM_WIDTH = 300;
 
-  @ViewChild(SignaturePad) signaturePad: SignaturePad;
+  @ViewChild(SignaturePad, { static: false }) signaturePad: SignaturePad;
 
   signaturePadOptions: Object = {
     // passed through to szimek/signature_pad constructor
