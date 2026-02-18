@@ -36,13 +36,12 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 // import { AngularSignaturePadModule } from '@almothafar/angular-signature-pad'; // TODO: Re-enable when upgrading to Angular 10+
-import { NgBusyModule } from 'ng-busy';
 import { AlertModule } from 'ngx-bootstrap/alert';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
 import { CookieService } from 'ngx-cookie-service';
-import { FileDropModule } from 'ngx-file-drop';
+import { NgxFileDropModule } from 'ngx-file-drop';
 import { NgxMaskModule } from 'ngx-mask';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -105,7 +104,7 @@ import { SignPadDialog } from './sign-dialog/sign-dialog.component';
     BrowserAnimationsModule,
     BrowserModule,
     CdkTableModule,
-    FileDropModule,
+    NgxFileDropModule,
     FormsModule,
     HttpClientModule,
     MatAutocompleteModule,
@@ -139,8 +138,7 @@ import { SignPadDialog } from './sign-dialog/sign-dialog.component';
     MatTableModule,
     MatTabsModule,
     MatToolbarModule,
-    MatTooltipModule,
-    NgBusyModule,
+    MatTooltipModule,    
     ReactiveFormsModule,
     // AngularSignaturePadModule, // TODO: Re-enable when upgrading to Angular 10+
     AlertModule.forRoot(),
@@ -154,7 +152,7 @@ import { SignPadDialog } from './sign-dialog/sign-dialog.component';
     BrowserAnimationsModule,
     BrowserModule,
     CdkTableModule,
-    FileDropModule,
+    NgxFileDropModule,
     FormsModule,
     HttpClientModule,
     // HttpModule,

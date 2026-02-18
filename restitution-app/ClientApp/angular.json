@@ -17,9 +17,11 @@
             "tsConfig": "src/tsconfig.app.json",
             "progress": true,
             "polyfills": "src/polyfills.ts",
+            "allowedCommonJsDependencies": [
+              "moment-timezone"
+            ],
             "assets": ["src/favicon.ico", "src/assets"],
-            "styles": [
-              "node_modules/ng-busy/src/style/busy.css",
+            "styles": [              
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "node_modules/ngx-bootstrap/datepicker/bs-datepicker.css",
               "src/styles-font.scss"
@@ -71,8 +73,7 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
             "scripts": [],
-            "styles": [
-              "node_modules/ng-busy/src/style/busy.css",
+            "styles": [              
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "node_modules/ng2-toastr/bundles/ng2-toastr.min.css",
               "node_modules/ngx-bootstrap/datepicker/bs-datepicker.css",
