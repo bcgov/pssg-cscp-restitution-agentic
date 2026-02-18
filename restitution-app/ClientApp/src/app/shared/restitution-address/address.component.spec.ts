@@ -1,4 +1,4 @@
-import { async, ComponentFixture, TestBed } from '@angular/core/testing';
+import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 
 import { RestitutionAddressComponent } from './address.component';
 
@@ -6,7 +6,7 @@ describe('RestitutionAddressComponent', () => {
   let component: RestitutionAddressComponent;
   let fixture: ComponentFixture<RestitutionAddressComponent>;
 
-  beforeEach(async(() => {
+  beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       declarations: [RestitutionAddressComponent]
     }).compileComponents();

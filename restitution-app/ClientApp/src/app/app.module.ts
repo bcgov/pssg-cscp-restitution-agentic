@@ -138,7 +138,7 @@ import { SignPadDialog } from './sign-dialog/sign-dialog.component';
     MatTableModule,
     MatTabsModule,
     MatToolbarModule,
-    MatTooltipModule,    
+    MatTooltipModule,
     ReactiveFormsModule,
     // AngularSignaturePadModule, // TODO: Re-enable when upgrading to Angular 10+
     AlertModule.forRoot(),

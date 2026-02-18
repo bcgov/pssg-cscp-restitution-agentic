@@ -17,11 +17,9 @@
             "tsConfig": "src/tsconfig.app.json",
             "progress": true,
             "polyfills": "src/polyfills.ts",
-            "allowedCommonJsDependencies": [
-              "moment-timezone"
-            ],
+            "allowedCommonJsDependencies": ["moment-timezone"],
             "assets": ["src/favicon.ico", "src/assets"],
-            "styles": [              
+            "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "node_modules/ngx-bootstrap/datepicker/bs-datepicker.css",
               "src/styles-font.scss"
@@ -33,7 +31,6 @@
               "optimization": true,
               "outputHashing": "all",
               "sourceMap": true,
-              "extractCss": true,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
@@ -73,7 +70,7 @@
             "polyfills": "src/polyfills.ts",
             "tsConfig": "src/tsconfig.spec.json",
             "scripts": [],
-            "styles": [              
+            "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "node_modules/ng2-toastr/bundles/ng2-toastr.min.css",
               "node_modules/ngx-bootstrap/datepicker/bs-datepicker.css",
