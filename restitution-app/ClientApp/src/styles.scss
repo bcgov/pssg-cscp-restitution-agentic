@@ -1,16 +1,17 @@
 /* You can add global styles to this file, and also import other style files */
+@use '~@angular/material' as mat;
 @import '~@angular/material/theming';
 
 @import '~mygovbc-bootstrap-theme/dist/mygovbc-bootstrap-theme.min.css';
 
-@include mat-core();
+@include mat.core();
 
-$primary: mat-palette($mat-black, 400);
-$accent: mat-palette($mat-indigo, 500, A200, A400);
-$warn: mat-palette($mat-red, 500);
+$primary: mat.define-palette($mat-black, 400);
+$accent: mat.define-palette(mat.$indigo-palette, 500, A200, A400);
+$warn: mat.define-palette(mat.$red-palette, 500);
 
-$theme: mat-light-theme($primary, $accent, $warn);
-@include angular-material-theme($theme);
+$theme: mat.define-light-theme($primary, $accent, $warn);
+@include mat.all-component-themes($theme);
 
 .ctx-home {
   background: #f2f2f2;
