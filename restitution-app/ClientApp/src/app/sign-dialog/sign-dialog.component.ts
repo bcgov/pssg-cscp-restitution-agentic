@@ -1,6 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatDialogRef } from '@angular/material';
-import { SignaturePad } from 'angular2-signaturepad';
+import { MatDialogRef } from '@angular/material/dialog';
+// import { AngularSignaturePad } from '@almothafar/angular-signature-pad'; // TODO: Re-enable when upgrading to Angular 10+
 
 @Component({
   selector: 'app-sign-dialog',
@@ -14,7 +14,8 @@ export class SignPadDialog implements OnInit {
   CRM_HEIGHT = 125;
   CRM_WIDTH = 300;
 
-  @ViewChild(SignaturePad, { static: false }) signaturePad: SignaturePad;
+  // @ViewChild(AngularSignaturePad, { static: false }) signaturePad: AngularSignaturePad; // TODO: Re-enable when upgrading to Angular 10+
+  @ViewChild('signaturePad', { static: false }) signaturePad: any;
 
   signaturePadOptions: Object = {
     // passed through to szimek/signature_pad constructor

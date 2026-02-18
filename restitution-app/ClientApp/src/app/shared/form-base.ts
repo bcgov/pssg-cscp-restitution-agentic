@@ -1,8 +1,8 @@
-import { EnumHelper } from './enums-list';
-import { MatStepper } from '@angular/material';
-import { ValidatorFn, ValidationErrors, AbstractControl, FormControl, FormGroup, FormArray } from '@angular/forms';
+import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { MatStepper } from '@angular/material/stepper';
 import * as _ from 'lodash';
 import * as _moment from 'moment';
+import { EnumHelper } from './enums-list';
 
 export class FormBase {
   form: FormGroup;

@@ -1,15 +1,16 @@
-import { FormBase } from '../../form-base';
-import { OnInit, Component, Input } from '@angular/core';
-import { DateAdapter, MAT_DATE_LOCALE, MAT_DATE_FORMATS, MatDialog, MatDialogConfig } from '@angular/material';
-import { FormGroup, ControlContainer, FormArray, FormBuilder } from '@angular/forms';
+import { Component, Input, OnInit } from '@angular/core';
+import { ControlContainer, FormArray, FormBuilder, FormGroup } from '@angular/forms';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
-import { MY_FORMATS, IOptionSetVal, ResitutionForm, CRMMultiBoolean } from '../../enums-list';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { iLookupData } from '../../../interfaces/lookup-data.interface';
-import { POSTAL_CODE } from '../../regex.constants';
-import { AddressHelper } from '../../address/address.helper';
-import { RestitutionInfoHelper } from './restitution-information.helper';
-import { SignPadDialog } from '../../../sign-dialog/sign-dialog.component';
 import { LookupService } from '../../../services/lookup.service';
+import { SignPadDialog } from '../../../sign-dialog/sign-dialog.component';
+import { AddressHelper } from '../../address/address.helper';
+import { CRMMultiBoolean, IOptionSetVal, MY_FORMATS, ResitutionForm } from '../../enums-list';
+import { FormBase } from '../../form-base';
+import { POSTAL_CODE } from '../../regex.constants';
+import { RestitutionInfoHelper } from './restitution-information.helper';
 
 @Component({
   selector: 'app-restitution-information',
