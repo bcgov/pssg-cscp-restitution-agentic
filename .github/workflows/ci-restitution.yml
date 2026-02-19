@@ -67,7 +67,7 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "14.x"
+          node-version: "22.x"
 
       - name: Setup .NET SDK
         uses: actions/setup-dotnet@v4
@@ -82,7 +82,7 @@ jobs:
       # ---- Build Angular UI ----
       - name: Install Angular Dependencies
         working-directory: restitution-app/ClientApp
-        run: npm install
+        run: npm ci
 
       - name: Build Angular Application
         working-directory: restitution-app/ClientApp
