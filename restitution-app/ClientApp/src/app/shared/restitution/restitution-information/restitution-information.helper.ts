@@ -1,12 +1,12 @@
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { CRMMultiBoolean, IOptionSetVal, ResitutionForm } from '../../enums-list';
 import { POSTAL_CODE } from '../../regex.constants';
 import { EmailValidator } from '../../validators/email.validator';
 
 export class RestitutionInfoHelper {
   postalRegex = POSTAL_CODE;
-  public setupFormGroup(fb: FormBuilder, form_type: IOptionSetVal): FormGroup {
-    let contactInformationGroup: FormGroup;
+  public setupFormGroup(fb: UntypedFormBuilder, form_type: IOptionSetVal): UntypedFormGroup {
+    let contactInformationGroup: UntypedFormGroup;
     if (form_type.val === ResitutionForm.VictimEntity.val) {
       contactInformationGroup = fb.group({
         entityContacts: fb.array([this.createEntityContact(fb, form_type)]),
@@ -85,7 +85,7 @@ export class RestitutionInfoHelper {
     return fb.group(group);
   }
 
-  createCourtFile(fb: FormBuilder, form_type: IOptionSetVal): FormGroup {
+  createCourtFile(fb: UntypedFormBuilder, form_type: IOptionSetVal): UntypedFormGroup {
     let group = {
       fileNumber: [''],
       location: ['']
@@ -101,7 +101,7 @@ export class RestitutionInfoHelper {
     return fb.group(group);
   }
 
-  createDesignate(fb: FormBuilder): FormGroup {
+  createDesignate(fb: UntypedFormBuilder): UntypedFormGroup {
     return fb.group({
       firstName: ['', [Validators.required]],
       lastName: ['', [Validators.required]],
@@ -110,7 +110,7 @@ export class RestitutionInfoHelper {
     });
   }
 
-  createVSW(fb: FormBuilder): FormGroup {
+  createVSW(fb: UntypedFormBuilder): UntypedFormGroup {
     return fb.group({
       firstName: [''],
       lastName: [''],
@@ -120,7 +120,7 @@ export class RestitutionInfoHelper {
     });
   }
 
-  createEntityContact(fb: FormBuilder, form_type: IOptionSetVal): FormGroup {
+  createEntityContact(fb: UntypedFormBuilder, form_type: IOptionSetVal): UntypedFormGroup {
     let group = {
       firstName: [''],
       lastName: ['']

@@ -1,11 +1,11 @@
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatVerticalStepper } from '@angular/material/stepper';
+import { MatStepper } from '@angular/material/stepper';
 import { ActivatedRoute, Router } from '@angular/router';
 import { config } from '../../config';
 import { iLookupData } from '../interfaces/lookup-data.interface';
@@ -38,7 +38,7 @@ export enum RESTITUTION_PAGES {
   ]
 })
 export class RestitutionApplicationComponent extends FormBase implements OnInit {
-  @ViewChild('stepper', { static: false }) restitutionStepper: MatVerticalStepper;
+  @ViewChild('stepper', { static: false }) restitutionStepper: MatStepper;
   FORM_TYPE: IOptionSetVal = { val: -1, name: '' };
   ApplicationType = ApplicationType;
   isIE: boolean = false;
@@ -60,7 +60,7 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
 
   constructor(
     private justiceDataService: JusticeApplicationDataService,
-    public fb: FormBuilder,
+    public fb: UntypedFormBuilder,
     private router: Router,
     private route: ActivatedRoute,
     public snackBar: MatSnackBar,
@@ -152,17 +152,17 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
       });
   }
 
-  cloneForm(data, FORM: IOptionSetVal = this.FORM_TYPE): FormGroup {
-    let clonedForm: FormGroup = data.form;
+  cloneForm(data, FORM: IOptionSetVal = this.FORM_TYPE): UntypedFormGroup {
+    let clonedForm: UntypedFormGroup = data.form;
 
-    let courtFiles = clonedForm.get('restitutionInformation.courtFiles') as FormArray;
+    let courtFiles = clonedForm.get('restitutionInformation.courtFiles') as UntypedFormArray;
     while (courtFiles.length > 0) {
       courtFiles.removeAt(0);
     }
 
     courtFiles.push(this.restitutionInfoHelper.createCourtFile(this.fb, FORM));
 
-    let documents = clonedForm.get('restitutionInformation.documents') as FormArray;
+    let documents = clonedForm.get('restitutionInformation.documents') as UntypedFormArray;
     while (documents.length > 0) {
       documents.removeAt(0);
     }
@@ -176,7 +176,7 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
     return clonedForm;
   }
 
-  buildApplicationForm(FORM: IOptionSetVal = this.FORM_TYPE): FormGroup {
+  buildApplicationForm(FORM: IOptionSetVal = this.FORM_TYPE): UntypedFormGroup {
     let group = {
       introduction: this.fb.group({}),
       restitutionInformation: this.restitutionInfoHelper.setupFormGroup(this.fb, FORM),

@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ControlContainer, FormGroup } from '@angular/forms';
+import { ControlContainer, UntypedFormGroup } from '@angular/forms';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { IOptionSetVal, MY_FORMATS, ResitutionForm } from '../../enums-list';
@@ -16,7 +16,7 @@ import { FormBase } from '../../form-base';
 })
 export class RestitutionOverviewComponent extends FormBase implements OnInit {
   @Input() formType: IOptionSetVal;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   ResitutionForm = ResitutionForm;
   applicant: string = '';
 
@@ -25,7 +25,7 @@ export class RestitutionOverviewComponent extends FormBase implements OnInit {
   }
 
   ngOnInit() {
-    this.form = <FormGroup>this.controlContainer.control;
+    this.form = <UntypedFormGroup>this.controlContainer.control;
     setTimeout(() => {
       this.form.markAsTouched();
     }, 0);

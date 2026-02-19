@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { FormBase } from '../form-base';
 import { EnumHelper } from '../enums-list';
 
@@ -12,7 +12,7 @@ export class GenderSelectorComponent extends FormBase implements OnInit {
   constructor() {
     super();
   }
-  @Input() form: FormGroup;
+  @Input() form: UntypedFormGroup;
   @Input() formControlName: string;
   @Input() isDisabled: boolean;
   enumHelper = new EnumHelper();

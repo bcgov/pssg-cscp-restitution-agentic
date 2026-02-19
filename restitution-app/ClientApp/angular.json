@@ -16,6 +16,7 @@
             "main": "src/main.ts",
             "tsConfig": "src/tsconfig.app.json",
             "progress": true,
+            "baseHref": "/restwebforms/",
             "polyfills": "src/polyfills.ts",
             "allowedCommonJsDependencies": ["moment-timezone"],
             "assets": ["src/favicon.ico", "src/assets"],
@@ -103,7 +104,6 @@
       }
     }
   },
-  "defaultProject": "restitution_app",
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",

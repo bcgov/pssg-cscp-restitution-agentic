@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { FormGroup } from '@angular/forms';
+import { UntypedFormGroup } from '@angular/forms';
 import { FormBase } from '../form-base';
 import { EnumHelper } from '../enums-list';
 
@@ -9,7 +9,7 @@ import { EnumHelper } from '../enums-list';
   styleUrls: ['./race-selector.component.scss']
 })
 export class RaceSelectorComponent extends FormBase implements OnInit {
-  @Input() form: FormGroup;
+  @Input() form: UntypedFormGroup;
   @Input() formControlName: string;
   @Input() isDisabled: boolean;
   enumHelper = new EnumHelper();

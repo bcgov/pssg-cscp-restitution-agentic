@@ -1,10 +1,10 @@
-import { AbstractControl, FormArray, FormControl, FormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
+import { AbstractControl, UntypedFormArray, UntypedFormControl, UntypedFormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
 import { MatStepper } from '@angular/material/stepper';
 import * as _moment from 'moment';
 import { EnumHelper } from './enums-list';
 
 export class FormBase {
-  form: FormGroup;
+  form: UntypedFormGroup;
   today = new Date();
   oldestHuman = new Date(this.today.getFullYear() - 120, this.today.getMonth(), this.today.getDay());
   enum = new EnumHelper();
@@ -84,7 +84,7 @@ export class FormBase {
   }
 
   isArrayFieldValid(formArrayName: string, arrayControl: string, arrayIndex: number) {
-    let formArray = <FormArray>this.form.get(formArrayName);
+    let formArray = <UntypedFormArray>this.form.get(formArrayName);
     let indexedControl = formArray.controls[arrayIndex];
     let formField = indexedControl.get(arrayControl);
     if (formField == null) return true;
@@ -145,7 +145,7 @@ export class FormBase {
     };
   }
 
-  public requireCheckboxesToBeCheckedValidator: ValidatorFn = (control: FormGroup): ValidationErrors | null => {
+  public requireCheckboxesToBeCheckedValidator: ValidatorFn = (control: UntypedFormGroup): ValidationErrors | null => {
     const name = control.get('haveMedicalExpenses');
     const alterEgo = control.get('haveDentalExpenses');
 
@@ -185,18 +185,18 @@ export class FormBase {
         console.log('invalid: ', field);
       }
 
-      if (control instanceof FormControl) {
+      if (control instanceof UntypedFormControl) {
         control.markAsTouched({ onlySelf: true });
-      } else if (control instanceof FormGroup) {
+      } else if (control instanceof UntypedFormGroup) {
         this.validateAllFormFields(control);
-      } else if (control instanceof FormArray) {
+      } else if (control instanceof UntypedFormArray) {
         for (const control1 of control.controls) {
-          if (control1 instanceof FormControl) {
+          if (control1 instanceof UntypedFormControl) {
             control1.markAsTouched({
               onlySelf: true
             });
           }
-          if (control1 instanceof FormGroup) {
+          if (control1 instanceof UntypedFormGroup) {
             this.validateAllFormFields(control1);
           }
         }
@@ -207,18 +207,18 @@ export class FormBase {
   getErrors(formGroup: any, errors: any = {}) {
     Object.keys(formGroup.controls).forEach((field) => {
       const control = formGroup.get(field);
-      if (control instanceof FormControl) {
+      if (control instanceof UntypedFormControl) {
         errors[field] = control.errors;
-      } else if (control instanceof FormGroup) {
+      } else if (control instanceof UntypedFormGroup) {
         errors[field] = this.getErrors(control);
-      } else if (control instanceof FormArray) {
+      } else if (control instanceof UntypedFormArray) {
         errors[field] = this.getErrors(control);
       }
     });
     return errors;
   }
 
-  orEmpty(amI: FormControl): string {
+  orEmpty(amI: UntypedFormControl): string {
     if (amI == null || amI === undefined) return '--';
 
     if (amI.value.length == 0) return '--';
@@ -233,7 +233,7 @@ export class FormBase {
     return formField.get(field).valid || !formField.get(field).touched;
   }
 
-  controlsHaveValueCheck(controlKeys: Array<string>, formGroup: FormGroup): Array<boolean> {
+  controlsHaveValueCheck(controlKeys: Array<string>, formGroup: UntypedFormGroup): Array<boolean> {
     return controlKeys.map((item) => {
       // reset any errors already set (ON ALL GIVEN KEYS).
       formGroup.controls[item].setErrors(null);
@@ -248,9 +248,9 @@ export class FormBase {
   }
 
   conditionalAnyRequired(controlKeys: Array<string>): ValidatorFn {
-    return (control: FormControl): { [key: string]: any } => {
+    return (control: UntypedFormControl): { [key: string]: any } => {
       let formGroup = control.root;
-      if (formGroup instanceof FormGroup) {
+      if (formGroup instanceof UntypedFormGroup) {
         // Only check if all FormControls are siblings(& present on the nearest FormGroup)
         if (
           controlKeys.every((item) => {
@@ -322,9 +322,9 @@ export class FormBase {
 
     if (typeof controlName == 'string') control = this.form.get(controlName);
 
-    if (controlName instanceof FormGroup) control = controlName;
+    if (controlName instanceof UntypedFormGroup) control = controlName;
 
-    if (controlName instanceof FormControl) control = controlName;
+    if (controlName instanceof UntypedFormControl) control = controlName;
 
     if (control == null || control === undefined) return emptyValue;
 
@@ -350,9 +350,9 @@ export class FormBase {
 
     if (typeof controlName == 'string') control = this.form.get(controlName);
 
-    if (controlName instanceof FormGroup) control = controlName;
+    if (controlName instanceof UntypedFormGroup) control = controlName;
 
-    if (controlName instanceof FormControl) control = controlName;
+    if (controlName instanceof UntypedFormControl) control = controlName;
 
     if (control == null || control === undefined || control.value == null || control.value === undefined) return 0;
 
@@ -415,7 +415,7 @@ export class FormBase {
 
     if (typeof addressControl == 'string') control = this.form.get(addressControl);
 
-    if (addressControl instanceof FormGroup) control = addressControl;
+    if (addressControl instanceof UntypedFormGroup) control = addressControl;
 
     let line1 = control.value.line1 || '';
     let line2 = control.value.line2 || '';
@@ -439,7 +439,7 @@ export class FormBase {
 
     if (typeof addressControl == 'string') control = this.form.get(addressControl);
 
-    if (addressControl instanceof FormGroup) control = addressControl;
+    if (addressControl instanceof UntypedFormGroup) control = addressControl;
 
     if (control == null || control === undefined) return '--';
 
@@ -465,7 +465,7 @@ export class FormBase {
     return ret ? ret['name'] : '--';
   }
 
-  public trimValue(control: FormControl) {
+  public trimValue(control: UntypedFormControl) {
     const value = control.value;
     control.setValue('');
     control.setValue(value.trim());
@@ -539,7 +539,7 @@ export class FormBase {
     }
   }
 
-  copyPersonalContactInfoToVictim(form: FormGroup | FormArray) {
+  copyPersonalContactInfoToVictim(form: UntypedFormGroup | UntypedFormArray) {
     let copyInfo = form.get('victimInformation.victimSameContactInfo').value === true;
     let target = form.get('victimInformation');
     let source = form.get('personalInformation');
@@ -573,7 +573,7 @@ export class FormBase {
     target.get('confirmEmail').updateValueAndValidity(options);
   }
 
-  copyPersonalAddressToVictimAddress(form: FormGroup | FormArray) {
+  copyPersonalAddressToVictimAddress(form: UntypedFormGroup | UntypedFormArray) {
     let copyAddress = form.get('victimInformation.mostRecentMailingAddressSameAsPersonal').value === true;
     let target = form.get('victimInformation.primaryAddress');
     let source = form.get('personalInformation.primaryAddress');
@@ -617,7 +617,7 @@ export class FormBase {
     target.get('country').updateValueAndValidity(options);
   }
 
-  copyPersonalAddressToRepresentativeAddress(form: FormGroup | FormArray) {
+  copyPersonalAddressToRepresentativeAddress(form: UntypedFormGroup | UntypedFormArray) {
     let copyAddress = form.get('representativeInformation.mostRecentMailingAddressSameAsPersonal').value === true;
     let target = form.get('representativeInformation.representativeAddress');
     let source = form.get('personalInformation.primaryAddress');
@@ -661,7 +661,7 @@ export class FormBase {
     target.get('country').updateValueAndValidity(options);
   }
 
-  copyPersonalContactInfoToRepresentative(form: FormGroup | FormArray) {
+  copyPersonalContactInfoToRepresentative(form: UntypedFormGroup | UntypedFormArray) {
     let copyInfo = form.get('representativeInformation.applicantSameContactInfo').value === true;
     let target = form.get('representativeInformation');
     let source = form.get('personalInformation');
@@ -696,7 +696,7 @@ export class FormBase {
   }
 
   setControlValidators(
-    control: AbstractControl | FormControl,
+    control: AbstractControl | UntypedFormControl,
     newValidator: ValidatorFn | ValidatorFn[],
     options = { onlySelf: false, emitEvent: true }
   ) {
@@ -704,7 +704,7 @@ export class FormBase {
     control.updateValueAndValidity(options);
   }
 
-  clearControlValidators(control: AbstractControl | FormControl, options = { onlySelf: false, emitEvent: true }) {
+  clearControlValidators(control: AbstractControl | UntypedFormControl, options = { onlySelf: false, emitEvent: true }) {
     control.setErrors(null, options);
     control.clearValidators();
     control.updateValueAndValidity(options);

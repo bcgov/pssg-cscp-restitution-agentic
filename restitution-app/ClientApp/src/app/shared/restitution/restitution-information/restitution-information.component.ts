@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ControlContainer, FormArray, FormBuilder, FormGroup } from '@angular/forms';
+import { ControlContainer, UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
@@ -25,7 +25,7 @@ export class RestitutionInformationComponent extends FormBase implements OnInit 
   @Input() formType: IOptionSetVal;
   @Input() lookupData: iLookupData;
   @Input() isDisabled: boolean;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   ResitutionForm = ResitutionForm;
   postalRegex = POSTAL_CODE;
   CRMMultiBoolean = CRMMultiBoolean;
@@ -44,7 +44,7 @@ export class RestitutionInformationComponent extends FormBase implements OnInit 
 
   constructor(
     private controlContainer: ControlContainer,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private matDialog: MatDialog,
     public lookupService: LookupService
   ) {
@@ -52,7 +52,7 @@ export class RestitutionInformationComponent extends FormBase implements OnInit 
   }
 
   ngOnInit() {
-    this.form = <FormGroup>this.controlContainer.control;
+    this.form = <UntypedFormGroup>this.controlContainer.control;
     setTimeout(() => {
       this.form.markAsTouched();
     }, 0);
@@ -122,26 +122,26 @@ export class RestitutionInformationComponent extends FormBase implements OnInit 
   }
 
   addDesignate() {
-    let designate = this.form.get('designate') as FormArray;
+    let designate = this.form.get('designate') as UntypedFormArray;
     if (designate.length == 0) {
       designate.push(this.restitutionInfoHelper.createDesignate(this.fb));
     }
   }
 
   removeDesignate() {
-    let designate = this.form.get('designate') as FormArray;
+    let designate = this.form.get('designate') as UntypedFormArray;
     while (designate.length > 0) {
       designate.removeAt(0);
     }
   }
 
   addCourtFile() {
-    let courtFiles = this.form.get('courtFiles') as FormArray;
+    let courtFiles = this.form.get('courtFiles') as UntypedFormArray;
     courtFiles.push(this.restitutionInfoHelper.createCourtFile(this.fb, this.formType));
   }
 
   removeCourtFile(index: number) {
-    let courtFiles = this.form.get('courtFiles') as FormArray;
+    let courtFiles = this.form.get('courtFiles') as UntypedFormArray;
     courtFiles.removeAt(index);
   }
 
