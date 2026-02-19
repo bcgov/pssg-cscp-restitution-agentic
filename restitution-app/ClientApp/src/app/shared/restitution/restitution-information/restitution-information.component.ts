@@ -156,7 +156,7 @@ export class RestitutionInformationComponent extends FormBase implements OnInit 
         patchObject[control] = data;
         this.form.patchValue(patchObject);
       },
-      (err) => console.debug(err)
+      (err) => console.log(err)
     );
   }
 }

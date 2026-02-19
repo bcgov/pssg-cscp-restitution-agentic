@@ -1,3 +1,4 @@
+import { AngularSignaturePadModule } from '@almothafar/angular-signature-pad';
 import { CdkTableModule } from '@angular/cdk/table';
 import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
 import { NgModule } from '@angular/core';
@@ -35,7 +36,6 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-// import { AngularSignaturePadModule } from '@almothafar/angular-signature-pad'; // TODO: Re-enable when upgrading to Angular 10+
 import { AlertModule } from 'ngx-bootstrap/alert';
 import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { TooltipModule } from 'ngx-bootstrap/tooltip';
@@ -184,7 +184,7 @@ import { SignPadDialog } from './sign-dialog/sign-dialog.component';
     MatToolbarModule,
     MatTooltipModule,
     ReactiveFormsModule,
-    // AngularSignaturePadModule, // TODO: Re-enable when upgrading to Angular 10+
+    AngularSignaturePadModule,
     AlertModule.forRoot(),
     BsDatepickerModule.forRoot(),
     TooltipModule.forRoot(),
