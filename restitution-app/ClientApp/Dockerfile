@@ -39,7 +39,7 @@
 #                                                                                                 #
 # ##################################################################################################
 # Create build image layer
-FROM node:14-alpine AS build
+FROM node:22-alpine AS build
 
 # Install python3, make, and g++ for node-gyp/node-sass
 #RUN apk add --no-cache python3 make g++
@@ -53,8 +53,8 @@ ARG BUILD_VERSION
 COPY ./restitution-app/ClientApp ./restitution-app/ClientApp
 WORKDIR /restitution-app/ClientApp
 
-# Installing dependencies with npm ci for faster, deterministic builds
-RUN npm ci
+# Installing dependencies with npm install (npm ci has compatibility issues with Node 22)
+RUN npm install --legacy-peer-deps --ignore-scripts
 
 # Adding Node.js memory optimization for large Angular builds, not needed for this build size
 #ENV NODE_OPTIONS="--max-old-space-size=8192"
@@ -78,7 +78,7 @@ ENV BUILD_IMAGE_NAME=${BUILD_IMAGE_NAME}
 ENV BUILD_VERSION=${BUILD_VERSION}
 
 COPY ./restitution-app/ClientApp/Caddyfile /etc/caddy/Caddyfile
-COPY --from=build /restitution-app/ClientApp/dist/ /site
+COPY --from=build /restitution-app/ClientApp/dist/browser/ /site
 
 # Add version files
 RUN echo "${BUILD_IMAGE_NAME}" > /site/build_image_name.txt && echo "${BUILD_VERSION}" > /site/version.txt
