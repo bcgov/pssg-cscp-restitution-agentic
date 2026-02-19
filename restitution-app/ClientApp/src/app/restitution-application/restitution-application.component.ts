@@ -1,9 +1,18 @@
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
-import { FormArray, FormBuilder, FormGroup } from '@angular/forms';
-import { MatDialog, MatSnackBar, MatVerticalStepper } from '@angular/material';
+import {
+  AbstractControl,
+  FormArray,
+  FormGroup,
+  UntypedFormArray,
+  UntypedFormBuilder,
+  UntypedFormGroup
+} from '@angular/forms';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { MatDialog } from '@angular/material/dialog';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { MatStepper } from '@angular/material/stepper';
 import { ActivatedRoute, Router } from '@angular/router';
 import { config } from '../../config';
 import { iLookupData } from '../interfaces/lookup-data.interface';
@@ -33,10 +42,11 @@ export enum RESTITUTION_PAGES {
     { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
     { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS },
     { provide: STEPPER_GLOBAL_OPTIONS, useValue: { showError: true } }
-  ]
+  ],
+  standalone: false
 })
 export class RestitutionApplicationComponent extends FormBase implements OnInit {
-  @ViewChild('stepper') restitutionStepper: MatVerticalStepper;
+  @ViewChild('stepper', { static: false }) restitutionStepper: MatStepper;
   FORM_TYPE: IOptionSetVal = { val: -1, name: '' };
   ApplicationType = ApplicationType;
   isIE: boolean = false;
@@ -58,7 +68,7 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
 
   constructor(
     private justiceDataService: JusticeApplicationDataService,
-    public fb: FormBuilder,
+    public fb: UntypedFormBuilder,
     private router: Router,
     private route: ActivatedRoute,
     public snackBar: MatSnackBar,
@@ -148,19 +158,38 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
           verticalPosition: 'top'
         });
       });
+
+    this.form.valueChanges.subscribe((val) => {
+      this.showValidationMessage = this.hasInvalidTouchedControls(this.form);
+    });
   }
 
-  cloneForm(data, FORM: IOptionSetVal = this.FORM_TYPE): FormGroup {
-    let clonedForm: FormGroup = data.form;
+  // recursively checks if all required fields are filled out touched
+  // this is used to determine if the validation message should be shown
+  protected hasInvalidTouchedControls(control: AbstractControl): boolean {
+    if (control instanceof FormGroup) {
+      // check all controls in the FormGroup
+      return Object.keys(control.controls).some((key) => this.hasInvalidTouchedControls(control.get(key)));
+    } else if (control instanceof FormArray) {
+      // check all controls in the FormArray
+      return control.controls.some((ctrl) => this.hasInvalidTouchedControls(ctrl));
+    } else {
+      // it's a FormControl - check if it's invalid and touched
+      return control.invalid && control.touched;
+    }
+  }
 
-    let courtFiles = clonedForm.get('restitutionInformation.courtFiles') as FormArray;
+  cloneForm(data, FORM: IOptionSetVal = this.FORM_TYPE): UntypedFormGroup {
+    let clonedForm: UntypedFormGroup = data.form;
+
+    let courtFiles = clonedForm.get('restitutionInformation.courtFiles') as UntypedFormArray;
     while (courtFiles.length > 0) {
       courtFiles.removeAt(0);
     }
 
     courtFiles.push(this.restitutionInfoHelper.createCourtFile(this.fb, FORM));
 
-    let documents = clonedForm.get('restitutionInformation.documents') as FormArray;
+    let documents = clonedForm.get('restitutionInformation.documents') as UntypedFormArray;
     while (documents.length > 0) {
       documents.removeAt(0);
     }
@@ -174,7 +203,7 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
     return clonedForm;
   }
 
-  buildApplicationForm(FORM: IOptionSetVal = this.FORM_TYPE): FormGroup {
+  buildApplicationForm(FORM: IOptionSetVal = this.FORM_TYPE): UntypedFormGroup {
     let group = {
       introduction: this.fb.group({}),
       restitutionInformation: this.restitutionInfoHelper.setupFormGroup(this.fb, FORM),
@@ -227,7 +256,6 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
       );
     } else {
       this.submitting = false;
-      console.log('form not validated');
       this.markAsTouched();
     }
   }

@@ -1,21 +1,29 @@
 <div [formGroup]="form">
   <app-field label="Primary Race/Ethnicity" [required]="false" [disabled]="isDisabled" [valid]="isMyControlValid(form.get('primaryRaceEthnicity'))" errorMessage="Please select an option">
     <select class="form-control" formControlName="primaryRaceEthnicity">
-      <span *ngFor="let enum of raceEthnicityList">
-        <option [value]="enum.val">{{enum.name}}</option>
-      </span>
-    </select>
-  </app-field>
-  <app-field *ngIf="isPersonIndigenous" label="Indigenous" [required]="false"  [disabled]="isDisabled" errorMessage="Please select an option">
-      <select class="form-control" formControlName="indigenousStatus">
-        <span *ngFor="let enum of indigenousStatusList">
+      @for (enum of raceEthnicityList; track enum) {
+        <span>
           <option [value]="enum.val">{{enum.name}}</option>
         </span>
-      </select>
+      }
+    </select>
   </app-field>
-  <app-field *ngIf="form.get('primaryRaceEthnicity').value == otherRaceEthnicityValue" label="Other Race/Ethnicity" [required]="false" errorMessage="Please emter your gender" [disabled]="isDisabled">
+  @if (isPersonIndigenous) {
+    <app-field label="Indigenous" [required]="false"  [disabled]="isDisabled" errorMessage="Please select an option">
+      <select class="form-control" formControlName="indigenousStatus">
+        @for (enum of indigenousStatusList; track enum) {
+          <span>
+            <option [value]="enum.val">{{enum.name}}</option>
+          </span>
+        }
+      </select>
+    </app-field>
+  }
+  @if (form.get('primaryRaceEthnicity').value == otherRaceEthnicityValue) {
+    <app-field label="Other Race/Ethnicity" [required]="false" errorMessage="Please emter your gender" [disabled]="isDisabled">
       <label class="inline-label">
         <input type="text" name="raceEthnicity" formControlName="otherPrimaryRaceEthnicity">
       </label>
-  </app-field>
+    </app-field>
+  }
 </div>

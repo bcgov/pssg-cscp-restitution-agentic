@@ -2,7 +2,8 @@ import { Directive, ElementRef, Input, OnInit } from '@angular/core';
 import { ConfigService } from '../services/config.service';
 
 @Directive({
-  selector: '[featureEnabled]'
+    selector: '[featureEnabled]',
+    standalone: false
 })
 export class FeatureEnabledDirective implements OnInit {
   @Input('featureEnabled') featureName: string;

@@ -1,15 +1,16 @@
-import { FormBase } from '../../form-base';
-import { OnInit, Component, Input } from '@angular/core';
-import { DateAdapter, MAT_DATE_LOCALE, MAT_DATE_FORMATS, MatDialog, MatDialogConfig } from '@angular/material';
-import { FormGroup, ControlContainer, FormArray, FormBuilder } from '@angular/forms';
+import { Component, Input, OnInit } from '@angular/core';
+import { ControlContainer, UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
-import { MY_FORMATS, IOptionSetVal, ResitutionForm, CRMMultiBoolean } from '../../enums-list';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { iLookupData } from '../../../interfaces/lookup-data.interface';
-import { POSTAL_CODE } from '../../regex.constants';
-import { AddressHelper } from '../../address/address.helper';
-import { RestitutionInfoHelper } from './restitution-information.helper';
-import { SignPadDialog } from '../../../sign-dialog/sign-dialog.component';
 import { LookupService } from '../../../services/lookup.service';
+import { SignPadDialog } from '../../../sign-dialog/sign-dialog.component';
+import { AddressHelper } from '../../address/address.helper';
+import { CRMMultiBoolean, IOptionSetVal, MY_FORMATS, ResitutionForm } from '../../enums-list';
+import { FormBase } from '../../form-base';
+import { POSTAL_CODE } from '../../regex.constants';
+import { RestitutionInfoHelper } from './restitution-information.helper';
 
 @Component({
   selector: 'app-restitution-information',
@@ -18,13 +19,14 @@ import { LookupService } from '../../../services/lookup.service';
   providers: [
     { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
     { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS }
-  ]
+  ],
+  standalone: false
 })
 export class RestitutionInformationComponent extends FormBase implements OnInit {
   @Input() formType: IOptionSetVal;
   @Input() lookupData: iLookupData;
   @Input() isDisabled: boolean;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   ResitutionForm = ResitutionForm;
   postalRegex = POSTAL_CODE;
   CRMMultiBoolean = CRMMultiBoolean;
@@ -43,7 +45,7 @@ export class RestitutionInformationComponent extends FormBase implements OnInit 
 
   constructor(
     private controlContainer: ControlContainer,
-    private fb: FormBuilder,
+    private fb: UntypedFormBuilder,
     private matDialog: MatDialog,
     public lookupService: LookupService
   ) {
@@ -51,12 +53,10 @@ export class RestitutionInformationComponent extends FormBase implements OnInit 
   }
 
   ngOnInit() {
-    this.form = <FormGroup>this.controlContainer.control;
+    this.form = <UntypedFormGroup>this.controlContainer.control;
     setTimeout(() => {
       this.form.markAsTouched();
     }, 0);
-    // console.log("restitution info component");
-    // console.log(this.form);
 
     if (this.formType.val === ResitutionForm.Victim.val) {
       this.page_header = 'Victim Application';
@@ -121,26 +121,26 @@ export class RestitutionInformationComponent extends FormBase implements OnInit 
   }
 
   addDesignate() {
-    let designate = this.form.get('designate') as FormArray;
+    let designate = this.form.get('designate') as UntypedFormArray;
     if (designate.length == 0) {
       designate.push(this.restitutionInfoHelper.createDesignate(this.fb));
     }
   }
 
   removeDesignate() {
-    let designate = this.form.get('designate') as FormArray;
+    let designate = this.form.get('designate') as UntypedFormArray;
     while (designate.length > 0) {
       designate.removeAt(0);
     }
   }
 
   addCourtFile() {
-    let courtFiles = this.form.get('courtFiles') as FormArray;
+    let courtFiles = this.form.get('courtFiles') as UntypedFormArray;
     courtFiles.push(this.restitutionInfoHelper.createCourtFile(this.fb, this.formType));
   }
 
   removeCourtFile(index: number) {
-    let courtFiles = this.form.get('courtFiles') as FormArray;
+    let courtFiles = this.form.get('courtFiles') as UntypedFormArray;
     courtFiles.removeAt(index);
   }
 

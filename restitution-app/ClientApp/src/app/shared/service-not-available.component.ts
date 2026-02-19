@@ -1,19 +1,19 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-service-not-available',
-  template: `
+    selector: 'app-service-not-available',
+    template: `
     <div class="service-error-message">
       <p>The Restitution application is currently down. Please retry later or contact the Restitution Unit:</p>
       <p>
         Telephone: 604-660-4898<br />
         Toll Free: 1-844-660-4898<br />
-        Email: <a href="mailto:restitution@gov.bc.ca">restitution@gov.bc.ca</a>
+        Email: <a href="mailto:restitution@gov.bc.ca">restitution&#64;gov.bc.ca</a>
       </p>
     </div>
   `,
-  styles: [
-    `
+    styles: [
+        `
       .service-error-message {
         color: white;
       }
@@ -25,7 +25,8 @@ import { Component } from '@angular/core';
         text-decoration: underline;
       }
     `
-  ]
+    ],
+    standalone: false
 })
 export class ServiceNotAvailableComponent {
   constructor() {}

@@ -1,10 +1,11 @@
-import { Component, OnInit, Inject } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
+import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
-import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material';
 
 @Component({
-  selector: 'app-cancel-dialog',
-  templateUrl: './cancel-dialog.component.html'
+    selector: 'app-cancel-dialog',
+    templateUrl: './cancel-dialog.component.html',
+    standalone: false
 })
 export class CancelApplicationDialog implements OnInit {
   applicationType: string;

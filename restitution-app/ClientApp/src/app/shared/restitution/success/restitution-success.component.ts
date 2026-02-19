@@ -4,9 +4,10 @@ import { StateService } from '../../../services/state.service';
 import { ResitutionForm } from '../../enums-list';
 
 @Component({
-  selector: 'restitution-success',
-  templateUrl: './restitution-success.component.html',
-  styleUrls: ['./restitution-success.component.scss']
+    selector: 'restitution-success',
+    templateUrl: './restitution-success.component.html',
+    styleUrls: ['./restitution-success.component.scss'],
+    standalone: false
 })
 export class RestitutionSuccessComponent {
   constructor(private router: Router, private state: StateService) {

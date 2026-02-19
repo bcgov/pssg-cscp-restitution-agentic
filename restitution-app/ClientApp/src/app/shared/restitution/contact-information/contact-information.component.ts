@@ -1,46 +1,45 @@
-import { FormBase } from '../../form-base';
-import { OnInit, Component, Input } from '@angular/core';
-import { DateAdapter, MAT_DATE_LOCALE, MAT_DATE_FORMATS } from '@angular/material';
-import { FormGroup, ControlContainer, Validators, FormArray, FormBuilder, FormControl } from '@angular/forms';
+import { Component, Input, OnInit } from '@angular/core';
+import { ControlContainer, UntypedFormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
-import { MY_FORMATS, IOptionSetVal, ResitutionForm, CRMBoolean, CRMMultiBoolean } from '../../enums-list';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { iLookupData } from '../../../interfaces/lookup-data.interface';
+import { CRMBoolean, CRMMultiBoolean, IOptionSetVal, MY_FORMATS, ResitutionForm } from '../../enums-list';
+import { FormBase } from '../../form-base';
 import { RestitutionInfoHelper } from '../restitution-information/restitution-information.helper';
 
 @Component({
-  selector: 'app-restitution-contact-information',
-  templateUrl: './contact-information.component.html',
-  styleUrls: ['./contact-information.component.scss'],
-  providers: [
-    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
-    { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS }
-  ]
+    selector: 'app-restitution-contact-information',
+    templateUrl: './contact-information.component.html',
+    styleUrls: ['./contact-information.component.scss'],
+    providers: [
+        { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+        { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS }
+    ],
+    standalone: false
 })
 export class RestitutionContactInformationComponent extends FormBase implements OnInit {
   @Input() formType: IOptionSetVal;
   @Input() lookupData: iLookupData;
   @Input() isDisabled: boolean;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   ResitutionForm = ResitutionForm;
   CRMMultiBoolean = CRMMultiBoolean;
   CRMBoolean = CRMBoolean;
 
   restitutionInfoHelper = new RestitutionInfoHelper();
 
-  constructor(private controlContainer: ControlContainer, private fb: FormBuilder) {
+  constructor(private controlContainer: ControlContainer, private fb: UntypedFormBuilder) {
     super();
   }
 
   ngOnInit() {
-    this.form = <FormGroup>this.controlContainer.control;
+    this.form = <UntypedFormGroup>this.controlContainer.control;
     setTimeout(() => {
       this.form.markAsTouched();
-    }, 0);
-    // console.log("contact info component");
-    // console.log(this.form);
+    }, 0);    
   }
   primaryContactChange(index) {
-    let entityContacts = this.form.get('entityContacts') as FormArray;
+    let entityContacts = this.form.get('entityContacts') as UntypedFormArray;
     //entityContacts.at(index).get("isPrimaryContact").setValue(CRMMultiBoolean.True);
     for (var i = 0; i < entityContacts.controls.length; i++) {
       if (i != index) {
@@ -82,8 +81,8 @@ export class RestitutionContactInformationComponent extends FormBase implements 
     }
   }
   preferredMethodOfContactChangeByContact(index) {
-    let entityContacts = this.form.get('entityContacts') as FormArray;
-    let selectedContact = entityContacts.at(index) as FormControl;
+    let entityContacts = this.form.get('entityContacts') as UntypedFormArray;
+    let selectedContact = entityContacts.at(index) as UntypedFormControl;
     let preferredVal = selectedContact.get('preferredMethodOfContact').value;
     let phoneControl = selectedContact.get('phoneNumber');
     let emailControl = selectedContact.get('email');
@@ -117,14 +116,14 @@ export class RestitutionContactInformationComponent extends FormBase implements 
   }
 
   addContact() {
-    let entityContacts = this.form.get('entityContacts') as FormArray;
+    let entityContacts = this.form.get('entityContacts') as UntypedFormArray;
     var contact = this.restitutionInfoHelper.createEntityContact(this.fb, this.formType);
     contact.get('isPrimaryContact').setValue(CRMMultiBoolean.False);
     entityContacts.push(contact);
   }
 
   removeContact(index: number) {
-    let entityContacts = this.form.get('entityContacts') as FormArray;
+    let entityContacts = this.form.get('entityContacts') as UntypedFormArray;
     entityContacts.removeAt(index);
     if (entityContacts.length == 1) {
       entityContacts.at(0).get('isPrimaryContact').setValue(CRMMultiBoolean.True);

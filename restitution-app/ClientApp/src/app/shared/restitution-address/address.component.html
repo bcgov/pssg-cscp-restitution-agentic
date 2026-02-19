@@ -4,9 +4,11 @@
       <app-field label="Country" [required]="showChildrenAsRequired && countryList.length > 0" [valid]="isSubFieldValid('country', isDisabled)" errorMessage="Please select your country">
         <select class="form-control" formControlName="country" (change)="onCountryChange($event)">
           <option value="">Choose a country</option>
-          <option *ngFor="let item of countryList" [value]="item.vsd_name">
-            {{ item.vsd_name }}
-          </option>
+          @for (item of countryList; track item) {
+            <option [value]="item.vsd_name">
+              {{ item.vsd_name }}
+            </option>
+          }
         </select>
       </app-field>
     </div>

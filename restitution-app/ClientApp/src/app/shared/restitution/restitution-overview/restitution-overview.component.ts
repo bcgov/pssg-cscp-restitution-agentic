@@ -1,9 +1,9 @@
-import { FormBase } from '../../form-base';
-import { OnInit, Component, Input } from '@angular/core';
-import { DateAdapter, MAT_DATE_LOCALE, MAT_DATE_FORMATS } from '@angular/material';
-import { FormGroup, ControlContainer } from '@angular/forms';
+import { Component, Input, OnInit } from '@angular/core';
+import { ControlContainer, UntypedFormGroup } from '@angular/forms';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
-import { MY_FORMATS, IOptionSetVal, ResitutionForm } from '../../enums-list';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { IOptionSetVal, MY_FORMATS, ResitutionForm } from '../../enums-list';
+import { FormBase } from '../../form-base';
 
 @Component({
   selector: 'app-restitution-overview',
@@ -12,11 +12,12 @@ import { MY_FORMATS, IOptionSetVal, ResitutionForm } from '../../enums-list';
   providers: [
     { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
     { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS }
-  ]
+  ],
+  standalone: false
 })
 export class RestitutionOverviewComponent extends FormBase implements OnInit {
   @Input() formType: IOptionSetVal;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   ResitutionForm = ResitutionForm;
   applicant: string = '';
 
@@ -25,12 +26,10 @@ export class RestitutionOverviewComponent extends FormBase implements OnInit {
   }
 
   ngOnInit() {
-    this.form = <FormGroup>this.controlContainer.control;
+    this.form = <UntypedFormGroup>this.controlContainer.control;
     setTimeout(() => {
       this.form.markAsTouched();
     }, 0);
-    // console.log("overview component");
-    // console.log(this.formType);
 
     if (this.formType.val === ResitutionForm.Victim.val || this.formType.val === ResitutionForm.VictimEntity.val) {
       this.applicant = 'Victim';

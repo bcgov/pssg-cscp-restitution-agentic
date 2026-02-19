@@ -9,9 +9,6 @@ import { iCourtFile, iDocument, iEntityContact, iRestitutionApplication } from '
 import { CRMBoolean, CRMMultiBoolean, EnumHelper, ResitutionForm } from '../shared/enums-list';
 
 export function convertRestitutionToCRM(application: iRestitutionApplication) {
-  console.log('converting restitution application');
-  console.log(application);
-
   let crm_application: iRestitutionCRM = {
     Application: getCRMApplication(application)
   };
@@ -30,9 +27,6 @@ export function convertRestitutionToCRM(application: iRestitutionApplication) {
 
   let documents = getCRMDocumentCollection(application);
   if (documents.length > 0) crm_application.DocumentCollection = documents;
-
-  console.log('restitution crm:');
-  console.log(crm_application);
 
   return crm_application;
 }

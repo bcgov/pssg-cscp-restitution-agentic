@@ -1,36 +1,44 @@
 <div [formGroup]="form">
+  <div class="row">
+    <app-field class=" col-md-12" label="Gender" [required]="false" errorMessage="Please select your gender" [disabled]="isDisabled">
+
+      @for (gender of genderList; track gender) {
+        <span>
+          <label class="inline-label">
+            <input type="radio" [value]="gender.val" name="gender" formControlName="gender">
+            <span>{{gender.name}}</span>
+          </label>
+        </span>
+      }
+    </app-field>
+  </div>
+  <div class="row">
+    @if (form.get('gender').value == selfDescribeValue) {
+      <app-field class="col-md-12" label="Other Gender" [required]="false" errorMessage="Please emter your gender" [disabled]="isDisabled">
+        <label class="inline-label">
+          <input type="text" name="gender" formControlName="otherGender">
+        </label>
+      </app-field>
+    }</div>
     <div class="row">
-  <app-field class=" col-md-12" label="Gender" [required]="false" errorMessage="Please select your gender" [disabled]="isDisabled">
-    
-    <span *ngFor="let gender of genderList">
-      <label class="inline-label">
-        <input type="radio" [value]="gender.val" name="gender" formControlName="gender">
-          <span>{{gender.name}}</span>
-        </label>
-    </span> 
-  </app-field>
+      <app-field class="col-md-12"  label="Pronouns" [required]="false" [valid]="isMyControlValid(form.get('pronouns'))" errorMessage="Please select your pronoun" [disabled]="isDisabled">
+        @for (pronoun of pronounList; track pronoun) {
+          <span>
+            <label class="inline-label">
+              <input type="radio" [value]="pronoun.val" name="pronouns" formControlName="pronouns">
+              <span>{{pronoun.name}}</span>
+            </label>
+          </span>
+        }
+      </app-field>
+    </div>
+    <div class="row">
+      @if (form.get('pronouns').value == otherPronounValue) {
+        <app-field class="col-md-12"  label="Other Pronoun" [required]="false" errorMessage="Please emter your pronoun" [disabled]="isDisabled">
+          <label class="inline-label">
+            <input type="text" name="otherPronoun" formControlName="otherPronoun">
+          </label>
+        </app-field>
+      }
+    </div>
   </div>
-  <div class="row">
-  <app-field class="col-md-12" *ngIf="form.get('gender').value == selfDescribeValue" label="Other Gender" [required]="false" errorMessage="Please emter your gender" [disabled]="isDisabled">
-      <label class="inline-label">
-        <input type="text" name="gender" formControlName="otherGender">
-      </label>
-  </app-field></div>
-  <div class="row">
-    <app-field class="col-md-12"  label="Pronouns" [required]="false" [valid]="isMyControlValid(form.get('pronouns'))" errorMessage="Please select your pronoun" [disabled]="isDisabled">
-      <span *ngFor="let pronoun of pronounList">
-        <label class="inline-label">
-            <input type="radio" [value]="pronoun.val" name="pronouns" formControlName="pronouns">
-                <span>{{pronoun.name}}</span>
-        </label>
-      </span>
-    </app-field>
-  </div>
-  <div class="row">
-    <app-field class="col-md-12"  *ngIf="form.get('pronouns').value == otherPronounValue" label="Other Pronoun" [required]="false" errorMessage="Please emter your pronoun" [disabled]="isDisabled">
-        <label class="inline-label">
-          <input type="text" name="otherPronoun" formControlName="otherPronoun">
-        </label>
-    </app-field>
-  </div>
-</div>

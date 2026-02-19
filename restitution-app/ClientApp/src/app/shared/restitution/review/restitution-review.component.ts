@@ -1,11 +1,12 @@
-import { FormBase } from '../../form-base';
-import { OnInit, Component, Input } from '@angular/core';
-import { DateAdapter, MAT_DATE_LOCALE, MAT_DATE_FORMATS, MatStepper } from '@angular/material';
-import { FormGroup, ControlContainer, FormArray, FormBuilder } from '@angular/forms';
+import { Component, Input, OnInit } from '@angular/core';
+import { ControlContainer, UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
-import { MY_FORMATS, IOptionSetVal, ResitutionForm, EnumHelper, CRMBoolean, CRMMultiBoolean } from '../../enums-list';
-import { AddressHelper } from '../../address/address.helper';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { MatStepper } from '@angular/material/stepper';
 import { RESTITUTION_PAGES } from '../../../restitution-application/restitution-application.component';
+import { AddressHelper } from '../../address/address.helper';
+import { CRMBoolean, CRMMultiBoolean, EnumHelper, IOptionSetVal, MY_FORMATS, ResitutionForm } from '../../enums-list';
+import { FormBase } from '../../form-base';
 
 @Component({
   selector: 'app-restitution-review',
@@ -14,12 +15,13 @@ import { RESTITUTION_PAGES } from '../../../restitution-application/restitution-
   providers: [
     { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
     { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS }
-  ]
+  ],
+  standalone: false
 })
 export class RestitutionReviewComponent extends FormBase implements OnInit {
   @Input() formType: IOptionSetVal;
   @Input() parentStepper: MatStepper;
-  public form: FormGroup;
+  public form: UntypedFormGroup;
   ResitutionForm = ResitutionForm;
   enumHelper = new EnumHelper();
   addressHelper = new AddressHelper();
@@ -30,33 +32,37 @@ export class RestitutionReviewComponent extends FormBase implements OnInit {
   PAGES = RESTITUTION_PAGES;
   applicant_type: string = '';
 
-  get showIndigenous(){
-    return this.form.get('restitutionInformation.primaryRaceEthnicity').value == this.enumHelper.CRMRaceEthnicity.Indigenous.val || this.form.get('restitutionInformation.indigenousStatus').value != null;
+  get showIndigenous() {
+    return (
+      this.form.get('restitutionInformation.primaryRaceEthnicity').value ==
+        this.enumHelper.CRMRaceEthnicity.Indigenous.val ||
+      this.form.get('restitutionInformation.indigenousStatus').value != null
+    );
   }
 
-  get showOtherRace(){
-    return this.form.get('restitutionInformation.primaryRaceEthnicity').value == this.enumHelper.CRMRaceEthnicity.Other.val;
+  get showOtherRace() {
+    return (
+      this.form.get('restitutionInformation.primaryRaceEthnicity').value == this.enumHelper.CRMRaceEthnicity.Other.val
+    );
   }
 
-  get showOtherPronoun(){
+  get showOtherPronoun() {
     return this.form.get('restitutionInformation.pronouns').value == this.enumHelper.CRMPronoun.Other.val;
   }
 
-    get showOtherGender(){
+  get showOtherGender() {
     return this.form.get('restitutionInformation.gender').value == this.enumHelper.CRMGender.SelfDescribe.val;
   }
 
-  constructor(private controlContainer: ControlContainer, private fb: FormBuilder) {
+  constructor(private controlContainer: ControlContainer, private fb: UntypedFormBuilder) {
     super();
   }
 
   ngOnInit() {
-    this.form = <FormGroup>this.controlContainer.control;
+    this.form = <UntypedFormGroup>this.controlContainer.control;
     setTimeout(() => {
       this.form.markAsTouched();
     }, 0);
-    // console.log("overview component");
-    // console.log(this.formType);
 
     if (this.formType.val === ResitutionForm.Victim.val || this.formType.val === ResitutionForm.VictimEntity.val) {
       this.applicant_type = 'Victim';
@@ -64,12 +70,10 @@ export class RestitutionReviewComponent extends FormBase implements OnInit {
       this.applicant_type = 'Accused/Offender';
     }
 
-    let entityContacts = this.form.get('restitutionInformation.contactInformation.entityContacts') as FormArray;
+    let entityContacts = this.form.get('restitutionInformation.contactInformation.entityContacts') as UntypedFormArray;
     this.contactsToDisplay = this.fb.array([]);
-    console.log(entityContacts);
 
     for (let i = 0; i < entityContacts.length; ++i) {
-      console.log(entityContacts.at(i).get('firstName'));
       if (entityContacts.at(i).get('firstName').value || entityContacts.at(i).get('lastName').value) {
         this.contactsToDisplay.push(entityContacts.at(i));
       }
