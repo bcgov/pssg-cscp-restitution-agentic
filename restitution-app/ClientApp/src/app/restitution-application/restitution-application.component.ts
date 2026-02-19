@@ -1,6 +1,13 @@
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
 import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
-import { UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import {
+  AbstractControl,
+  FormArray,
+  FormGroup,
+  UntypedFormArray,
+  UntypedFormBuilder,
+  UntypedFormGroup
+} from '@angular/forms';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
@@ -151,6 +158,25 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
           verticalPosition: 'top'
         });
       });
+
+    this.form.valueChanges.subscribe((val) => {
+      this.showValidationMessage = this.hasInvalidTouchedControls(this.form);
+    });
+  }
+
+  // recursively checks if all required fields are filled out touched
+  // this is used to determine if the validation message should be shown
+  protected hasInvalidTouchedControls(control: AbstractControl): boolean {
+    if (control instanceof FormGroup) {
+      // check all controls in the FormGroup
+      return Object.keys(control.controls).some((key) => this.hasInvalidTouchedControls(control.get(key)));
+    } else if (control instanceof FormArray) {
+      // check all controls in the FormArray
+      return control.controls.some((ctrl) => this.hasInvalidTouchedControls(ctrl));
+    } else {
+      // it's a FormControl - check if it's invalid and touched
+      return control.invalid && control.touched;
+    }
   }
 
   cloneForm(data, FORM: IOptionSetVal = this.FORM_TYPE): UntypedFormGroup {
