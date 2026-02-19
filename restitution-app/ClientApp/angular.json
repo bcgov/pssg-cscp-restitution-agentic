@@ -18,9 +18,7 @@
             "tsConfig": "src/tsconfig.app.json",
             "progress": true,
             "baseHref": "/restwebforms/",
-            "polyfills": [
-              "src/polyfills.ts"
-            ],
+            "polyfills": ["src/polyfills.ts"],
             "allowedCommonJsDependencies": ["moment", "moment-timezone"],
             "assets": ["src/favicon.ico", "src/assets"],
             "styles": [
