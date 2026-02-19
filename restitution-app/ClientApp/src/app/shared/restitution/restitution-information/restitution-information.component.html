@@ -238,7 +238,7 @@
               <app-field label="Court Location" [valid]="isMyControlValid(item.get('location'))" errorMessage="Please enter location" [disabled]="isDisabled">
                 <select class="form-control" formControlName="location">
                   <option value="">Choose a court</option>
-                  @for (item of courtList; track item) {
+                  @for (item of courtList; track $index) {
                     <option [value]="item">
                       {{ item }}
                     </option>
