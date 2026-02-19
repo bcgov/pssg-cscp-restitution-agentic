@@ -6,7 +6,7 @@
     "esModuleInterop": true,
     "removeComments": true,
     "declaration": false,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "experimentalDecorators": true,
     "target": "ES2022",
     "typeRoots": [
