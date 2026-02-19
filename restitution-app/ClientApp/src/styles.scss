@@ -1,5 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
 @use '@angular/material' as mat;
+@use 'sass:color';
 
 @import 'mygovbc-bootstrap-theme/dist/mygovbc-bootstrap-theme.min.css';
 
@@ -122,7 +123,7 @@ $indicator-thickness: 0.2em;
     position: absolute;
     top: (-$indicator-thickness);
     left: (-$indicator-thickness);
-    border: $indicator-thickness solid transparentize($indicator-color, 0.8);
+    border: $indicator-thickness solid color.adjust($indicator-color, $alpha: -0.8);
     content: ' ';
   }
 }
