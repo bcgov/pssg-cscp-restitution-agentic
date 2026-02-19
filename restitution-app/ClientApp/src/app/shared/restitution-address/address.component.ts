@@ -1,17 +1,18 @@
-import { Component, OnInit, Input } from '@angular/core';
-import { UntypedFormGroup, Validators, UntypedFormControl } from '@angular/forms';
-import { POSTAL_CODE, ZIP_CODE } from '../regex.constants';
-import { CitiesSearchResponse, iCity, iCountry, iLookupData, iProvince } from '../../interfaces/lookup-data.interface';
-import { config } from '../../../config';
-import { LookupService } from '../../services/lookup.service';
-import { noop, Observable, Observer, of, throwError } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { retry, catchError, map, switchMap, tap } from 'rxjs/operators';
+import { Component, Input, OnInit } from '@angular/core';
+import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import { noop, Observable, Observer, of, throwError } from 'rxjs';
+import { map, switchMap, tap } from 'rxjs/operators';
+import { config } from '../../../config';
+import { CitiesSearchResponse, iCity, iCountry, iLookupData, iProvince } from '../../interfaces/lookup-data.interface';
+import { LookupService } from '../../services/lookup.service';
 import { COUNTRIES_ADDRESS } from '../address/country-list';
+import { POSTAL_CODE, ZIP_CODE } from '../regex.constants';
 
 @Component({
   selector: 'app-restitution-address',
-  templateUrl: './address.component.html'
+  templateUrl: './address.component.html',
+  standalone: false
 })
 export class RestitutionAddressComponent implements OnInit {
   countryList: iCountry[] = config.preferred_countries;
@@ -277,7 +278,6 @@ export class RestitutionAddressComponent implements OnInit {
       this.lookupService
         .getCitiesByProvince(this.selectedCountry.vsd_countryid, this.selectedProvince.vsd_provinceid)
         .subscribe((city_res) => {
-          // console.log(city_res);
           if (city_res.value) {
             this.cityList = city_res.value;
             if (this.cityList) {
@@ -297,7 +297,6 @@ export class RestitutionAddressComponent implements OnInit {
         });
     } else if (this.provinceList.length == 1 && this.selectedCountry && this.selectedCountry.vsd_countryid) {
       this.lookupService.getCitiesByCountry(this.selectedCountry.vsd_countryid).subscribe((city_res) => {
-        // console.log(city_res);
         if (city_res.value) {
           this.cityList = city_res.value;
           if (this.cityList) {

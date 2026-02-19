@@ -3,8 +3,9 @@ import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
 import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
-  selector: 'app-cancel-dialog',
-  templateUrl: './cancel-dialog.component.html'
+    selector: 'app-cancel-dialog',
+    templateUrl: './cancel-dialog.component.html',
+    standalone: false
 })
 export class CancelApplicationDialog implements OnInit {
   applicationType: string;

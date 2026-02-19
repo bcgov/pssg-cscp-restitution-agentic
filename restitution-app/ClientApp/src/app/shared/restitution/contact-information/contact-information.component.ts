@@ -8,13 +8,14 @@ import { FormBase } from '../../form-base';
 import { RestitutionInfoHelper } from '../restitution-information/restitution-information.helper';
 
 @Component({
-  selector: 'app-restitution-contact-information',
-  templateUrl: './contact-information.component.html',
-  styleUrls: ['./contact-information.component.scss'],
-  providers: [
-    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
-    { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS }
-  ]
+    selector: 'app-restitution-contact-information',
+    templateUrl: './contact-information.component.html',
+    styleUrls: ['./contact-information.component.scss'],
+    providers: [
+        { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+        { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS }
+    ],
+    standalone: false
 })
 export class RestitutionContactInformationComponent extends FormBase implements OnInit {
   @Input() formType: IOptionSetVal;
@@ -35,9 +36,7 @@ export class RestitutionContactInformationComponent extends FormBase implements 
     this.form = <UntypedFormGroup>this.controlContainer.control;
     setTimeout(() => {
       this.form.markAsTouched();
-    }, 0);
-    // console.log("contact info component");
-    // console.log(this.form);
+    }, 0);    
   }
   primaryContactChange(index) {
     let entityContacts = this.form.get('entityContacts') as UntypedFormArray;

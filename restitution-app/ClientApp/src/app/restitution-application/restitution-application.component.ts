@@ -35,7 +35,8 @@ export enum RESTITUTION_PAGES {
     { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
     { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS },
     { provide: STEPPER_GLOBAL_OPTIONS, useValue: { showError: true } }
-  ]
+  ],
+  standalone: false
 })
 export class RestitutionApplicationComponent extends FormBase implements OnInit {
   @ViewChild('stepper', { static: false }) restitutionStepper: MatStepper;
@@ -229,7 +230,6 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
       );
     } else {
       this.submitting = false;
-      console.log('form not validated');
       this.markAsTouched();
     }
   }

@@ -1,6 +1,6 @@
 import { Component, isDevMode, OnInit, Renderer2 } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import * as moment from 'moment-timezone';
+import moment from 'moment-timezone';
 import { environment } from '../environments/environment';
 import { Configuration } from './interfaces/configuration.interface';
 import { ConfigService } from './services/config.service';
@@ -8,7 +8,8 @@ import { ConfigService } from './services/config.service';
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
+  standalone: false
 })
 export class AppComponent implements OnInit {
   title = '';
@@ -41,7 +42,6 @@ export class AppComponent implements OnInit {
     this.configService
       .load()
       .then((configuration) => {
-        console.log('Fetched Configuration:', configuration);
         this.configuration = configuration;
       })
       .catch((error) => {

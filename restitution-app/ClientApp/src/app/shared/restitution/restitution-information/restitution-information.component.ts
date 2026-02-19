@@ -19,7 +19,8 @@ import { RestitutionInfoHelper } from './restitution-information.helper';
   providers: [
     { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
     { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS }
-  ]
+  ],
+  standalone: false
 })
 export class RestitutionInformationComponent extends FormBase implements OnInit {
   @Input() formType: IOptionSetVal;
@@ -56,8 +57,6 @@ export class RestitutionInformationComponent extends FormBase implements OnInit 
     setTimeout(() => {
       this.form.markAsTouched();
     }, 0);
-    // console.log("restitution info component");
-    // console.log(this.form);
 
     if (this.formType.val === ResitutionForm.Victim.val) {
       this.page_header = 'Victim Application';
@@ -157,7 +156,7 @@ export class RestitutionInformationComponent extends FormBase implements OnInit 
         patchObject[control] = data;
         this.form.patchValue(patchObject);
       },
-      (err) => console.log(err)
+      (err) => console.debug(err)
     );
   }
 }

@@ -3,9 +3,10 @@ import { MatDialogRef } from '@angular/material/dialog';
 // import { AngularSignaturePad } from '@almothafar/angular-signature-pad'; // TODO: Re-enable when upgrading to Angular 10+
 
 @Component({
-  selector: 'app-sign-dialog',
-  templateUrl: './sign-dialog.component.html',
-  styleUrls: ['./sign-dialog.component.scss']
+    selector: 'app-sign-dialog',
+    templateUrl: './sign-dialog.component.html',
+    styleUrls: ['./sign-dialog.component.scss'],
+    standalone: false
 })
 export class SignPadDialog implements OnInit {
   public signatureImage: any;

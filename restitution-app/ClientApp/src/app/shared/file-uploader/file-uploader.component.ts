@@ -6,7 +6,8 @@ import { config } from '../../../config';
 @Component({
   selector: 'app-file-uploader',
   templateUrl: './file-uploader.component.html',
-  styleUrls: ['./file-uploader.component.scss']
+  styleUrls: ['./file-uploader.component.scss'],
+  standalone: false
 })
 export class FileUploaderComponent implements OnInit {
   @ViewChild('files', { static: false }) myInputVariable: ElementRef;
@@ -37,12 +38,10 @@ export class FileUploaderComponent implements OnInit {
     let totalSize = this.form.parent.get('totalAttachmentSize').value;
     for (let i = 0; i < files.length; i++) {
       if (files[i].size > this.MAX_FILE_SIZE) {
-        console.log('File too big:', (files[i].size / (1024 * 1024)).toFixed(2) + 'MB');
         this.snackBar.open('File cannot exceed 2MB', 'Fail', { duration: 3500, panelClass: ['red-snackbar'] });
         continue;
       }
       if (totalSize + files[i].size > this.MAX_TOTAL_FILE_SIZE) {
-        console.log('Total size too big:', ((totalSize + files[i].size) / (1024 * 1024)).toFixed(2) + 'MB');
         this.snackBar.open('Files uploaded to application cannot exceed 3.5MB', 'Fail', {
           duration: 3500,
           panelClass: ['red-snackbar']
@@ -78,7 +77,7 @@ export class FileUploaderComponent implements OnInit {
           );
         }
       };
-      reader.onerror = (error) => console.log('Error: ', error);
+      reader.onerror = (error) => console.debug('Error: ', error);
     }
 
     this.form.parent.get('totalAttachmentSize').patchValue(totalSize);

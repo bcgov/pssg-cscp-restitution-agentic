@@ -12,7 +12,8 @@ import { FormBase } from '../../form-base';
   providers: [
     { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
     { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS }
-  ]
+  ],
+  standalone: false
 })
 export class RestitutionOverviewComponent extends FormBase implements OnInit {
   @Input() formType: IOptionSetVal;
@@ -29,8 +30,6 @@ export class RestitutionOverviewComponent extends FormBase implements OnInit {
     setTimeout(() => {
       this.form.markAsTouched();
     }, 0);
-    // console.log("overview component");
-    // console.log(this.formType);
 
     if (this.formType.val === ResitutionForm.Victim.val || this.formType.val === ResitutionForm.VictimEntity.val) {
       this.applicant = 'Victim';

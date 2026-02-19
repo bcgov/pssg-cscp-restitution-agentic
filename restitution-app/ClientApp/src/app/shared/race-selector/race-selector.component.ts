@@ -4,9 +4,10 @@ import { FormBase } from '../form-base';
 import { EnumHelper } from '../enums-list';
 
 @Component({
-  selector: 'app-race-selector',
-  templateUrl: './race-selector.component.html',
-  styleUrls: ['./race-selector.component.scss']
+    selector: 'app-race-selector',
+    templateUrl: './race-selector.component.html',
+    styleUrls: ['./race-selector.component.scss'],
+    standalone: false
 })
 export class RaceSelectorComponent extends FormBase implements OnInit {
   @Input() form: UntypedFormGroup;

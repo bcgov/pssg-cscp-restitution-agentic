@@ -15,7 +15,8 @@ import { FormBase } from '../../form-base';
   providers: [
     { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
     { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS }
-  ]
+  ],
+  standalone: false
 })
 export class RestitutionReviewComponent extends FormBase implements OnInit {
   @Input() formType: IOptionSetVal;
@@ -62,8 +63,6 @@ export class RestitutionReviewComponent extends FormBase implements OnInit {
     setTimeout(() => {
       this.form.markAsTouched();
     }, 0);
-    // console.log("overview component");
-    // console.log(this.formType);
 
     if (this.formType.val === ResitutionForm.Victim.val || this.formType.val === ResitutionForm.VictimEntity.val) {
       this.applicant_type = 'Victim';
@@ -73,10 +72,8 @@ export class RestitutionReviewComponent extends FormBase implements OnInit {
 
     let entityContacts = this.form.get('restitutionInformation.contactInformation.entityContacts') as UntypedFormArray;
     this.contactsToDisplay = this.fb.array([]);
-    console.log(entityContacts);
 
     for (let i = 0; i < entityContacts.length; ++i) {
-      console.log(entityContacts.at(i).get('firstName'));
       if (entityContacts.at(i).get('firstName').value || entityContacts.at(i).get('lastName').value) {
         this.contactsToDisplay.push(entityContacts.at(i));
       }

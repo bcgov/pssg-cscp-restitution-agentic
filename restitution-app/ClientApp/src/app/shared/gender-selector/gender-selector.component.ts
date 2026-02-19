@@ -4,9 +4,10 @@ import { FormBase } from '../form-base';
 import { EnumHelper } from '../enums-list';
 
 @Component({
-  selector: 'app-gender-selector',
-  templateUrl: './gender-selector.component.html',
-  styleUrls: ['./gender-selector.component.scss']
+    selector: 'app-gender-selector',
+    templateUrl: './gender-selector.component.html',
+    styleUrls: ['./gender-selector.component.scss'],
+    standalone: false
 })
 export class GenderSelectorComponent extends FormBase implements OnInit {
   constructor() {

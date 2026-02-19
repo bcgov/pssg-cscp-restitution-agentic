@@ -1,6 +1,13 @@
-import { AbstractControl, UntypedFormArray, UntypedFormControl, UntypedFormGroup, ValidationErrors, ValidatorFn } from '@angular/forms';
+import {
+  AbstractControl,
+  UntypedFormArray,
+  UntypedFormControl,
+  UntypedFormGroup,
+  ValidationErrors,
+  ValidatorFn
+} from '@angular/forms';
 import { MatStepper } from '@angular/material/stepper';
-import * as _moment from 'moment';
+import _moment from 'moment';
 import { EnumHelper } from './enums-list';
 
 export class FormBase {
@@ -26,9 +33,6 @@ export class FormBase {
   }
 
   isMyControlValid(control: AbstractControl) {
-    if (control == null) {
-      console.log(control);
-    }
     return control.valid || !control.touched || control.disabled;
   }
 
@@ -181,9 +185,6 @@ export class FormBase {
   validateAllFormFields(formGroup: any) {
     Object.keys(formGroup.controls).forEach((field) => {
       const control = formGroup.get(field);
-      if (control.valid === false) {
-        console.log('invalid: ', field);
-      }
 
       if (control instanceof UntypedFormControl) {
         control.markAsTouched({ onlySelf: true });
@@ -482,8 +483,6 @@ export class FormBase {
   }
 
   gotoPage(selectPage: MatStepper): void {
-    console.log('goto page');
-    console.log(this.form);
     window.scroll(0, 0);
     this.showValidationMessage = false;
     this.currentFormStep = selectPage.selectedIndex;
@@ -498,9 +497,7 @@ export class FormBase {
       const this_step = stepper._steps.find((step) => step.label == step_label);
       if (this_step) {
         const formGroupName = this_step.stepControl.get('name').value;
-        console.log(`Form for validation is ${formGroupName}.`);
         const formParts = this.form.get(formGroupName);
-        console.log(this.form);
 
         let formValid = true;
 
@@ -517,12 +514,10 @@ export class FormBase {
         }
 
         if (formValid) {
-          console.log('Form is valid so proceeding to next step.');
           this.showValidationMessage = false;
           window.scroll(0, 0);
           stepper.next();
         } else {
-          console.log('Form is not valid rerun the validation and show the validation message.');
           this.validateAllFormFields(formParts);
           this.showValidationMessage = true;
         }
@@ -532,7 +527,6 @@ export class FormBase {
 
   gotoPreviousStep(stepper: MatStepper): void {
     if (stepper) {
-      console.log('Going back a step');
       this.showValidationMessage = false;
       window.scroll(0, 0);
       stepper.previous();
@@ -704,7 +698,10 @@ export class FormBase {
     control.updateValueAndValidity(options);
   }
 
-  clearControlValidators(control: AbstractControl | UntypedFormControl, options = { onlySelf: false, emitEvent: true }) {
+  clearControlValidators(
+    control: AbstractControl | UntypedFormControl,
+    options = { onlySelf: false, emitEvent: true }
+  ) {
     control.setErrors(null, options);
     control.clearValidators();
     control.updateValueAndValidity(options);

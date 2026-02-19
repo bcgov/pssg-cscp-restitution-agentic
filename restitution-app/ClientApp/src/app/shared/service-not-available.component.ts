@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
 
 @Component({
-  selector: 'app-service-not-available',
-  template: `
+    selector: 'app-service-not-available',
+    template: `
     <div class="service-error-message">
       <p>The Restitution application is currently down. Please retry later or contact the Restitution Unit:</p>
       <p>
@@ -12,8 +12,8 @@ import { Component } from '@angular/core';
       </p>
     </div>
   `,
-  styles: [
-    `
+    styles: [
+        `
       .service-error-message {
         color: white;
       }
@@ -25,7 +25,8 @@ import { Component } from '@angular/core';
         text-decoration: underline;
       }
     `
-  ]
+    ],
+    standalone: false
 })
 export class ServiceNotAvailableComponent {
   constructor() {}
