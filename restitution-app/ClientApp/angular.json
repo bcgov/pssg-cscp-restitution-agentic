@@ -21,7 +21,7 @@
             "polyfills": [
               "src/polyfills.ts"
             ],
-            "allowedCommonJsDependencies": ["moment-timezone"],
+            "allowedCommonJsDependencies": ["moment", "moment-timezone"],
             "assets": ["src/favicon.ico", "src/assets"],
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",

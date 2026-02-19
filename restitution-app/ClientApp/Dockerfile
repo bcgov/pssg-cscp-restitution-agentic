@@ -60,9 +60,7 @@ RUN npm ci
 #ENV NODE_OPTIONS="--max-old-space-size=8192"
 
 # Build Angular app
-RUN npm run build
-# removed --base-href /restwebforms --prod from npm run build, as it is already defined in package.json which executes
-# ng build --base-href /restwebforms --prod
+RUN npm run buildprod
 
 # Create runtime image layer, copy build image contents into this image
 FROM caddy:2.10.0-alpine AS final
