@@ -1,5 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { MatLegacyDialogRef as MatDialogRef } from '@angular/material/legacy-dialog';
+import { MatDialogRef } from '@angular/material/dialog';
 // import { AngularSignaturePad } from '@almothafar/angular-signature-pad'; // TODO: Re-enable when upgrading to Angular 10+
 
 @Component({
