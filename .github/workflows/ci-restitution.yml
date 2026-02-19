@@ -82,7 +82,7 @@ jobs:
       # ---- Build Angular UI ----
       - name: Install Angular Dependencies
         working-directory: restitution-app/ClientApp
-        run: npm ci
+        run: npm install
 
       - name: Build Angular Application
         working-directory: restitution-app/ClientApp
