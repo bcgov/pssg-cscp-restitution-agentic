@@ -3,7 +3,6 @@
 
 /* Controls Survey styles */
 
-@import '@angular/material/theming';
 @import '~mygovbc-bootstrap-theme/dist/mygovbc-bootstrap-theme.min.css';
 // TODO(v15): As of v15 mat.legacy-core no longer includes default typography styles.
 //  The following line adds:
@@ -13,13 +12,13 @@
 //  If you don't need the default component typographies but still want the hierarchy styles,
 //  you can delete this line and instead use:
 //    `@include mat.legacy-typography-hierarchy(mat.define-legacy-typography-config());`
-@include mat.all-legacy-component-typographies();
-@include mat.legacy-core();
+@include mat.all-component-typographies();
+@include mat.core();
 $primary: mat.define-palette(mat.$grey-palette, 400);
 $accent: mat.define-palette(mat.$indigo-palette, 500, A200, A400);
 $warn: mat.define-palette(mat.$red-palette, 500);
 $theme: mat.define-light-theme($primary, $accent, $warn);
-@include mat.all-legacy-component-themes($theme);
+@include mat.all-component-themes($theme);
 body {
   color: #494949;
   background: #f2f2f2;
