@@ -24,7 +24,6 @@
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "node_modules/ngx-bootstrap/datepicker/bs-datepicker.css",
-              "src/styles-font.scss",
               "src/styles.scss"
             ],
             "scripts": [],
@@ -37,8 +36,16 @@
           },
           "configurations": {
             "production": {
-              "optimization": true,
+              "optimization": {
+                "scripts": true,
+                "styles": {
+                  "minify": true,
+                  "inlineCritical": false
+                },
+                "fonts": true
+              },
               "outputHashing": "all",
+              "sourceMap": false,
               "namedChunks": false,
               "aot": true,
               "extractLicenses": true,
@@ -81,7 +88,6 @@
               "node_modules/bootstrap/dist/css/bootstrap.min.css",
               "node_modules/ng2-toastr/bundles/ng2-toastr.min.css",
               "node_modules/ngx-bootstrap/datepicker/bs-datepicker.css",
-              "src/styles-font.scss",
               "src/styles.scss"
             ],
             "assets": ["src/assets"]
@@ -93,7 +99,7 @@
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",
-      "styleext": "scss",
+      "style": "scss",
       "type": "component"
     },
     "@schematics/angular:directive": {
