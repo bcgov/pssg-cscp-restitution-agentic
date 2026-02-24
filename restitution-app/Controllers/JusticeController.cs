@@ -23,7 +23,7 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         )
         {
             _configuration = configuration;
-            this._dynamicsResultService = dynamicsResultService;
+            _dynamicsResultService = dynamicsResultService;
             _logger = Log.Logger;
         }
 

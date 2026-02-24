@@ -4,14 +4,14 @@
 
 ### Pre-reqs
 
-- Node 12.x
-- npm 6.x
+- Node 22.x
+- npm 11.x
 
 #### For those using [NVM](https://github.com/nvm-sh/nvm)
 
 ```bash
-nvm install 12.22.12
-nvm use 12.22.12
+nvm install 22.18.0
+nvm use 22.18.0
 ```
 
 ## Running the application locally

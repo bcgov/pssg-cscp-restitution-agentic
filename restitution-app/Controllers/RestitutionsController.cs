@@ -1,0 +1,49 @@
+﻿using System.Threading.Tasks;
+using Gov.Cscp.VictimServices.Public.Models;
+using Gov.Cscp.VictimServices.Public.Models.Extensions;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.PowerPlatform.Dataverse.Client;
+using Serilog;
+
+namespace Gov.Cscp.VictimServices.Public.Controllers
+{
+    [Route("api/[controller]")]
+    public class RestitutionsController : Controller
+    {
+        private readonly IOrganizationServiceAsync _organizationService;
+        private readonly ILogger _logger;
+
+        public RestitutionsController(IOrganizationServiceAsync organizationService)
+        {
+            _organizationService = organizationService;
+            _logger = Log.Logger;
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> SubmitRestitution(
+            [FromBody] CreateRestitutionCaseRequestDto model
+        )
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    _logger.Error(
+                        $"API call to 'SubmitRestitution' made with invalid model state. Error is:\n{ModelState}."
+                    );
+                    return BadRequest(ModelState);
+                }
+
+                var request = model.ConvertToDynamicsRequest();
+                var response = await _organizationService.ExecuteAsync(request);
+
+                return Ok(response);
+            }
+            catch (System.Exception e)
+            {
+                _logger.Error(e, "Unexpected error while saving victim restitution.", model);
+                return StatusCode(500, "An unexpected error occurred.");
+            }
+        }
+    }
+}
