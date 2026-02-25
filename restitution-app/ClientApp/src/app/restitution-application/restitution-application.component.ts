@@ -615,10 +615,10 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
       pronounsText: restitutionInfo.otherPronoun,
       genderIdentityText: restitutionInfo.otherGender,
       preferredMethodOfContact: restitutionInfo.contactInformation.preferredMethodOfContact,
-      smsPreferred: null,
-      primaryPhoneNumber: '',
-      alternatePhoneNumber: '',
-      email: '',
+      smsPreferred: restitutionInfo.contactInformation.smsPreferred,
+      primaryPhoneNumber: restitutionInfo.contactInformation.phoneNumber,
+      alternatePhoneNumber: restitutionInfo.contactInformation.alternatePhoneNumber,
+      email: restitutionInfo.contactInformation.email,
       primaryAddressLine1: restitutionInfo.contactInformation.mailingAddress.line1,
       primaryAddressLine2: restitutionInfo.contactInformation.mailingAddress.line2,
       primaryAddressLine3: restitutionInfo.contactInformation.attentionTo,
@@ -626,17 +626,9 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
       primaryProvince: restitutionInfo.contactInformation.mailingAddress.province,
       primaryPostalCode: restitutionInfo.contactInformation.mailingAddress.postalCode,
       primaryCountry: restitutionInfo.contactInformation.mailingAddress.country,
-      voicemailOption: null,
+      voicemailOption: restitutionInfo.contactInformation.leaveVoicemail,
       offenderCustodyLocation: ''
     } as OffenderApplicationDto;
-
-    if (!hasDesignate) {
-      app.smsPreferred = restitutionInfo.contactInformation.smsPreferred;
-      app.primaryPhoneNumber = restitutionInfo.contactInformation.phoneNumber;
-      app.alternatePhoneNumber = restitutionInfo.contactInformation.alternatePhoneNumber;
-      app.email = restitutionInfo.contactInformation.email;
-      app.voicemailOption = restitutionInfo.contactInformation.leaveVoicemail;
-    }
 
     this.applyDeclarationFields(app, restitutionInfo);
     this.applyOffenderNameFields(app, restitutionInfo);
