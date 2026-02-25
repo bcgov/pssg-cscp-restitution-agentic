@@ -8,24 +8,22 @@
 
 export interface ApplicationDto {
   applicantType?: number;
-  /** @nullable */
-  applicantsFirstName?: string | null;
+  /** @minLength 1 */
+  applicantsFirstName: string;
   /** @nullable */
   applicantsMiddleName?: string | null;
-  /** @nullable */
-  applicantsLastName?: string | null;
+  /** @minLength 1 */
+  applicantsLastName: string;
   /** @nullable */
   otherFirstName?: string | null;
   /** @nullable */
   otherLastName?: string | null;
   /** @nullable */
   applicantsGenderCode?: number | null;
-  /** @nullable */
-  applicantsBirthDate?: string | null;
+  applicantsBirthDate: string;
   /** @nullable */
   indigenous?: number | null;
-  /** @nullable */
-  applicantsPreferredMethodOfContact?: number | null;
+  applicantsPreferredMethodOfContact: number;
   /** @nullable */
   smsPreferred?: number | null;
   /** @nullable */
@@ -34,20 +32,20 @@ export interface ApplicationDto {
   applicantsAlternatePhoneNumber?: string | null;
   /** @nullable */
   applicantsEmail?: string | null;
-  /** @nullable */
-  applicantsPrimaryAddressLine1?: string | null;
+  /** @minLength 1 */
+  applicantsPrimaryAddressLine1: string;
   /** @nullable */
   applicantsPrimaryAddressLine2?: string | null;
   /** @nullable */
   applicantsPrimaryAddressLine3?: string | null;
-  /** @nullable */
-  applicantsPrimaryCity?: string | null;
-  /** @nullable */
-  applicantsPrimaryProvince?: string | null;
-  /** @nullable */
-  applicantsPrimaryPostalCode?: string | null;
-  /** @nullable */
-  applicantsPrimaryCountry?: string | null;
+  /** @minLength 1 */
+  applicantsPrimaryCity: string;
+  /** @minLength 1 */
+  applicantsPrimaryProvince: string;
+  /** @minLength 1 */
+  applicantsPrimaryPostalCode: string;
+  /** @minLength 1 */
+  applicantsPrimaryCountry: string;
   /** @nullable */
   offenderFirstName?: string | null;
   /** @nullable */
@@ -56,8 +54,8 @@ export interface ApplicationDto {
   offenderLastName?: string | null;
   /** @nullable */
   voicemailOption?: number | null;
-  /** @nullable */
-  applicantsSignature?: string | null;
+  /** @minLength 1 */
+  applicantsSignature: string;
   /** @nullable */
   declarationFullName?: string | null;
   /** @nullable */
