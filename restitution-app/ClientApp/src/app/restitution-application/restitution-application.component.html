@@ -96,7 +96,7 @@
               </div>
               <div class="submit-grid" [class.disabled-wrapper]="submitting">
                 @if (stepper.selectedIndex == PAGES.REVIEW) {
-                  <button (click)="submitApplication();" class="btn btn-primary" [class.is-disabled]="submitting">SUBMIT APPLICATION <i class="fas fa-chevron-right"></i></button>
+                  <button (click)="submit();" class="btn btn-primary" [class.is-disabled]="submitting">SUBMIT APPLICATION <i class="fas fa-chevron-right"></i></button>
                 }
               </div>
             </span>

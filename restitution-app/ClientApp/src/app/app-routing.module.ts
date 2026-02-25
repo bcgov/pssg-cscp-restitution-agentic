@@ -1,5 +1,5 @@
 import { NgModule } from '@angular/core';
-import { Routes, RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { RestitutionApplicationComponent } from './restitution-application/restitution-application.component';
 import { ResitutionForm } from './shared/enums-list';
@@ -8,8 +8,6 @@ import { RestitutionSuccessComponent } from './shared/restitution/success/restit
 const routes: Routes = [
   {
     path: '',
-    // component: RestitutionApplicationComponent,
-    // data: { formType: ResitutionForm.Victim }
     redirectTo: '/victim',
     pathMatch: 'full'
   },
@@ -28,14 +26,6 @@ const routes: Routes = [
     component: RestitutionApplicationComponent,
     data: { formType: ResitutionForm.VictimEntity }
   },
-  // {
-  //   path: 'application-cancelled',
-  //   component: ApplicationCancelledComponent,
-  // },
-  // {
-  //   path: 'application-success',
-  //   component: ApplicationSuccessComponent,
-  // },
   {
     path: 'restitution-success',
     component: RestitutionSuccessComponent
