@@ -262,101 +262,101 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
 
     const app: ApplicationDto = isVictimEntity
       ? {
-          applicanttype: ResitutionForm.Victim.val,
-          applicantsfirstname: restitutionInfo.firstName,
-          applicantsmiddlename: restitutionInfo.middleName,
-          applicantslastname: restitutionInfo.lastName,
-          otherfirstname: restitutionInfo.otherFirstName,
-          otherlastname: restitutionInfo.otherLastName,
-          applicantsgendercode: restitutionInfo.gender,
-          genderidentitytext: restitutionInfo.otherGender,
-          primaryraceethnicity: restitutionInfo.primaryRaceEthnicity,
-          primaryraceethnicitytext: restitutionInfo.otherPrimaryRaceEthnicity,
+          applicantType: ResitutionForm.Victim.val,
+          applicantsFirstName: restitutionInfo.firstName,
+          applicantsMiddleName: restitutionInfo.middleName,
+          applicantsLastName: restitutionInfo.lastName,
+          otherFirstName: restitutionInfo.otherFirstName,
+          otherLastName: restitutionInfo.otherLastName,
+          applicantsGenderCode: restitutionInfo.gender,
+          genderIdentityText: restitutionInfo.otherGender,
+          primaryRaceEthnicity: restitutionInfo.primaryRaceEthnicity,
+          primaryRaceEthnicityText: restitutionInfo.otherPrimaryRaceEthnicity,
           pronouns: restitutionInfo.pronouns,
-          pronountext: restitutionInfo.otherPronoun,
-          applicantsbirthdate: restitutionInfo.birthDate as any,
+          pronounsText: restitutionInfo.otherPronoun,
+          applicantsBirthDate: restitutionInfo.birthDate as any,
           indigenous: restitutionInfo.indigenousStatus,
-          applicantssignature: restitutionInfo.signature,
-          smspreferred: 100000000,
-          applicantspreferredmethodofcontact: primaryContact?.preferredMethodOfContact,
-          applicantsprimaryphonenumber: primaryContact?.phoneNumber,
-          applicantsalternatephonenumber: primaryContact?.alternatePhoneNumber,
-          applicantsemail: primaryContact?.email,
-          applicantsprimaryaddressline1: restitutionInfo.contactInformation.mailingAddress.line1,
-          applicantsprimaryaddressline2: restitutionInfo.contactInformation.mailingAddress.line2,
-          applicantsprimaryaddressline3: '',
-          applicantsprimarycity: restitutionInfo.contactInformation.mailingAddress.city,
-          applicantsprimaryprovince: restitutionInfo.contactInformation.mailingAddress.province,
-          applicantsprimarypostalcode: restitutionInfo.contactInformation.mailingAddress.postalCode,
-          applicantsprimarycountry: restitutionInfo.contactInformation.mailingAddress.country,
-          voicemailoption: null,
-          contacttitle: '',
-          offendercustodylocation: ''
+          applicantsSignature: restitutionInfo.signature,
+          smsPreferred: 100000000,
+          applicantsPreferredMethodOfContact: primaryContact?.preferredMethodOfContact,
+          applicantsPrimaryPhoneNumber: primaryContact?.phoneNumber,
+          applicantsAlternatePhoneNumber: primaryContact?.alternatePhoneNumber,
+          applicantsEmail: primaryContact?.email,
+          applicantsPrimaryAddressLine1: restitutionInfo.contactInformation.mailingAddress.line1,
+          applicantsPrimaryAddressLine2: restitutionInfo.contactInformation.mailingAddress.line2,
+          applicantsPrimaryAddressLine3: '',
+          applicantsPrimaryCity: restitutionInfo.contactInformation.mailingAddress.city,
+          applicantsPrimaryProvince: restitutionInfo.contactInformation.mailingAddress.province,
+          applicantsPrimaryPostalCode: restitutionInfo.contactInformation.mailingAddress.postalCode,
+          applicantsPrimaryCountry: restitutionInfo.contactInformation.mailingAddress.country,
+          voicemailOption: null,
+          contactTitle: '',
+          offenderCustodyLocation: ''
         }
       : {
-          applicanttype: formData.ApplicationType.val,
-          applicantsfirstname: restitutionInfo.firstName,
-          applicantsmiddlename: restitutionInfo.middleName,
-          applicantslastname: restitutionInfo.lastName,
-          otherfirstname: restitutionInfo.otherFirstName,
-          otherlastname: restitutionInfo.otherLastName,
-          applicantsgendercode: restitutionInfo.gender,
-          applicantsbirthdate: restitutionInfo.birthDate as any,
+          applicantType: formData.ApplicationType.val,
+          applicantsFirstName: restitutionInfo.firstName,
+          applicantsMiddleName: restitutionInfo.middleName,
+          applicantsLastName: restitutionInfo.lastName,
+          otherFirstName: restitutionInfo.otherFirstName,
+          otherLastName: restitutionInfo.otherLastName,
+          applicantsGenderCode: restitutionInfo.gender,
+          applicantsBirthDate: restitutionInfo.birthDate as any,
           indigenous: restitutionInfo.indigenousStatus,
-          applicantspreferredmethodofcontact: null,
-          smspreferred: null,
-          applicantsprimaryphonenumber: '',
-          applicantsalternatephonenumber: '',
-          applicantsemail: '',
-          applicantsprimaryaddressline1: '',
-          applicantsprimaryaddressline2: '',
-          applicantsprimaryaddressline3: restitutionInfo.contactInformation.attentionTo,
-          applicantsprimarycity: '',
-          applicantsprimaryprovince: '',
-          applicantsprimarypostalcode: '',
-          applicantsprimarycountry: '',
-          voicemailoption: null,
-          applicantssignature: restitutionInfo.signature,
-          offendercustodylocation: '',
-          primaryraceethnicity: restitutionInfo.primaryRaceEthnicity,
+          applicantsPreferredMethodOfContact: null,
+          smsPreferred: null,
+          applicantsPrimaryPhoneNumber: '',
+          applicantsAlternatePhoneNumber: '',
+          applicantsEmail: '',
+          applicantsPrimaryAddressLine1: '',
+          applicantsPrimaryAddressLine2: '',
+          applicantsPrimaryAddressLine3: restitutionInfo.contactInformation.attentionTo,
+          applicantsPrimaryCity: '',
+          applicantsPrimaryProvince: '',
+          applicantsPrimaryPostalCode: '',
+          applicantsPrimaryCountry: '',
+          voicemailOption: null,
+          applicantsSignature: restitutionInfo.signature,
+          offenderCustodyLocation: '',
+          primaryRaceEthnicity: restitutionInfo.primaryRaceEthnicity,
           pronouns: restitutionInfo.pronouns,
-          pronountext: restitutionInfo.otherPronoun,
-          primaryraceethnicitytext: restitutionInfo.otherPrimaryRaceEthnicity,
-          genderidentitytext: restitutionInfo.otherGender
+          pronounsText: restitutionInfo.otherPronoun,
+          primaryRaceEthnicityText: restitutionInfo.otherPrimaryRaceEthnicity,
+          genderIdentityText: restitutionInfo.otherGender
         };
 
     if (!isVictimEntity && !hasDesignate) {
-      app.applicantspreferredmethodofcontact = restitutionInfo.contactInformation.preferredMethodOfContact;
-      app.smspreferred = restitutionInfo.contactInformation.smsPreferred;
-      app.applicantsprimaryphonenumber = restitutionInfo.contactInformation.phoneNumber;
-      app.applicantsalternatephonenumber = restitutionInfo.contactInformation.alternatePhoneNumber;
-      app.applicantsemail = restitutionInfo.contactInformation.email;
-      app.applicantsprimaryaddressline1 = restitutionInfo.contactInformation.mailingAddress.line1;
-      app.applicantsprimaryaddressline2 = restitutionInfo.contactInformation.mailingAddress.line2;
-      app.applicantsprimarycity = restitutionInfo.contactInformation.mailingAddress.city;
-      app.applicantsprimaryprovince = restitutionInfo.contactInformation.mailingAddress.province;
-      app.applicantsprimarypostalcode = restitutionInfo.contactInformation.mailingAddress.postalCode;
-      app.applicantsprimarycountry = restitutionInfo.contactInformation.mailingAddress.country;
-      app.voicemailoption = restitutionInfo.contactInformation.leaveVoicemail;
+      app.applicantsPreferredMethodOfContact = restitutionInfo.contactInformation.preferredMethodOfContact;
+      app.smsPreferred = restitutionInfo.contactInformation.smsPreferred;
+      app.applicantsPrimaryPhoneNumber = restitutionInfo.contactInformation.phoneNumber;
+      app.applicantsAlternatePhoneNumber = restitutionInfo.contactInformation.alternatePhoneNumber;
+      app.applicantsEmail = restitutionInfo.contactInformation.email;
+      app.applicantsPrimaryAddressLine1 = restitutionInfo.contactInformation.mailingAddress.line1;
+      app.applicantsPrimaryAddressLine2 = restitutionInfo.contactInformation.mailingAddress.line2;
+      app.applicantsPrimaryCity = restitutionInfo.contactInformation.mailingAddress.city;
+      app.applicantsPrimaryProvince = restitutionInfo.contactInformation.mailingAddress.province;
+      app.applicantsPrimaryPostalCode = restitutionInfo.contactInformation.mailingAddress.postalCode;
+      app.applicantsPrimaryCountry = restitutionInfo.contactInformation.mailingAddress.country;
+      app.voicemailOption = restitutionInfo.contactInformation.leaveVoicemail;
     }
 
     if (restitutionInfo.signatureName) {
-      app.declarationfullname = restitutionInfo.signatureName;
+      app.declarationFullName = restitutionInfo.signatureName;
     }
 
     if (restitutionInfo.signerTitle) {
-      app.signingofficertitle = restitutionInfo.signerTitle;
+      app.signingOfficerTitle = restitutionInfo.signerTitle;
     }
 
     if (restitutionInfo.signatureDate) {
-      app.declarationdate = restitutionInfo.signatureDate as any;
+      app.declarationDate = restitutionInfo.signatureDate as any;
     }
 
     restitutionInfo.courtFiles.forEach((file) => {
       if (file && (file.firstName || file.middleName || file.lastName || file.relationship)) {
-        app.offenderfirstname = file.firstName;
-        app.offendermiddlename = file.middleName;
-        app.offenderlastname = file.lastName;
+        app.offenderFirstName = file.firstName;
+        app.offenderMiddleName = file.middleName;
+        app.offenderLastName = file.lastName;
       }
     });
 

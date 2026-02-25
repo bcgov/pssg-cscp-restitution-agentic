@@ -5,76 +5,41 @@ namespace Gov.Cscp.VictimServices.Public.Models
 {
     public class ApplicationDto
     {
-        public int Applicanttype { get; set; }
-
-        public string Applicantsfirstname { get; set; }
-
-        public string Applicantsmiddlename { get; set; }
-
-        public string Applicantslastname { get; set; }
-
-        public string Otherfirstname { get; set; }
-
-        public string Otherlastname { get; set; }
-
-        public int? Applicantsgendercode { get; set; }
-
-        public DateTime? Applicantsbirthdate { get; set; }
-
+        public int ApplicantType { get; set; }
+        public string ApplicantsFirstName { get; set; }
+        public string ApplicantsMiddleName { get; set; }
+        public string ApplicantsLastName { get; set; }
+        public string OtherFirstName { get; set; }
+        public string OtherLastName { get; set; }
+        public int? ApplicantsGenderCode { get; set; }
+        public DateTime? ApplicantsBirthDate { get; set; }
         public int? Indigenous { get; set; }
-
-        public int? Applicantspreferredmethodofcontact { get; set; }
-
-        public int? Smspreferred { get; set; }
-
-        public string Applicantsprimaryphonenumber { get; set; }
-
-        public string Applicantsalternatephonenumber { get; set; }
-
-        public string Applicantsemail { get; set; }
-
-        public string Applicantsprimaryaddressline1 { get; set; }
-
-        public string Applicantsprimaryaddressline2 { get; set; }
-
-        public string Applicantsprimaryaddressline3 { get; set; }
-
-        public string Applicantsprimarycity { get; set; }
-
-        public string Applicantsprimaryprovince { get; set; }
-
-        public string Applicantsprimarypostalcode { get; set; }
-
-        public string Applicantsprimarycountry { get; set; }
-
-        public string Offenderfirstname { get; set; }
-
-        public string Offendermiddlename { get; set; }
-
-        public string Offenderlastname { get; set; }
-
-        public int? Voicemailoption { get; set; }
-
-        public string Applicantssignature { get; set; }
-
-        public string Declarationfullname { get; set; }
-
-        public string Signingofficertitle { get; set; }
-
-        public DateTime? Declarationdate { get; set; }
-
-        public string Contacttitle { get; set; }
-
-        public string Offendercustodylocation { get; set; }
-
-        public string Genderidentitytext { get; set; }
-
-        public int? Primaryraceethnicity { get; set; }
-
-        public string Primaryraceethnicitytext { get; set; }
-
+        public int? ApplicantsPreferredMethodOfContact { get; set; }
+        public int? SmsPreferred { get; set; }
+        public string ApplicantsPrimaryPhoneNumber { get; set; }
+        public string ApplicantsAlternatePhoneNumber { get; set; }
+        public string ApplicantsEmail { get; set; }
+        public string ApplicantsPrimaryAddressLine1 { get; set; }
+        public string ApplicantsPrimaryAddressLine2 { get; set; }
+        public string ApplicantsPrimaryAddressLine3 { get; set; }
+        public string ApplicantsPrimaryCity { get; set; }
+        public string ApplicantsPrimaryProvince { get; set; }
+        public string ApplicantsPrimaryPostalCode { get; set; }
+        public string ApplicantsPrimaryCountry { get; set; }
+        public string OffenderFirstName { get; set; }
+        public string OffenderMiddleName { get; set; }
+        public string OffenderLastName { get; set; }
+        public int? VoicemailOption { get; set; }
+        public string ApplicantsSignature { get; set; }
+        public string DeclarationFullName { get; set; }
+        public string SigningOfficerTitle { get; set; }
+        public DateTime? DeclarationDate { get; set; }
+        public string ContactTitle { get; set; }
+        public string OffenderCustodyLocation { get; set; }
+        public string GenderIdentityText { get; set; }
+        public int? PrimaryRaceEthnicity { get; set; }
+        public string PrimaryRaceEthnicityText { get; set; }
         public int? Pronouns { get; set; }
-
-        public string Pronountext { get; set; }
+        public string PronounsText { get; set; }
     }
 }

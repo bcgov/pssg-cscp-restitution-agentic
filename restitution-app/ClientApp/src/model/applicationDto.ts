@@ -7,75 +7,75 @@
  */
 
 export interface ApplicationDto {
-  applicanttype?: number;
+  applicantType?: number;
   /** @nullable */
-  applicantsfirstname?: string | null;
+  applicantsFirstName?: string | null;
   /** @nullable */
-  applicantsmiddlename?: string | null;
+  applicantsMiddleName?: string | null;
   /** @nullable */
-  applicantslastname?: string | null;
+  applicantsLastName?: string | null;
   /** @nullable */
-  otherfirstname?: string | null;
+  otherFirstName?: string | null;
   /** @nullable */
-  otherlastname?: string | null;
+  otherLastName?: string | null;
   /** @nullable */
-  applicantsgendercode?: number | null;
+  applicantsGenderCode?: number | null;
   /** @nullable */
-  applicantsbirthdate?: string | null;
+  applicantsBirthDate?: string | null;
   /** @nullable */
   indigenous?: number | null;
   /** @nullable */
-  applicantspreferredmethodofcontact?: number | null;
+  applicantsPreferredMethodOfContact?: number | null;
   /** @nullable */
-  smspreferred?: number | null;
+  smsPreferred?: number | null;
   /** @nullable */
-  applicantsprimaryphonenumber?: string | null;
+  applicantsPrimaryPhoneNumber?: string | null;
   /** @nullable */
-  applicantsalternatephonenumber?: string | null;
+  applicantsAlternatePhoneNumber?: string | null;
   /** @nullable */
-  applicantsemail?: string | null;
+  applicantsEmail?: string | null;
   /** @nullable */
-  applicantsprimaryaddressline1?: string | null;
+  applicantsPrimaryAddressLine1?: string | null;
   /** @nullable */
-  applicantsprimaryaddressline2?: string | null;
+  applicantsPrimaryAddressLine2?: string | null;
   /** @nullable */
-  applicantsprimaryaddressline3?: string | null;
+  applicantsPrimaryAddressLine3?: string | null;
   /** @nullable */
-  applicantsprimarycity?: string | null;
+  applicantsPrimaryCity?: string | null;
   /** @nullable */
-  applicantsprimaryprovince?: string | null;
+  applicantsPrimaryProvince?: string | null;
   /** @nullable */
-  applicantsprimarypostalcode?: string | null;
+  applicantsPrimaryPostalCode?: string | null;
   /** @nullable */
-  applicantsprimarycountry?: string | null;
+  applicantsPrimaryCountry?: string | null;
   /** @nullable */
-  offenderfirstname?: string | null;
+  offenderFirstName?: string | null;
   /** @nullable */
-  offendermiddlename?: string | null;
+  offenderMiddleName?: string | null;
   /** @nullable */
-  offenderlastname?: string | null;
+  offenderLastName?: string | null;
   /** @nullable */
-  voicemailoption?: number | null;
+  voicemailOption?: number | null;
   /** @nullable */
-  applicantssignature?: string | null;
+  applicantsSignature?: string | null;
   /** @nullable */
-  declarationfullname?: string | null;
+  declarationFullName?: string | null;
   /** @nullable */
-  signingofficertitle?: string | null;
+  signingOfficerTitle?: string | null;
   /** @nullable */
-  declarationdate?: string | null;
+  declarationDate?: string | null;
   /** @nullable */
-  contacttitle?: string | null;
+  contactTitle?: string | null;
   /** @nullable */
-  offendercustodylocation?: string | null;
+  offenderCustodyLocation?: string | null;
   /** @nullable */
-  genderidentitytext?: string | null;
+  genderIdentityText?: string | null;
   /** @nullable */
-  primaryraceethnicity?: number | null;
+  primaryRaceEthnicity?: number | null;
   /** @nullable */
-  primaryraceethnicitytext?: string | null;
+  primaryRaceEthnicityText?: string | null;
   /** @nullable */
   pronouns?: number | null;
   /** @nullable */
-  pronountext?: string | null;
+  pronounsText?: string | null;
 }

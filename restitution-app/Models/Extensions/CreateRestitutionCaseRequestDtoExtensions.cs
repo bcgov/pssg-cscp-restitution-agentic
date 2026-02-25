@@ -77,53 +77,53 @@ namespace Gov.Cscp.VictimServices.Public.Models.Extensions
 
             var entity = new VSd_Application
             {
-                VSd_ApplicantType = (VSd_ApplicantType)application.Applicanttype,
-                VSd_ApplicantsFirstName = application.Applicantsfirstname,
-                VSd_ApplicantsMiddleName = application.Applicantsmiddlename,
-                VSd_ApplicantsLastName = application.Applicantslastname,
-                VSd_OtherFirstName = application.Otherfirstname,
-                VSd_OtherLastName = application.Otherlastname,
+                VSd_ApplicantType = (VSd_ApplicantType)application.ApplicantType,
+                VSd_ApplicantsFirstName = application.ApplicantsFirstName,
+                VSd_ApplicantsMiddleName = application.ApplicantsMiddleName,
+                VSd_ApplicantsLastName = application.ApplicantsLastName,
+                VSd_OtherFirstName = application.OtherFirstName,
+                VSd_OtherLastName = application.OtherLastName,
                 VSd_ApplicantsGenderCode = ConvertToEnum<VSd_Gender>(
-                    application.Applicantsgendercode
+                    application.ApplicantsGenderCode
                 ),
-                VSd_ApplicantsBirthdate = application.Applicantsbirthdate,
+                VSd_ApplicantsBirthdate = application.ApplicantsBirthDate,
                 VSd_Indigenous = ConvertToEnum<VSd_Application_VSd_Indigenous>(
                     application.Indigenous
                 ),
                 VSd_ApplicantsPreferredMethodOfContact =
                     ConvertToEnum<VSd_Application_VSd_ApplicantsPreferredMethodOfContact>(
-                        application.Applicantspreferredmethodofcontact
+                        application.ApplicantsPreferredMethodOfContact
                     ),
-                VSd_SmsPreferred = ConvertToEnum<VSd_YesNo>(application.Smspreferred),
-                VSd_ApplicantsPrimaryPhoneNumber = application.Applicantsprimaryphonenumber,
-                VSd_ApplicantsAlternatePhoneNumber = application.Applicantsalternatephonenumber,
-                VSd_ApplicantsEmail = application.Applicantsemail,
-                VSd_ApplicantsPrimaryAddressLine1 = application.Applicantsprimaryaddressline1,
-                VSd_ApplicantsPrimaryAddressLine2 = application.Applicantsprimaryaddressline2,
-                VSd_ApplicantsPrimaryAddressLine3 = application.Applicantsprimaryaddressline3,
-                VSd_ApplicantsPrimaryCity = application.Applicantsprimarycity,
-                VSd_ApplicantsPrimaryProvince = application.Applicantsprimaryprovince,
-                VSd_ApplicantsPrimaryPostalCode = application.Applicantsprimarypostalcode,
-                VSd_ApplicantsPrimaryCountry = application.Applicantsprimarycountry,
-                VSd_CVAp_OffenderFirstName = application.Offenderfirstname,
-                VSd_CVAp_OffenderMiddleName = application.Offendermiddlename,
-                VSd_CVAp_OffenderLastName = application.Offenderlastname,
+                VSd_SmsPreferred = ConvertToEnum<VSd_YesNo>(application.SmsPreferred),
+                VSd_ApplicantsPrimaryPhoneNumber = application.ApplicantsPrimaryPhoneNumber,
+                VSd_ApplicantsAlternatePhoneNumber = application.ApplicantsAlternatePhoneNumber,
+                VSd_ApplicantsEmail = application.ApplicantsEmail,
+                VSd_ApplicantsPrimaryAddressLine1 = application.ApplicantsPrimaryAddressLine1,
+                VSd_ApplicantsPrimaryAddressLine2 = application.ApplicantsPrimaryAddressLine2,
+                VSd_ApplicantsPrimaryAddressLine3 = application.ApplicantsPrimaryAddressLine3,
+                VSd_ApplicantsPrimaryCity = application.ApplicantsPrimaryCity,
+                VSd_ApplicantsPrimaryProvince = application.ApplicantsPrimaryProvince,
+                VSd_ApplicantsPrimaryPostalCode = application.ApplicantsPrimaryPostalCode,
+                VSd_ApplicantsPrimaryCountry = application.ApplicantsPrimaryCountry,
+                VSd_CVAp_OffenderFirstName = application.OffenderFirstName,
+                VSd_CVAp_OffenderMiddleName = application.OffenderMiddleName,
+                VSd_CVAp_OffenderLastName = application.OffenderLastName,
                 VSd_VoiceMailOption = ConvertToEnum<VSd_VoiceMailOption>(
-                    application.Voicemailoption
+                    application.VoicemailOption
                 ),
-                VSd_ApplicantsSignature = application.Applicantssignature,
-                VSd_DeclarationFullName = application.Declarationfullname,
-                VSd_SigningOfficerTitle = application.Signingofficertitle,
-                VSd_DeclarationDate = application.Declarationdate,
-                VSd_ContactTitle = application.Contacttitle,
-                VSd_OffenderCustodyLocation = application.Offendercustodylocation,
-                VSd_GenderIdentityText = application.Genderidentitytext,
+                VSd_ApplicantsSignature = application.ApplicantsSignature,
+                VSd_DeclarationFullName = application.DeclarationFullName,
+                VSd_SigningOfficerTitle = application.SigningOfficerTitle,
+                VSd_DeclarationDate = application.DeclarationDate,
+                VSd_ContactTitle = application.ContactTitle,
+                VSd_OffenderCustodyLocation = application.OffenderCustodyLocation,
+                VSd_GenderIdentityText = application.GenderIdentityText,
                 VSd_PrimaryRaceEthnicity = ConvertToEnum<VSd_RaceEthnicity>(
-                    application.Primaryraceethnicity
+                    application.PrimaryRaceEthnicity
                 ),
-                VSd_PrimaryRaceEthnicityText = application.Primaryraceethnicitytext,
+                VSd_PrimaryRaceEthnicityText = application.PrimaryRaceEthnicityText,
                 VSd_Pronouns = ConvertToEnum<VSd_Pronouns>(application.Pronouns),
-                VSd_PronounText = application.Pronountext,
+                VSd_PronounText = application.PronounsText,
             };
 
             return entity;
