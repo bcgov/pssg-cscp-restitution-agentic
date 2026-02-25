@@ -50,7 +50,6 @@ import { NotFoundComponent } from './not-found/not-found.component';
 import { PhonePipe } from './pipes/phone.pipe';
 import { QuickExitComponent } from './quick-exit/quick-exit.component';
 import { RestitutionApplicationComponent } from './restitution-application/restitution-application.component';
-import { JusticeApplicationDataService } from './services/justice-application-data.service';
 import { LookupService } from './services/lookup.service';
 import { StateService } from './services/state.service';
 import { CancelApplicationDialog } from './shared/cancel-dialog/cancel-dialog.component';
@@ -190,13 +189,6 @@ import { SignPadDialog } from './sign-dialog/sign-dialog.component';
     TooltipModule.forRoot(),
     TypeaheadModule.forRoot()
   ],
-  providers: [
-    provideNgxMask(),
-    JusticeApplicationDataService,
-    LookupService,
-    StateService,
-    Title,
-    provideHttpClient(withInterceptorsFromDi())
-  ]
+  providers: [provideNgxMask(), LookupService, StateService, Title, provideHttpClient(withInterceptorsFromDi())]
 })
 export class AppModule {}

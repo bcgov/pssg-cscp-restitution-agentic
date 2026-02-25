@@ -27,7 +27,6 @@ import {
 } from '../../model';
 import { iLookupData } from '../interfaces/lookup-data.interface';
 import { iRestitutionApplication } from '../interfaces/restitution.interface';
-import { JusticeApplicationDataService } from '../services/justice-application-data.service';
 import { LookupService } from '../services/lookup.service';
 import { StateService } from '../services/state.service';
 import { CancelDialog } from '../shared/dialogs/cancel/cancel.dialog';
@@ -80,7 +79,6 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
   restitutionInfoHelper = new RestitutionInfoHelper();
 
   constructor(
-    private justiceDataService: JusticeApplicationDataService,
     public fb: UntypedFormBuilder,
     private router: Router,
     private route: ActivatedRoute,

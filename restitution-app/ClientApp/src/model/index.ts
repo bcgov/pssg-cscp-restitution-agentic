@@ -6,18 +6,13 @@
  * OpenAPI spec version: v1
  */
 
-export * from './courtInfo';
 export * from './courtInfoDto';
 export * from './createOffenderRestitutionCaseRequestDto';
 export * from './createVictimEntityRestitutionCaseRequestDto';
 export * from './createVictimRestitutionCaseRequestDto';
-export * from './documentCollection';
 export * from './documentDto';
 export * from './getApiLookupCitiesSearchParams';
 export * from './offenderApplicationDto';
-export * from './participant';
 export * from './participantDto';
-export * from './restitutionApplication';
-export * from './restitutionFormModel';
 export * from './victimApplicationDto';
 export * from './victimEntityApplicationDto';

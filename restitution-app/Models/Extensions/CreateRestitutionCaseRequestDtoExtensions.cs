@@ -8,23 +8,6 @@ namespace Gov.Cscp.VictimServices.Public.Models.Extensions
     public static class CreateRestitutionCaseRequestDtoExtensions
     {
         public static VSd_CreateRestitutionCaseRequest ConvertToDynamicsRequest(
-            this CreateRestitutionCaseRequestDto model
-        )
-        {
-            if (model == null)
-            {
-                throw new ArgumentNullException(nameof(model));
-            }
-
-            if (model.Application == null)
-            {
-                throw new ArgumentNullException(nameof(model.Application));
-            }
-
-            return ConvertToDynamicsRequestInternal(model.Application.ToDynamicsEntity(), model);
-        }
-
-        public static VSd_CreateRestitutionCaseRequest ConvertToDynamicsRequest(
             this CreateVictimRestitutionCaseRequestDto model
         )
         {
