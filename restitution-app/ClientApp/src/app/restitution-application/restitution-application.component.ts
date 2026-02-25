@@ -252,118 +252,63 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
 
   private getRestitutionCreateRequest(): CreateRestitutionCaseRequestDto {
     const formData = this.harvestForm();
+    switch (formData.ApplicationType.val) {
+      case ResitutionForm.VictimEntity.val:
+        return this.getVictimEntityRestitutionCreateRequest(formData);
+      case ResitutionForm.Offender.val:
+        return this.getOffenderRestitutionCreateRequest(formData);
+      case ResitutionForm.Victim.val:
+      default:
+        return this.getVictimRestitutionCreateRequest(formData);
+    }
+  }
+
+  private getVictimRestitutionCreateRequest(formData: iRestitutionApplication): CreateRestitutionCaseRequestDto {
     const restitutionInfo = formData.RestitutionInformation;
-
-    const isVictimEntity = formData.ApplicationType.val === ResitutionForm.VictimEntity.val;
-    const isVictimOrOffender =
-      formData.ApplicationType.val === ResitutionForm.Victim.val ||
-      formData.ApplicationType.val === ResitutionForm.Offender.val;
-
     const hasDesignate = restitutionInfo.authorizeDesignate && restitutionInfo.designate.length > 0;
 
-    const primaryContact =
-      restitutionInfo.contactInformation.entityContacts.find((contact) => contact?.isPrimaryContact === 100000000) ||
-      restitutionInfo.contactInformation.entityContacts[0];
+    const app: ApplicationDto = {
+      applicantType: ResitutionForm.Victim.val,
+      applicantsFirstName: restitutionInfo.firstName,
+      applicantsMiddleName: restitutionInfo.middleName,
+      applicantsLastName: restitutionInfo.lastName,
+      otherFirstName: restitutionInfo.otherFirstName,
+      otherLastName: restitutionInfo.otherLastName,
+      applicantsGenderCode: restitutionInfo.gender,
+      applicantsBirthDate: restitutionInfo.birthDate as any,
+      indigenous: restitutionInfo.indigenousStatus,
+      applicantsSignature: restitutionInfo.signature,
+      primaryRaceEthnicity: restitutionInfo.primaryRaceEthnicity,
+      primaryRaceEthnicityText: restitutionInfo.otherPrimaryRaceEthnicity,
+      pronouns: restitutionInfo.pronouns,
+      pronounsText: restitutionInfo.otherPronoun,
+      genderIdentityText: restitutionInfo.otherGender,
+      applicantsPreferredMethodOfContact: restitutionInfo.contactInformation.preferredMethodOfContact,
+      smsPreferred: null,
+      applicantsPrimaryPhoneNumber: '',
+      applicantsAlternatePhoneNumber: '',
+      applicantsEmail: '',
+      applicantsPrimaryAddressLine1: restitutionInfo.contactInformation.mailingAddress.line1,
+      applicantsPrimaryAddressLine2: restitutionInfo.contactInformation.mailingAddress.line2,
+      applicantsPrimaryAddressLine3: restitutionInfo.contactInformation.attentionTo,
+      applicantsPrimaryCity: restitutionInfo.contactInformation.mailingAddress.city,
+      applicantsPrimaryProvince: restitutionInfo.contactInformation.mailingAddress.province,
+      applicantsPrimaryPostalCode: restitutionInfo.contactInformation.mailingAddress.postalCode,
+      applicantsPrimaryCountry: restitutionInfo.contactInformation.mailingAddress.country,
+      voicemailOption: null,
+      offenderCustodyLocation: ''
+    } as ApplicationDto;
 
-    const app: ApplicationDto = isVictimEntity
-      ? {
-          applicantType: ResitutionForm.Victim.val,
-          applicantsFirstName: restitutionInfo.firstName,
-          applicantsMiddleName: restitutionInfo.middleName,
-          applicantsLastName: restitutionInfo.lastName,
-          otherFirstName: restitutionInfo.otherFirstName,
-          otherLastName: restitutionInfo.otherLastName,
-          applicantsGenderCode: restitutionInfo.gender,
-          genderIdentityText: restitutionInfo.otherGender,
-          primaryRaceEthnicity: restitutionInfo.primaryRaceEthnicity,
-          primaryRaceEthnicityText: restitutionInfo.otherPrimaryRaceEthnicity,
-          pronouns: restitutionInfo.pronouns,
-          pronounsText: restitutionInfo.otherPronoun,
-          applicantsBirthDate: restitutionInfo.birthDate as any,
-          indigenous: restitutionInfo.indigenousStatus,
-          applicantsSignature: restitutionInfo.signature,
-          smsPreferred: 100000000,
-          applicantsPreferredMethodOfContact: primaryContact?.preferredMethodOfContact,
-          applicantsPrimaryPhoneNumber: primaryContact?.phoneNumber,
-          applicantsAlternatePhoneNumber: primaryContact?.alternatePhoneNumber,
-          applicantsEmail: primaryContact?.email,
-          applicantsPrimaryAddressLine1: restitutionInfo.contactInformation.mailingAddress.line1,
-          applicantsPrimaryAddressLine2: restitutionInfo.contactInformation.mailingAddress.line2,
-          applicantsPrimaryAddressLine3: '',
-          applicantsPrimaryCity: restitutionInfo.contactInformation.mailingAddress.city,
-          applicantsPrimaryProvince: restitutionInfo.contactInformation.mailingAddress.province,
-          applicantsPrimaryPostalCode: restitutionInfo.contactInformation.mailingAddress.postalCode,
-          applicantsPrimaryCountry: restitutionInfo.contactInformation.mailingAddress.country,
-          voicemailOption: null,
-          contactTitle: '',
-          offenderCustodyLocation: ''
-        }
-      : {
-          applicantType: formData.ApplicationType.val,
-          applicantsFirstName: restitutionInfo.firstName,
-          applicantsMiddleName: restitutionInfo.middleName,
-          applicantsLastName: restitutionInfo.lastName,
-          otherFirstName: restitutionInfo.otherFirstName,
-          otherLastName: restitutionInfo.otherLastName,
-          applicantsGenderCode: restitutionInfo.gender,
-          applicantsBirthDate: restitutionInfo.birthDate as any,
-          indigenous: restitutionInfo.indigenousStatus,
-          applicantsPreferredMethodOfContact: null,
-          smsPreferred: null,
-          applicantsPrimaryPhoneNumber: '',
-          applicantsAlternatePhoneNumber: '',
-          applicantsEmail: '',
-          applicantsPrimaryAddressLine1: '',
-          applicantsPrimaryAddressLine2: '',
-          applicantsPrimaryAddressLine3: restitutionInfo.contactInformation.attentionTo,
-          applicantsPrimaryCity: '',
-          applicantsPrimaryProvince: '',
-          applicantsPrimaryPostalCode: '',
-          applicantsPrimaryCountry: '',
-          voicemailOption: null,
-          applicantsSignature: restitutionInfo.signature,
-          offenderCustodyLocation: '',
-          primaryRaceEthnicity: restitutionInfo.primaryRaceEthnicity,
-          pronouns: restitutionInfo.pronouns,
-          pronounsText: restitutionInfo.otherPronoun,
-          primaryRaceEthnicityText: restitutionInfo.otherPrimaryRaceEthnicity,
-          genderIdentityText: restitutionInfo.otherGender
-        };
-
-    if (!isVictimEntity && !hasDesignate) {
-      app.applicantsPreferredMethodOfContact = restitutionInfo.contactInformation.preferredMethodOfContact;
+    if (!hasDesignate) {
       app.smsPreferred = restitutionInfo.contactInformation.smsPreferred;
       app.applicantsPrimaryPhoneNumber = restitutionInfo.contactInformation.phoneNumber;
       app.applicantsAlternatePhoneNumber = restitutionInfo.contactInformation.alternatePhoneNumber;
       app.applicantsEmail = restitutionInfo.contactInformation.email;
-      app.applicantsPrimaryAddressLine1 = restitutionInfo.contactInformation.mailingAddress.line1;
-      app.applicantsPrimaryAddressLine2 = restitutionInfo.contactInformation.mailingAddress.line2;
-      app.applicantsPrimaryCity = restitutionInfo.contactInformation.mailingAddress.city;
-      app.applicantsPrimaryProvince = restitutionInfo.contactInformation.mailingAddress.province;
-      app.applicantsPrimaryPostalCode = restitutionInfo.contactInformation.mailingAddress.postalCode;
-      app.applicantsPrimaryCountry = restitutionInfo.contactInformation.mailingAddress.country;
       app.voicemailOption = restitutionInfo.contactInformation.leaveVoicemail;
     }
 
-    if (restitutionInfo.signatureName) {
-      app.declarationFullName = restitutionInfo.signatureName;
-    }
-
-    if (restitutionInfo.signerTitle) {
-      app.signingOfficerTitle = restitutionInfo.signerTitle;
-    }
-
-    if (restitutionInfo.signatureDate) {
-      app.declarationDate = restitutionInfo.signatureDate as any;
-    }
-
-    restitutionInfo.courtFiles.forEach((file) => {
-      if (file && (file.firstName || file.middleName || file.lastName || file.relationship)) {
-        app.offenderFirstName = file.firstName;
-        app.offenderMiddleName = file.middleName;
-        app.offenderLastName = file.lastName;
-      }
-    });
+    this.applyDeclarationFields(app, restitutionInfo);
+    this.applyOffenderNameFields(app, restitutionInfo);
 
     const courtInfoCollection = restitutionInfo.courtFiles
       .filter((file) => file && (file.fileNumber || file.location))
@@ -372,49 +317,24 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
         courtLocation: file.location
       }));
 
-    const toParticipantMethodOfContact = (input: number): number | null => {
-      if (input === 1) {
-        return 100000000;
-      }
-
-      if (input === 4) {
-        return 100000002;
-      }
-
-      if (input === 2) {
-        return 100000001;
-      }
-
-      return null;
-    };
-
     const providerCollection: ParticipantDto[] = [];
 
     if (hasDesignate) {
       const designate = restitutionInfo.designate[0];
-      const designatePrimaryContact =
-        restitutionInfo.contactInformation.entityContacts.find((contact) => contact?.isPrimaryContact === 100000000) ||
-        restitutionInfo.contactInformation.entityContacts[0];
-
-      const contactInfo = isVictimOrOffender ? restitutionInfo.contactInformation : null;
 
       restitutionInfo.contactInformation.entityContacts.forEach((contact) => {
         const address = contact?.mailingAddress ?? restitutionInfo.contactInformation.mailingAddress;
-        const preferredMethodOfContact = isVictimOrOffender
-          ? contactInfo?.preferredMethodOfContact
-          : designatePrimaryContact?.preferredMethodOfContact;
-        const smsPreferred = isVictimOrOffender ? contactInfo?.smsPreferred : designatePrimaryContact?.smsPreferred;
 
-        let restContactPreferenceForUpdates = 0;
-        if (preferredMethodOfContact === 1) {
+        let restContactPreferenceForUpdates: number | undefined;
+        if (restitutionInfo.contactInformation.preferredMethodOfContact === 1) {
           restContactPreferenceForUpdates = 100000000;
-        } else if (preferredMethodOfContact === 4) {
+        } else if (restitutionInfo.contactInformation.preferredMethodOfContact === 4) {
           restContactPreferenceForUpdates = 100000001;
-        } else if (preferredMethodOfContact === 2) {
+        } else if (restitutionInfo.contactInformation.preferredMethodOfContact === 2) {
           restContactPreferenceForUpdates = 100000002;
         }
 
-        if (smsPreferred === CRMBoolean.True) {
+        if (restitutionInfo.contactInformation.smsPreferred === CRMBoolean.True) {
           restContactPreferenceForUpdates = 100000003;
         }
 
@@ -429,39 +349,32 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
           province: address?.province,
           postalCode: address?.postalCode,
           country: address?.country,
-          phoneNumber: contactInfo ? contactInfo.phoneNumber : contact?.phoneNumber,
-          alternatePhoneNumber: contactInfo ? contactInfo.alternatePhoneNumber : contact?.alternatePhoneNumber,
-          email: contactInfo ? contactInfo.email : contact?.email,
-          voicemailOptions: contactInfo ? contactInfo.leaveVoicemail : contact?.leaveVoicemail,
-          preferredMethodOfContact: toParticipantMethodOfContact(
-            contactInfo ? contactInfo.preferredMethodOfContact : contact?.preferredMethodOfContact
+          phoneNumber: restitutionInfo.contactInformation.phoneNumber,
+          alternatePhoneNumber: restitutionInfo.contactInformation.alternatePhoneNumber,
+          email: restitutionInfo.contactInformation.email,
+          voicemailOptions: restitutionInfo.contactInformation.leaveVoicemail,
+          preferredMethodOfContact: this.toParticipantMethodOfContact(
+            restitutionInfo.contactInformation.preferredMethodOfContact
           ),
-          restContactPreferenceForUpdates,
+          ...(restContactPreferenceForUpdates !== undefined ? { restContactPreferenceForUpdates } : {}),
           isPrimaryEntityContact: contact?.isPrimaryContact,
           title: contact?.contactTitle
         });
       });
     }
 
-    if (
-      formData.ApplicationType.val === ResitutionForm.Victim.val ||
-      formData.ApplicationType.val === ResitutionForm.VictimEntity.val
-    ) {
-      restitutionInfo.courtFiles.forEach((file) => {
-        providerCollection.push({
-          firstName: restitutionInfo.firstName,
-          middleName: restitutionInfo.middleName,
-          lastName: restitutionInfo.lastName,
-          relationship1: 'Victim',
-          relationship2: 'Other',
-          relationship2Other: file.relationship
-        });
+    restitutionInfo.courtFiles.forEach((file) => {
+      providerCollection.push({
+        firstName: restitutionInfo.firstName,
+        middleName: restitutionInfo.middleName,
+        lastName: restitutionInfo.lastName,
+        relationship1: 'Victim',
+        relationship2: 'Other',
+        relationship2Other: file.relationship
       });
-    }
+    });
 
     if (
-      (formData.ApplicationType.val === ResitutionForm.Victim.val ||
-        formData.ApplicationType.val === ResitutionForm.VictimEntity.val) &&
       restitutionInfo.vsw &&
       restitutionInfo.vsw[0] &&
       Object.values(restitutionInfo.vsw[0]).some((value) => !!value)
@@ -477,23 +390,274 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
       });
     }
 
-    if (formData.ApplicationType.val === ResitutionForm.VictimEntity.val) {
+    const documentCollection = restitutionInfo.documents.map((document) => ({
+      filename: document.filename,
+      subject: document.subject,
+      body: document.body
+    }));
+
+    return {
+      application: app,
+      courtInfoCollection: courtInfoCollection.length > 0 ? courtInfoCollection : null,
+      providerCollection: providerCollection.length > 0 ? providerCollection : null,
+      documentCollection: documentCollection.length > 0 ? documentCollection : null
+    };
+  }
+
+  private getVictimEntityRestitutionCreateRequest(formData: iRestitutionApplication): CreateRestitutionCaseRequestDto {
+    const restitutionInfo = formData.RestitutionInformation;
+    const hasDesignate = restitutionInfo.authorizeDesignate && restitutionInfo.designate.length > 0;
+
+    const primaryContact =
+      restitutionInfo.contactInformation.entityContacts.find((contact) => contact?.isPrimaryContact === 100000000) ||
+      restitutionInfo.contactInformation.entityContacts[0];
+
+    const app: ApplicationDto = {
+      applicantType: ResitutionForm.Victim.val,
+      applicantsFirstName: restitutionInfo.firstName,
+      applicantsMiddleName: restitutionInfo.middleName,
+      applicantsLastName: restitutionInfo.lastName,
+      otherFirstName: restitutionInfo.otherFirstName,
+      otherLastName: restitutionInfo.otherLastName,
+      applicantsGenderCode: restitutionInfo.gender,
+      applicantsBirthDate: restitutionInfo.birthDate as any,
+      indigenous: restitutionInfo.indigenousStatus,
+      applicantsSignature: restitutionInfo.signature,
+      primaryRaceEthnicity: restitutionInfo.primaryRaceEthnicity,
+      primaryRaceEthnicityText: restitutionInfo.otherPrimaryRaceEthnicity,
+      pronouns: restitutionInfo.pronouns,
+      pronounsText: restitutionInfo.otherPronoun,
+      genderIdentityText: restitutionInfo.otherGender,
+      smsPreferred: 100000000,
+      applicantsPreferredMethodOfContact: primaryContact?.preferredMethodOfContact,
+      applicantsPrimaryPhoneNumber: primaryContact?.phoneNumber,
+      applicantsAlternatePhoneNumber: primaryContact?.alternatePhoneNumber,
+      applicantsEmail: primaryContact?.email,
+      applicantsPrimaryAddressLine1: restitutionInfo.contactInformation.mailingAddress.line1,
+      applicantsPrimaryAddressLine2: restitutionInfo.contactInformation.mailingAddress.line2,
+      applicantsPrimaryAddressLine3: '',
+      applicantsPrimaryCity: restitutionInfo.contactInformation.mailingAddress.city,
+      applicantsPrimaryProvince: restitutionInfo.contactInformation.mailingAddress.province,
+      applicantsPrimaryPostalCode: restitutionInfo.contactInformation.mailingAddress.postalCode,
+      applicantsPrimaryCountry: restitutionInfo.contactInformation.mailingAddress.country,
+      voicemailOption: null,
+      contactTitle: '',
+      offenderCustodyLocation: ''
+    } as ApplicationDto;
+
+    this.applyDeclarationFields(app, restitutionInfo);
+    this.applyOffenderNameFields(app, restitutionInfo);
+
+    const courtInfoCollection = restitutionInfo.courtFiles
+      .filter((file) => file && (file.fileNumber || file.location))
+      .map((file) => ({
+        courtFileNumber: file.fileNumber,
+        courtLocation: file.location
+      }));
+
+    const providerCollection: ParticipantDto[] = [];
+
+    if (hasDesignate) {
+      const designate = restitutionInfo.designate[0];
+      const designatePrimaryContact =
+        restitutionInfo.contactInformation.entityContacts.find((contact) => contact?.isPrimaryContact === 100000000) ||
+        restitutionInfo.contactInformation.entityContacts[0];
+
       restitutionInfo.contactInformation.entityContacts.forEach((contact) => {
-        if (contact && Object.values(contact).some((value) => !!value)) {
-          providerCollection.push({
-            firstName: contact.firstName,
-            lastName: contact.lastName,
-            relationship1: 'Representative',
-            preferredMethodOfContact: toParticipantMethodOfContact(contact.preferredMethodOfContact),
-            phoneNumber: contact.phoneNumber,
-            alternatePhoneNumber: contact.alternatePhoneNumber,
-            voicemailOptions: contact.leaveVoicemail,
-            email: contact.email,
-            isPrimaryEntityContact: contact.isPrimaryContact,
-            contactTitle: contact.contactTitle,
-            smsPreferred: contact.smsPreferred
-          });
+        const address = contact?.mailingAddress ?? restitutionInfo.contactInformation.mailingAddress;
+
+        let restContactPreferenceForUpdates: number | undefined;
+        if (designatePrimaryContact?.preferredMethodOfContact === 1) {
+          restContactPreferenceForUpdates = 100000000;
+        } else if (designatePrimaryContact?.preferredMethodOfContact === 4) {
+          restContactPreferenceForUpdates = 100000001;
+        } else if (designatePrimaryContact?.preferredMethodOfContact === 2) {
+          restContactPreferenceForUpdates = 100000002;
         }
+
+        if (designatePrimaryContact?.smsPreferred === CRMBoolean.True) {
+          restContactPreferenceForUpdates = 100000003;
+        }
+
+        providerCollection.push({
+          firstName: designate.firstName,
+          lastName: designate.lastName,
+          preferredName: designate.preferredName,
+          relationship1: 'Designate',
+          addressLine1: address?.line1,
+          addressLine2: address?.line2,
+          city: address?.city,
+          province: address?.province,
+          postalCode: address?.postalCode,
+          country: address?.country,
+          phoneNumber: contact?.phoneNumber,
+          alternatePhoneNumber: contact?.alternatePhoneNumber,
+          email: contact?.email,
+          voicemailOptions: contact?.leaveVoicemail,
+          preferredMethodOfContact: this.toParticipantMethodOfContact(contact?.preferredMethodOfContact),
+          ...(restContactPreferenceForUpdates !== undefined ? { restContactPreferenceForUpdates } : {}),
+          isPrimaryEntityContact: contact?.isPrimaryContact,
+          title: contact?.contactTitle
+        });
+      });
+    }
+
+    restitutionInfo.courtFiles.forEach((file) => {
+      providerCollection.push({
+        firstName: restitutionInfo.firstName,
+        middleName: restitutionInfo.middleName,
+        lastName: restitutionInfo.lastName,
+        relationship1: 'Victim',
+        relationship2: 'Other',
+        relationship2Other: file.relationship
+      });
+    });
+
+    if (
+      restitutionInfo.vsw &&
+      restitutionInfo.vsw[0] &&
+      Object.values(restitutionInfo.vsw[0]).some((value) => !!value)
+    ) {
+      const vsw = restitutionInfo.vsw[0];
+      providerCollection.push({
+        firstName: vsw.firstName,
+        lastName: vsw.lastName,
+        programName: vsw.program,
+        phoneNumber: vsw.phoneNumber,
+        email: vsw.email,
+        relationship1: 'Victim Service Worker'
+      });
+    }
+
+    restitutionInfo.contactInformation.entityContacts.forEach((contact) => {
+      if (contact && Object.values(contact).some((value) => !!value)) {
+        providerCollection.push({
+          firstName: contact.firstName,
+          lastName: contact.lastName,
+          relationship1: 'Representative',
+          preferredMethodOfContact: this.toParticipantMethodOfContact(contact.preferredMethodOfContact),
+          phoneNumber: contact.phoneNumber,
+          alternatePhoneNumber: contact.alternatePhoneNumber,
+          voicemailOptions: contact.leaveVoicemail,
+          email: contact.email,
+          isPrimaryEntityContact: contact.isPrimaryContact,
+          contactTitle: contact.contactTitle,
+          smsPreferred: contact.smsPreferred
+        });
+      }
+    });
+
+    const documentCollection = restitutionInfo.documents.map((document) => ({
+      filename: document.filename,
+      subject: document.subject,
+      body: document.body
+    }));
+
+    return {
+      application: app,
+      courtInfoCollection: courtInfoCollection.length > 0 ? courtInfoCollection : null,
+      providerCollection: providerCollection.length > 0 ? providerCollection : null,
+      documentCollection: documentCollection.length > 0 ? documentCollection : null
+    };
+  }
+
+  private getOffenderRestitutionCreateRequest(formData: iRestitutionApplication): CreateRestitutionCaseRequestDto {
+    const restitutionInfo = formData.RestitutionInformation;
+    const hasDesignate = restitutionInfo.authorizeDesignate && restitutionInfo.designate.length > 0;
+
+    const app: ApplicationDto = {
+      applicantType: ResitutionForm.Offender.val,
+      applicantsFirstName: restitutionInfo.firstName,
+      applicantsMiddleName: restitutionInfo.middleName,
+      applicantsLastName: restitutionInfo.lastName,
+      otherFirstName: restitutionInfo.otherFirstName,
+      otherLastName: restitutionInfo.otherLastName,
+      applicantsGenderCode: restitutionInfo.gender,
+      applicantsBirthDate: restitutionInfo.birthDate as any,
+      indigenous: restitutionInfo.indigenousStatus,
+      applicantsSignature: restitutionInfo.signature,
+      primaryRaceEthnicity: restitutionInfo.primaryRaceEthnicity,
+      primaryRaceEthnicityText: restitutionInfo.otherPrimaryRaceEthnicity,
+      pronouns: restitutionInfo.pronouns,
+      pronounsText: restitutionInfo.otherPronoun,
+      genderIdentityText: restitutionInfo.otherGender,
+      applicantsPreferredMethodOfContact: restitutionInfo.contactInformation.preferredMethodOfContact,
+      smsPreferred: null,
+      applicantsPrimaryPhoneNumber: '',
+      applicantsAlternatePhoneNumber: '',
+      applicantsEmail: '',
+      applicantsPrimaryAddressLine1: restitutionInfo.contactInformation.mailingAddress.line1,
+      applicantsPrimaryAddressLine2: restitutionInfo.contactInformation.mailingAddress.line2,
+      applicantsPrimaryAddressLine3: restitutionInfo.contactInformation.attentionTo,
+      applicantsPrimaryCity: restitutionInfo.contactInformation.mailingAddress.city,
+      applicantsPrimaryProvince: restitutionInfo.contactInformation.mailingAddress.province,
+      applicantsPrimaryPostalCode: restitutionInfo.contactInformation.mailingAddress.postalCode,
+      applicantsPrimaryCountry: restitutionInfo.contactInformation.mailingAddress.country,
+      voicemailOption: null,
+      offenderCustodyLocation: ''
+    } as ApplicationDto;
+
+    if (!hasDesignate) {
+      app.smsPreferred = restitutionInfo.contactInformation.smsPreferred;
+      app.applicantsPrimaryPhoneNumber = restitutionInfo.contactInformation.phoneNumber;
+      app.applicantsAlternatePhoneNumber = restitutionInfo.contactInformation.alternatePhoneNumber;
+      app.applicantsEmail = restitutionInfo.contactInformation.email;
+      app.voicemailOption = restitutionInfo.contactInformation.leaveVoicemail;
+    }
+
+    this.applyDeclarationFields(app, restitutionInfo);
+    this.applyOffenderNameFields(app, restitutionInfo);
+
+    const courtInfoCollection = restitutionInfo.courtFiles
+      .filter((file) => file && (file.fileNumber || file.location))
+      .map((file) => ({
+        courtFileNumber: file.fileNumber,
+        courtLocation: file.location
+      }));
+
+    const providerCollection: ParticipantDto[] = [];
+
+    if (hasDesignate) {
+      const designate = restitutionInfo.designate[0];
+
+      restitutionInfo.contactInformation.entityContacts.forEach((contact) => {
+        const address = contact?.mailingAddress ?? restitutionInfo.contactInformation.mailingAddress;
+
+        let restContactPreferenceForUpdates: number | undefined;
+        if (restitutionInfo.contactInformation.preferredMethodOfContact === 1) {
+          restContactPreferenceForUpdates = 100000000;
+        } else if (restitutionInfo.contactInformation.preferredMethodOfContact === 4) {
+          restContactPreferenceForUpdates = 100000001;
+        } else if (restitutionInfo.contactInformation.preferredMethodOfContact === 2) {
+          restContactPreferenceForUpdates = 100000002;
+        }
+
+        if (restitutionInfo.contactInformation.smsPreferred === CRMBoolean.True) {
+          restContactPreferenceForUpdates = 100000003;
+        }
+
+        providerCollection.push({
+          firstName: designate.firstName,
+          lastName: designate.lastName,
+          preferredName: designate.preferredName,
+          relationship1: 'Designate',
+          addressLine1: address?.line1,
+          addressLine2: address?.line2,
+          city: address?.city,
+          province: address?.province,
+          postalCode: address?.postalCode,
+          country: address?.country,
+          phoneNumber: restitutionInfo.contactInformation.phoneNumber,
+          alternatePhoneNumber: restitutionInfo.contactInformation.alternatePhoneNumber,
+          email: restitutionInfo.contactInformation.email,
+          voicemailOptions: restitutionInfo.contactInformation.leaveVoicemail,
+          preferredMethodOfContact: this.toParticipantMethodOfContact(
+            restitutionInfo.contactInformation.preferredMethodOfContact
+          ),
+          ...(restContactPreferenceForUpdates !== undefined ? { restContactPreferenceForUpdates } : {}),
+          isPrimaryEntityContact: contact?.isPrimaryContact,
+          title: contact?.contactTitle
+        });
       });
     }
 
@@ -509,6 +673,52 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
       providerCollection: providerCollection.length > 0 ? providerCollection : null,
       documentCollection: documentCollection.length > 0 ? documentCollection : null
     };
+  }
+
+  private applyDeclarationFields(
+    app: ApplicationDto,
+    restitutionInfo: iRestitutionApplication['RestitutionInformation']
+  ): void {
+    if (restitutionInfo.signatureName) {
+      app.declarationFullName = restitutionInfo.signatureName;
+    }
+
+    if (restitutionInfo.signerTitle) {
+      app.signingOfficerTitle = restitutionInfo.signerTitle;
+    }
+
+    if (restitutionInfo.signatureDate) {
+      app.declarationDate = restitutionInfo.signatureDate as any;
+    }
+  }
+
+  private applyOffenderNameFields(
+    app: ApplicationDto,
+    restitutionInfo: iRestitutionApplication['RestitutionInformation']
+  ): void {
+    restitutionInfo.courtFiles.forEach((file) => {
+      if (file && (file.firstName || file.middleName || file.lastName || file.relationship)) {
+        app.offenderFirstName = file.firstName;
+        app.offenderMiddleName = file.middleName;
+        app.offenderLastName = file.lastName;
+      }
+    });
+  }
+
+  private toParticipantMethodOfContact(input: number): number | null {
+    if (input === 1) {
+      return 100000000;
+    }
+
+    if (input === 4) {
+      return 100000002;
+    }
+
+    if (input === 2) {
+      return 100000001;
+    }
+
+    return null;
   }
 
   verifyCancellation(): void {
