@@ -27,7 +27,6 @@ import { ApplicationType, CRMBoolean, IOptionSetVal, MY_FORMATS, ResitutionForm 
 import { FormBase } from '../shared/form-base';
 import { RestitutionInfoHelper } from '../shared/restitution/restitution-information/restitution-information.helper';
 import { ServiceNotAvailableComponent } from '../shared/service-not-available.component';
-import { convertRestitutionToCRM } from './restitution.to.crm';
 
 export enum RESTITUTION_PAGES {
   OVERVIEW,
@@ -230,17 +229,23 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
     this.form.markAllAsTouched();
 
     if (this.form.invalid) {
-      // TODO: check show/hide validation message logic
       return;
     }
+
+    // TODO: introduce interceptor to handle loading state
+    // this.submitting = true;
 
     const restitutionData = this.getRestitutionCreateRequest();
     this.restitutionsService.postApiRestitutions(restitutionData).subscribe({
       next: (res) => {
-        console.log('success', res);
+        this.state.data = { type: this.FORM_TYPE, form: this.form };
+        this.router.navigate(['/restitution-success']);
       },
       error: (err) => {
-        console.log('error', err);
+        this.snackBar.open('Error submitting application', 'Close', { duration: 3500, panelClass: ['red-snackbar'] });
+        if (this.isIE) {
+          alert('Encountered an error. Please use another browser as this may resolve the problem.');
+        }
       }
     });
   }
@@ -504,44 +509,6 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
       providerCollection: providerCollection.length > 0 ? providerCollection : null,
       documentCollection: documentCollection.length > 0 ? documentCollection : null
     };
-  }
-
-  submitApplication() {
-    this.markAsTouched();
-
-    this.submitting = true;
-    if (this.form.valid) {
-      let formValue = this.harvestForm();
-      let data = convertRestitutionToCRM(formValue);
-      this.justiceDataService.submitRestitutionApplication(data).subscribe(
-        (data) => {
-          if (data['IsSuccess'] == true) {
-            this.submitting = false;
-            this.state.data = { type: this.FORM_TYPE, form: this.form };
-            this.router.navigate(['/restitution-success']);
-          } else {
-            this.submitting = false;
-            this.snackBar.open('Error submitting application. ' + data['message'], 'Close', {
-              duration: 3500,
-              panelClass: ['red-snackbar']
-            });
-            if (this.isIE) {
-              alert('Encountered an error. Please use another browser as this may resolve the problem.');
-            }
-          }
-        },
-        (error) => {
-          this.submitting = false;
-          this.snackBar.open('Error submitting application', 'Close', { duration: 3500, panelClass: ['red-snackbar'] });
-          if (this.isIE) {
-            alert('Encountered an error. Please use another browser as this may resolve the problem.');
-          }
-        }
-      );
-    } else {
-      this.submitting = false;
-      this.markAsTouched();
-    }
   }
 
   verifyCancellation(): void {

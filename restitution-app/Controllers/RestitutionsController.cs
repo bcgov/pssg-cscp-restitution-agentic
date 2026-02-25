@@ -37,6 +37,16 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
                 var request = model.ConvertToDynamicsRequest();
                 var response = await _organizationService.ExecuteAsync(request);
 
+                if (response.Results["IsSuccess"] is not true)
+                {
+                    _logger.Error(
+                        "Error while saving victim restitution. Response from Dynamics was:\n{@Response}",
+                        response
+                    );
+
+                    return StatusCode(500, "An error occurred while saving the restitution case.");
+                }
+
                 return Ok(response);
             }
             catch (System.Exception e)
