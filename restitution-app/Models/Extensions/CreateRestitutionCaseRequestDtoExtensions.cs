@@ -21,9 +21,71 @@ namespace Gov.Cscp.VictimServices.Public.Models.Extensions
                 throw new ArgumentNullException(nameof(model.Application));
             }
 
+            return ConvertToDynamicsRequestInternal(model.Application.ToDynamicsEntity(), model);
+        }
+
+        public static VSd_CreateRestitutionCaseRequest ConvertToDynamicsRequest(
+            this CreateVictimRestitutionCaseRequestDto model
+        )
+        {
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
+
+            if (model.Application == null)
+            {
+                throw new ArgumentNullException(nameof(model.Application));
+            }
+
+            return ConvertToDynamicsRequestInternal(model.Application.ToDynamicsEntity(), model);
+        }
+
+        public static VSd_CreateRestitutionCaseRequest ConvertToDynamicsRequest(
+            this CreateVictimEntityRestitutionCaseRequestDto model
+        )
+        {
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
+
+            if (model.Application == null)
+            {
+                throw new ArgumentNullException(nameof(model.Application));
+            }
+
+            return ConvertToDynamicsRequestInternal(
+                model.Application.ToDynamicsEntityForVictimEntity(),
+                model
+            );
+        }
+
+        public static VSd_CreateRestitutionCaseRequest ConvertToDynamicsRequest(
+            this CreateOffenderRestitutionCaseRequestDto model
+        )
+        {
+            if (model == null)
+            {
+                throw new ArgumentNullException(nameof(model));
+            }
+
+            if (model.Application == null)
+            {
+                throw new ArgumentNullException(nameof(model.Application));
+            }
+
+            return ConvertToDynamicsRequestInternal(model.Application.ToDynamicsEntity(), model);
+        }
+
+        private static VSd_CreateRestitutionCaseRequest ConvertToDynamicsRequestInternal(
+            VSd_Application application,
+            RestitutionCaseRequestDtoBase model
+        )
+        {
             var request = new VSd_CreateRestitutionCaseRequest
             {
-                Application = model.Application.ToDynamicsEntity(),
+                Application = application,
                 CourtInfoCollection =
                     model.CourtInfoCollection != null
                         ? CreateEntityCollection(
@@ -66,6 +128,156 @@ namespace Gov.Cscp.VictimServices.Public.Models.Extensions
             };
 
             return request;
+        }
+
+        private static VSd_Application ToDynamicsEntity(this VictimApplicationDto application)
+        {
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
+
+            var normalized = new ApplicationDto
+            {
+                ApplicantType = (int)VSd_ApplicantType.Victim,
+                ApplicantsFirstName = application.FirstName,
+                ApplicantsMiddleName = application.MiddleName,
+                ApplicantsLastName = application.LastName,
+                OtherFirstName = application.OtherFirstName,
+                OtherLastName = application.OtherLastName,
+                ApplicantsGenderCode = application.Gender,
+                ApplicantsBirthDate = application.BirthDate,
+                Indigenous = application.IndigenousStatus,
+                ApplicantsPreferredMethodOfContact = application.PreferredMethodOfContact,
+                SmsPreferred = application.SmsPreferred,
+                ApplicantsPrimaryPhoneNumber = application.PrimaryPhoneNumber,
+                ApplicantsAlternatePhoneNumber = application.AlternatePhoneNumber,
+                ApplicantsEmail = application.Email,
+                ApplicantsPrimaryAddressLine1 = application.PrimaryAddressLine1,
+                ApplicantsPrimaryAddressLine2 = application.PrimaryAddressLine2,
+                ApplicantsPrimaryAddressLine3 = application.PrimaryAddressLine3,
+                ApplicantsPrimaryCity = application.PrimaryCity,
+                ApplicantsPrimaryProvince = application.PrimaryProvince,
+                ApplicantsPrimaryPostalCode = application.PrimaryPostalCode,
+                ApplicantsPrimaryCountry = application.PrimaryCountry,
+                ApplicantsSignature = application.Signature,
+                OffenderFirstName = application.OffenderFirstName,
+                OffenderMiddleName = application.OffenderMiddleName,
+                OffenderLastName = application.OffenderLastName,
+                VoicemailOption = application.VoicemailOption,
+                DeclarationFullName = application.DeclarationFullName,
+                SigningOfficerTitle = application.SigningOfficerTitle,
+                DeclarationDate = application.DeclarationDate,
+                ContactTitle = application.ContactTitle,
+                OffenderCustodyLocation = application.OffenderCustodyLocation,
+                GenderIdentityText = application.GenderIdentityText,
+                PrimaryRaceEthnicity = application.PrimaryRaceEthnicity,
+                PrimaryRaceEthnicityText = application.PrimaryRaceEthnicityText,
+                Pronouns = application.Pronouns,
+                PronounsText = application.PronounsText,
+            };
+
+            return normalized.ToDynamicsEntity();
+        }
+
+        private static VSd_Application ToDynamicsEntity(this OffenderApplicationDto application)
+        {
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
+
+            var normalized = new ApplicationDto
+            {
+                ApplicantType = (int)VSd_ApplicantType.Offender,
+                ApplicantsFirstName = application.FirstName,
+                ApplicantsMiddleName = application.MiddleName,
+                ApplicantsLastName = application.LastName,
+                OtherFirstName = application.OtherFirstName,
+                OtherLastName = application.OtherLastName,
+                ApplicantsGenderCode = application.Gender,
+                ApplicantsBirthDate = application.BirthDate,
+                Indigenous = application.IndigenousStatus,
+                ApplicantsPreferredMethodOfContact = application.PreferredMethodOfContact,
+                SmsPreferred = application.SmsPreferred,
+                ApplicantsPrimaryPhoneNumber = application.PrimaryPhoneNumber,
+                ApplicantsAlternatePhoneNumber = application.AlternatePhoneNumber,
+                ApplicantsEmail = application.Email,
+                ApplicantsPrimaryAddressLine1 = application.PrimaryAddressLine1,
+                ApplicantsPrimaryAddressLine2 = application.PrimaryAddressLine2,
+                ApplicantsPrimaryAddressLine3 = application.PrimaryAddressLine3,
+                ApplicantsPrimaryCity = application.PrimaryCity,
+                ApplicantsPrimaryProvince = application.PrimaryProvince,
+                ApplicantsPrimaryPostalCode = application.PrimaryPostalCode,
+                ApplicantsPrimaryCountry = application.PrimaryCountry,
+                ApplicantsSignature = application.Signature,
+                OffenderFirstName = application.OffenderFirstName,
+                OffenderMiddleName = application.OffenderMiddleName,
+                OffenderLastName = application.OffenderLastName,
+                VoicemailOption = application.VoicemailOption,
+                DeclarationFullName = application.DeclarationFullName,
+                SigningOfficerTitle = application.SigningOfficerTitle,
+                DeclarationDate = application.DeclarationDate,
+                ContactTitle = application.ContactTitle,
+                OffenderCustodyLocation = application.OffenderCustodyLocation,
+                GenderIdentityText = application.GenderIdentityText,
+                PrimaryRaceEthnicity = application.PrimaryRaceEthnicity,
+                PrimaryRaceEthnicityText = application.PrimaryRaceEthnicityText,
+                Pronouns = application.Pronouns,
+                PronounsText = application.PronounsText,
+            };
+
+            return normalized.ToDynamicsEntity();
+        }
+
+        private static VSd_Application ToDynamicsEntityForVictimEntity(
+            this VictimEntityApplicationDto application
+        )
+        {
+            if (application == null)
+            {
+                throw new ArgumentNullException(nameof(application));
+            }
+
+            var normalized = new ApplicationDto
+            {
+                ApplicantType = (int)VSd_ApplicantType.Victim,
+                ApplicantsMiddleName = application.MiddleName,
+                ApplicantsLastName = application.EntityName,
+                OtherFirstName = application.OtherFirstName,
+                OtherLastName = application.OtherLastName,
+                ApplicantsGenderCode = application.Gender,
+                Indigenous = application.IndigenousStatus,
+                ApplicantsPreferredMethodOfContact = application.PreferredMethodOfContact,
+                SmsPreferred = application.SmsPreferred,
+                ApplicantsPrimaryPhoneNumber = application.PrimaryPhoneNumber,
+                ApplicantsAlternatePhoneNumber = application.AlternatePhoneNumber,
+                ApplicantsEmail = application.Email,
+                ApplicantsPrimaryAddressLine1 = application.PrimaryAddressLine1,
+                ApplicantsPrimaryAddressLine2 = application.PrimaryAddressLine2,
+                ApplicantsPrimaryAddressLine3 = application.PrimaryAddressLine3,
+                ApplicantsPrimaryCity = application.PrimaryCity,
+                ApplicantsPrimaryProvince = application.PrimaryProvince,
+                ApplicantsPrimaryPostalCode = application.PrimaryPostalCode,
+                ApplicantsPrimaryCountry = application.PrimaryCountry,
+                ApplicantsSignature = application.Signature,
+                OffenderFirstName = application.OffenderFirstName,
+                OffenderMiddleName = application.OffenderMiddleName,
+                OffenderLastName = application.OffenderLastName,
+                VoicemailOption = application.VoicemailOption,
+                DeclarationFullName = application.DeclarationFullName,
+                SigningOfficerTitle = application.SigningOfficerTitle,
+                DeclarationDate = application.DeclarationDate,
+                ContactTitle = application.ContactTitle,
+                OffenderCustodyLocation = application.OffenderCustodyLocation,
+                GenderIdentityText = application.GenderIdentityText,
+                PrimaryRaceEthnicity = application.PrimaryRaceEthnicity,
+                PrimaryRaceEthnicityText = application.PrimaryRaceEthnicityText,
+                Pronouns = application.Pronouns,
+                PronounsText = application.PronounsText,
+            };
+
+            return normalized.ToDynamicsEntity();
         }
 
         private static VSd_Application ToDynamicsEntity(this ApplicationDto application)

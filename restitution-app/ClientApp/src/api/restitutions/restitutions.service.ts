@@ -12,7 +12,11 @@ import { Injectable, inject } from '@angular/core';
 
 import { Observable } from 'rxjs';
 
-import type { CreateRestitutionCaseRequestDto } from '../../model';
+import type {
+  CreateOffenderRestitutionCaseRequestDto,
+  CreateVictimEntityRestitutionCaseRequestDto,
+  CreateVictimRestitutionCaseRequestDto
+} from '../../model';
 
 interface HttpClientOptions {
   readonly headers?: HttpHeaders | Record<string, string | string[]>;
@@ -35,37 +39,107 @@ interface HttpClientOptions {
 @Injectable({ providedIn: 'root' })
 export class RestitutionsService {
   private readonly http = inject(HttpClient);
-  postApiRestitutions<TData = void>(
-    createRestitutionCaseRequestDto: CreateRestitutionCaseRequestDto,
+  postApiRestitutionsVictim<TData = void>(
+    createVictimRestitutionCaseRequestDto: CreateVictimRestitutionCaseRequestDto,
     options?: HttpClientOptions & { observe?: 'body' }
   ): Observable<TData>;
-  postApiRestitutions<TData = void>(
-    createRestitutionCaseRequestDto: CreateRestitutionCaseRequestDto,
+  postApiRestitutionsVictim<TData = void>(
+    createVictimRestitutionCaseRequestDto: CreateVictimRestitutionCaseRequestDto,
     options?: HttpClientOptions & { observe: 'events' }
   ): Observable<HttpEvent<TData>>;
-  postApiRestitutions<TData = void>(
-    createRestitutionCaseRequestDto: CreateRestitutionCaseRequestDto,
+  postApiRestitutionsVictim<TData = void>(
+    createVictimRestitutionCaseRequestDto: CreateVictimRestitutionCaseRequestDto,
     options?: HttpClientOptions & { observe: 'response' }
   ): Observable<AngularHttpResponse<TData>>;
-  postApiRestitutions<TData = void>(
-    createRestitutionCaseRequestDto: CreateRestitutionCaseRequestDto,
+  postApiRestitutionsVictim<TData = void>(
+    createVictimRestitutionCaseRequestDto: CreateVictimRestitutionCaseRequestDto,
     options?: HttpClientOptions & { observe?: 'body' | 'events' | 'response' }
   ): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
     if (options?.observe === 'events') {
-      return this.http.post<TData>(`/api/Restitutions`, createRestitutionCaseRequestDto, {
+      return this.http.post<TData>(`/api/restitutions/victim`, createVictimRestitutionCaseRequestDto, {
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'events'
       });
     }
 
     if (options?.observe === 'response') {
-      return this.http.post<TData>(`/api/Restitutions`, createRestitutionCaseRequestDto, {
+      return this.http.post<TData>(`/api/restitutions/victim`, createVictimRestitutionCaseRequestDto, {
         ...(options as Omit<NonNullable<typeof options>, 'observe'>),
         observe: 'response'
       });
     }
 
-    return this.http.post<TData>(`/api/Restitutions`, createRestitutionCaseRequestDto, {
+    return this.http.post<TData>(`/api/restitutions/victim`, createVictimRestitutionCaseRequestDto, {
+      ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+      observe: 'body'
+    });
+  }
+  postApiRestitutionsVictimEntity<TData = void>(
+    createVictimEntityRestitutionCaseRequestDto: CreateVictimEntityRestitutionCaseRequestDto,
+    options?: HttpClientOptions & { observe?: 'body' }
+  ): Observable<TData>;
+  postApiRestitutionsVictimEntity<TData = void>(
+    createVictimEntityRestitutionCaseRequestDto: CreateVictimEntityRestitutionCaseRequestDto,
+    options?: HttpClientOptions & { observe: 'events' }
+  ): Observable<HttpEvent<TData>>;
+  postApiRestitutionsVictimEntity<TData = void>(
+    createVictimEntityRestitutionCaseRequestDto: CreateVictimEntityRestitutionCaseRequestDto,
+    options?: HttpClientOptions & { observe: 'response' }
+  ): Observable<AngularHttpResponse<TData>>;
+  postApiRestitutionsVictimEntity<TData = void>(
+    createVictimEntityRestitutionCaseRequestDto: CreateVictimEntityRestitutionCaseRequestDto,
+    options?: HttpClientOptions & { observe?: 'body' | 'events' | 'response' }
+  ): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.post<TData>(`/api/restitutions/victim-entity`, createVictimEntityRestitutionCaseRequestDto, {
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events'
+      });
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.post<TData>(`/api/restitutions/victim-entity`, createVictimEntityRestitutionCaseRequestDto, {
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response'
+      });
+    }
+
+    return this.http.post<TData>(`/api/restitutions/victim-entity`, createVictimEntityRestitutionCaseRequestDto, {
+      ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+      observe: 'body'
+    });
+  }
+  postApiRestitutionsOffender<TData = void>(
+    createOffenderRestitutionCaseRequestDto: CreateOffenderRestitutionCaseRequestDto,
+    options?: HttpClientOptions & { observe?: 'body' }
+  ): Observable<TData>;
+  postApiRestitutionsOffender<TData = void>(
+    createOffenderRestitutionCaseRequestDto: CreateOffenderRestitutionCaseRequestDto,
+    options?: HttpClientOptions & { observe: 'events' }
+  ): Observable<HttpEvent<TData>>;
+  postApiRestitutionsOffender<TData = void>(
+    createOffenderRestitutionCaseRequestDto: CreateOffenderRestitutionCaseRequestDto,
+    options?: HttpClientOptions & { observe: 'response' }
+  ): Observable<AngularHttpResponse<TData>>;
+  postApiRestitutionsOffender<TData = void>(
+    createOffenderRestitutionCaseRequestDto: CreateOffenderRestitutionCaseRequestDto,
+    options?: HttpClientOptions & { observe?: 'body' | 'events' | 'response' }
+  ): Observable<TData | HttpEvent<TData> | AngularHttpResponse<TData>> {
+    if (options?.observe === 'events') {
+      return this.http.post<TData>(`/api/restitutions/offender`, createOffenderRestitutionCaseRequestDto, {
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'events'
+      });
+    }
+
+    if (options?.observe === 'response') {
+      return this.http.post<TData>(`/api/restitutions/offender`, createOffenderRestitutionCaseRequestDto, {
+        ...(options as Omit<NonNullable<typeof options>, 'observe'>),
+        observe: 'response'
+      });
+    }
+
+    return this.http.post<TData>(`/api/restitutions/offender`, createOffenderRestitutionCaseRequestDto, {
       ...(options as Omit<NonNullable<typeof options>, 'observe'>),
       observe: 'body'
     });

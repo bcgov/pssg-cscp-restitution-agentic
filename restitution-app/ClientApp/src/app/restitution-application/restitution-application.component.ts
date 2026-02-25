@@ -16,7 +16,15 @@ import { MatStepper } from '@angular/material/stepper';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RestitutionsService } from '../../api/restitutions/restitutions.service';
 import { config } from '../../config';
-import { ApplicationDto, CreateRestitutionCaseRequestDto, ParticipantDto } from '../../model';
+import {
+  CreateOffenderRestitutionCaseRequestDto,
+  CreateVictimEntityRestitutionCaseRequestDto,
+  CreateVictimRestitutionCaseRequestDto,
+  OffenderApplicationDto,
+  ParticipantDto,
+  VictimApplicationDto,
+  VictimEntityApplicationDto
+} from '../../model';
 import { iLookupData } from '../interfaces/lookup-data.interface';
 import { iRestitutionApplication } from '../interfaces/restitution.interface';
 import { JusticeApplicationDataService } from '../services/justice-application-data.service';
@@ -27,6 +35,8 @@ import { ApplicationType, CRMBoolean, IOptionSetVal, MY_FORMATS, ResitutionForm 
 import { FormBase } from '../shared/form-base';
 import { RestitutionInfoHelper } from '../shared/restitution/restitution-information/restitution-information.helper';
 import { ServiceNotAvailableComponent } from '../shared/service-not-available.component';
+
+type RestitutionApplicationPayload = VictimApplicationDto | VictimEntityApplicationDto | OffenderApplicationDto;
 
 export enum RESTITUTION_PAGES {
   OVERVIEW,
@@ -236,7 +246,7 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
     // this.submitting = true;
 
     const restitutionData = this.getRestitutionCreateRequest();
-    this.restitutionsService.postApiRestitutions(restitutionData).subscribe({
+    this.submitRestitutionByType(restitutionData).subscribe({
       next: (res) => {
         this.state.data = { type: this.FORM_TYPE, form: this.form };
         this.router.navigate(['/restitution-success']);
@@ -250,7 +260,33 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
     });
   }
 
-  private getRestitutionCreateRequest(): CreateRestitutionCaseRequestDto {
+  private submitRestitutionByType(
+    createRequest:
+      | CreateVictimRestitutionCaseRequestDto
+      | CreateVictimEntityRestitutionCaseRequestDto
+      | CreateOffenderRestitutionCaseRequestDto
+  ) {
+    switch (this.FORM_TYPE.val) {
+      case ResitutionForm.VictimEntity.val:
+        return this.restitutionsService.postApiRestitutionsVictimEntity(
+          createRequest as CreateVictimEntityRestitutionCaseRequestDto
+        );
+      case ResitutionForm.Offender.val:
+        return this.restitutionsService.postApiRestitutionsOffender(
+          createRequest as CreateOffenderRestitutionCaseRequestDto
+        );
+      case ResitutionForm.Victim.val:
+      default:
+        return this.restitutionsService.postApiRestitutionsVictim(
+          createRequest as CreateVictimRestitutionCaseRequestDto
+        );
+    }
+  }
+
+  private getRestitutionCreateRequest():
+    | CreateVictimRestitutionCaseRequestDto
+    | CreateVictimEntityRestitutionCaseRequestDto
+    | CreateOffenderRestitutionCaseRequestDto {
     const formData = this.harvestForm();
     switch (formData.ApplicationType.val) {
       case ResitutionForm.VictimEntity.val:
@@ -263,47 +299,46 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
     }
   }
 
-  private getVictimRestitutionCreateRequest(formData: iRestitutionApplication): CreateRestitutionCaseRequestDto {
+  private getVictimRestitutionCreateRequest(formData: iRestitutionApplication): CreateVictimRestitutionCaseRequestDto {
     const restitutionInfo = formData.RestitutionInformation;
     const hasDesignate = restitutionInfo.authorizeDesignate && restitutionInfo.designate.length > 0;
 
-    const app: ApplicationDto = {
-      applicantType: ResitutionForm.Victim.val,
-      applicantsFirstName: restitutionInfo.firstName,
-      applicantsMiddleName: restitutionInfo.middleName,
-      applicantsLastName: restitutionInfo.lastName,
+    const app: VictimApplicationDto = {
+      firstName: restitutionInfo.firstName,
+      middleName: restitutionInfo.middleName,
+      lastName: restitutionInfo.lastName,
       otherFirstName: restitutionInfo.otherFirstName,
       otherLastName: restitutionInfo.otherLastName,
-      applicantsGenderCode: restitutionInfo.gender,
-      applicantsBirthDate: restitutionInfo.birthDate as any,
-      indigenous: restitutionInfo.indigenousStatus,
-      applicantsSignature: restitutionInfo.signature,
+      gender: restitutionInfo.gender,
+      birthDate: restitutionInfo.birthDate as any,
+      indigenousStatus: restitutionInfo.indigenousStatus,
+      signature: restitutionInfo.signature,
       primaryRaceEthnicity: restitutionInfo.primaryRaceEthnicity,
       primaryRaceEthnicityText: restitutionInfo.otherPrimaryRaceEthnicity,
       pronouns: restitutionInfo.pronouns,
       pronounsText: restitutionInfo.otherPronoun,
       genderIdentityText: restitutionInfo.otherGender,
-      applicantsPreferredMethodOfContact: restitutionInfo.contactInformation.preferredMethodOfContact,
+      preferredMethodOfContact: restitutionInfo.contactInformation.preferredMethodOfContact,
       smsPreferred: null,
-      applicantsPrimaryPhoneNumber: '',
-      applicantsAlternatePhoneNumber: '',
-      applicantsEmail: '',
-      applicantsPrimaryAddressLine1: restitutionInfo.contactInformation.mailingAddress.line1,
-      applicantsPrimaryAddressLine2: restitutionInfo.contactInformation.mailingAddress.line2,
-      applicantsPrimaryAddressLine3: restitutionInfo.contactInformation.attentionTo,
-      applicantsPrimaryCity: restitutionInfo.contactInformation.mailingAddress.city,
-      applicantsPrimaryProvince: restitutionInfo.contactInformation.mailingAddress.province,
-      applicantsPrimaryPostalCode: restitutionInfo.contactInformation.mailingAddress.postalCode,
-      applicantsPrimaryCountry: restitutionInfo.contactInformation.mailingAddress.country,
+      primaryPhoneNumber: '',
+      alternatePhoneNumber: '',
+      email: '',
+      primaryAddressLine1: restitutionInfo.contactInformation.mailingAddress.line1,
+      primaryAddressLine2: restitutionInfo.contactInformation.mailingAddress.line2,
+      primaryAddressLine3: restitutionInfo.contactInformation.attentionTo,
+      primaryCity: restitutionInfo.contactInformation.mailingAddress.city,
+      primaryProvince: restitutionInfo.contactInformation.mailingAddress.province,
+      primaryPostalCode: restitutionInfo.contactInformation.mailingAddress.postalCode,
+      primaryCountry: restitutionInfo.contactInformation.mailingAddress.country,
       voicemailOption: null,
       offenderCustodyLocation: ''
-    } as ApplicationDto;
+    } as VictimApplicationDto;
 
     if (!hasDesignate) {
       app.smsPreferred = restitutionInfo.contactInformation.smsPreferred;
-      app.applicantsPrimaryPhoneNumber = restitutionInfo.contactInformation.phoneNumber;
-      app.applicantsAlternatePhoneNumber = restitutionInfo.contactInformation.alternatePhoneNumber;
-      app.applicantsEmail = restitutionInfo.contactInformation.email;
+      app.primaryPhoneNumber = restitutionInfo.contactInformation.phoneNumber;
+      app.alternatePhoneNumber = restitutionInfo.contactInformation.alternatePhoneNumber;
+      app.email = restitutionInfo.contactInformation.email;
       app.voicemailOption = restitutionInfo.contactInformation.leaveVoicemail;
     }
 
@@ -404,7 +439,9 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
     };
   }
 
-  private getVictimEntityRestitutionCreateRequest(formData: iRestitutionApplication): CreateRestitutionCaseRequestDto {
+  private getVictimEntityRestitutionCreateRequest(
+    formData: iRestitutionApplication
+  ): CreateVictimEntityRestitutionCaseRequestDto {
     const restitutionInfo = formData.RestitutionInformation;
     const hasDesignate = restitutionInfo.authorizeDesignate && restitutionInfo.designate.length > 0;
 
@@ -412,38 +449,35 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
       restitutionInfo.contactInformation.entityContacts.find((contact) => contact?.isPrimaryContact === 100000000) ||
       restitutionInfo.contactInformation.entityContacts[0];
 
-    const app: ApplicationDto = {
-      applicantType: ResitutionForm.Victim.val,
-      applicantsFirstName: restitutionInfo.firstName,
-      applicantsMiddleName: restitutionInfo.middleName,
-      applicantsLastName: restitutionInfo.lastName,
+    const app: VictimEntityApplicationDto = {
+      entityName: restitutionInfo.lastName,
+      middleName: restitutionInfo.middleName,
       otherFirstName: restitutionInfo.otherFirstName,
       otherLastName: restitutionInfo.otherLastName,
-      applicantsGenderCode: restitutionInfo.gender,
-      applicantsBirthDate: restitutionInfo.birthDate as any,
-      indigenous: restitutionInfo.indigenousStatus,
-      applicantsSignature: restitutionInfo.signature,
+      gender: restitutionInfo.gender,
+      indigenousStatus: restitutionInfo.indigenousStatus,
+      signature: restitutionInfo.signature,
       primaryRaceEthnicity: restitutionInfo.primaryRaceEthnicity,
       primaryRaceEthnicityText: restitutionInfo.otherPrimaryRaceEthnicity,
       pronouns: restitutionInfo.pronouns,
       pronounsText: restitutionInfo.otherPronoun,
       genderIdentityText: restitutionInfo.otherGender,
       smsPreferred: 100000000,
-      applicantsPreferredMethodOfContact: primaryContact?.preferredMethodOfContact,
-      applicantsPrimaryPhoneNumber: primaryContact?.phoneNumber,
-      applicantsAlternatePhoneNumber: primaryContact?.alternatePhoneNumber,
-      applicantsEmail: primaryContact?.email,
-      applicantsPrimaryAddressLine1: restitutionInfo.contactInformation.mailingAddress.line1,
-      applicantsPrimaryAddressLine2: restitutionInfo.contactInformation.mailingAddress.line2,
-      applicantsPrimaryAddressLine3: '',
-      applicantsPrimaryCity: restitutionInfo.contactInformation.mailingAddress.city,
-      applicantsPrimaryProvince: restitutionInfo.contactInformation.mailingAddress.province,
-      applicantsPrimaryPostalCode: restitutionInfo.contactInformation.mailingAddress.postalCode,
-      applicantsPrimaryCountry: restitutionInfo.contactInformation.mailingAddress.country,
+      preferredMethodOfContact: primaryContact?.preferredMethodOfContact,
+      primaryPhoneNumber: primaryContact?.phoneNumber,
+      alternatePhoneNumber: primaryContact?.alternatePhoneNumber,
+      email: primaryContact?.email,
+      primaryAddressLine1: restitutionInfo.contactInformation.mailingAddress.line1,
+      primaryAddressLine2: restitutionInfo.contactInformation.mailingAddress.line2,
+      primaryAddressLine3: '',
+      primaryCity: restitutionInfo.contactInformation.mailingAddress.city,
+      primaryProvince: restitutionInfo.contactInformation.mailingAddress.province,
+      primaryPostalCode: restitutionInfo.contactInformation.mailingAddress.postalCode,
+      primaryCountry: restitutionInfo.contactInformation.mailingAddress.country,
       voicemailOption: null,
       contactTitle: '',
       offenderCustodyLocation: ''
-    } as ApplicationDto;
+    } as VictimEntityApplicationDto;
 
     this.applyDeclarationFields(app, restitutionInfo);
     this.applyOffenderNameFields(app, restitutionInfo);
@@ -561,47 +595,48 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
     };
   }
 
-  private getOffenderRestitutionCreateRequest(formData: iRestitutionApplication): CreateRestitutionCaseRequestDto {
+  private getOffenderRestitutionCreateRequest(
+    formData: iRestitutionApplication
+  ): CreateOffenderRestitutionCaseRequestDto {
     const restitutionInfo = formData.RestitutionInformation;
     const hasDesignate = restitutionInfo.authorizeDesignate && restitutionInfo.designate.length > 0;
 
-    const app: ApplicationDto = {
-      applicantType: ResitutionForm.Offender.val,
-      applicantsFirstName: restitutionInfo.firstName,
-      applicantsMiddleName: restitutionInfo.middleName,
-      applicantsLastName: restitutionInfo.lastName,
+    const app: OffenderApplicationDto = {
+      firstName: restitutionInfo.firstName,
+      middleName: restitutionInfo.middleName,
+      lastName: restitutionInfo.lastName,
       otherFirstName: restitutionInfo.otherFirstName,
       otherLastName: restitutionInfo.otherLastName,
-      applicantsGenderCode: restitutionInfo.gender,
-      applicantsBirthDate: restitutionInfo.birthDate as any,
-      indigenous: restitutionInfo.indigenousStatus,
-      applicantsSignature: restitutionInfo.signature,
+      gender: restitutionInfo.gender,
+      birthDate: restitutionInfo.birthDate as any,
+      indigenousStatus: restitutionInfo.indigenousStatus,
+      signature: restitutionInfo.signature,
       primaryRaceEthnicity: restitutionInfo.primaryRaceEthnicity,
       primaryRaceEthnicityText: restitutionInfo.otherPrimaryRaceEthnicity,
       pronouns: restitutionInfo.pronouns,
       pronounsText: restitutionInfo.otherPronoun,
       genderIdentityText: restitutionInfo.otherGender,
-      applicantsPreferredMethodOfContact: restitutionInfo.contactInformation.preferredMethodOfContact,
+      preferredMethodOfContact: restitutionInfo.contactInformation.preferredMethodOfContact,
       smsPreferred: null,
-      applicantsPrimaryPhoneNumber: '',
-      applicantsAlternatePhoneNumber: '',
-      applicantsEmail: '',
-      applicantsPrimaryAddressLine1: restitutionInfo.contactInformation.mailingAddress.line1,
-      applicantsPrimaryAddressLine2: restitutionInfo.contactInformation.mailingAddress.line2,
-      applicantsPrimaryAddressLine3: restitutionInfo.contactInformation.attentionTo,
-      applicantsPrimaryCity: restitutionInfo.contactInformation.mailingAddress.city,
-      applicantsPrimaryProvince: restitutionInfo.contactInformation.mailingAddress.province,
-      applicantsPrimaryPostalCode: restitutionInfo.contactInformation.mailingAddress.postalCode,
-      applicantsPrimaryCountry: restitutionInfo.contactInformation.mailingAddress.country,
+      primaryPhoneNumber: '',
+      alternatePhoneNumber: '',
+      email: '',
+      primaryAddressLine1: restitutionInfo.contactInformation.mailingAddress.line1,
+      primaryAddressLine2: restitutionInfo.contactInformation.mailingAddress.line2,
+      primaryAddressLine3: restitutionInfo.contactInformation.attentionTo,
+      primaryCity: restitutionInfo.contactInformation.mailingAddress.city,
+      primaryProvince: restitutionInfo.contactInformation.mailingAddress.province,
+      primaryPostalCode: restitutionInfo.contactInformation.mailingAddress.postalCode,
+      primaryCountry: restitutionInfo.contactInformation.mailingAddress.country,
       voicemailOption: null,
       offenderCustodyLocation: ''
-    } as ApplicationDto;
+    } as OffenderApplicationDto;
 
     if (!hasDesignate) {
       app.smsPreferred = restitutionInfo.contactInformation.smsPreferred;
-      app.applicantsPrimaryPhoneNumber = restitutionInfo.contactInformation.phoneNumber;
-      app.applicantsAlternatePhoneNumber = restitutionInfo.contactInformation.alternatePhoneNumber;
-      app.applicantsEmail = restitutionInfo.contactInformation.email;
+      app.primaryPhoneNumber = restitutionInfo.contactInformation.phoneNumber;
+      app.alternatePhoneNumber = restitutionInfo.contactInformation.alternatePhoneNumber;
+      app.email = restitutionInfo.contactInformation.email;
       app.voicemailOption = restitutionInfo.contactInformation.leaveVoicemail;
     }
 
@@ -676,7 +711,7 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
   }
 
   private applyDeclarationFields(
-    app: ApplicationDto,
+    app: RestitutionApplicationPayload,
     restitutionInfo: iRestitutionApplication['RestitutionInformation']
   ): void {
     if (restitutionInfo.signatureName) {
@@ -693,7 +728,7 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
   }
 
   private applyOffenderNameFields(
-    app: ApplicationDto,
+    app: RestitutionApplicationPayload,
     restitutionInfo: iRestitutionApplication['RestitutionInformation']
   ): void {
     restitutionInfo.courtFiles.forEach((file) => {

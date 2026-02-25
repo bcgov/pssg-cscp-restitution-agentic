@@ -6,46 +6,41 @@
  * OpenAPI spec version: v1
  */
 
-export interface ApplicationDto {
-  applicantType?: number;
-  /** @minLength 1 */
-  applicantsFirstName: string;
+export interface OffenderApplicationDto {
   /** @nullable */
-  applicantsMiddleName?: string | null;
-  /** @minLength 1 */
-  applicantsLastName: string;
+  middleName?: string | null;
   /** @nullable */
   otherFirstName?: string | null;
   /** @nullable */
   otherLastName?: string | null;
   /** @nullable */
-  applicantsGenderCode?: number | null;
-  applicantsBirthDate: string;
+  gender?: number | null;
   /** @nullable */
-  indigenous?: number | null;
-  applicantsPreferredMethodOfContact: number;
+  indigenousStatus?: number | null;
+  /** @nullable */
+  preferredMethodOfContact?: number | null;
   /** @nullable */
   smsPreferred?: number | null;
   /** @nullable */
-  applicantsPrimaryPhoneNumber?: string | null;
+  primaryPhoneNumber?: string | null;
   /** @nullable */
-  applicantsAlternatePhoneNumber?: string | null;
+  alternatePhoneNumber?: string | null;
   /** @nullable */
-  applicantsEmail?: string | null;
+  email?: string | null;
   /** @minLength 1 */
-  applicantsPrimaryAddressLine1: string;
+  primaryAddressLine1: string;
   /** @nullable */
-  applicantsPrimaryAddressLine2?: string | null;
+  primaryAddressLine2?: string | null;
   /** @nullable */
-  applicantsPrimaryAddressLine3?: string | null;
+  primaryAddressLine3?: string | null;
   /** @minLength 1 */
-  applicantsPrimaryCity: string;
+  primaryCity: string;
   /** @minLength 1 */
-  applicantsPrimaryProvince: string;
+  primaryProvince: string;
   /** @minLength 1 */
-  applicantsPrimaryPostalCode: string;
+  primaryPostalCode: string;
   /** @minLength 1 */
-  applicantsPrimaryCountry: string;
+  primaryCountry: string;
   /** @nullable */
   offenderFirstName?: string | null;
   /** @nullable */
@@ -55,7 +50,7 @@ export interface ApplicationDto {
   /** @nullable */
   voicemailOption?: number | null;
   /** @minLength 1 */
-  applicantsSignature: string;
+  signature: string;
   /** @nullable */
   declarationFullName?: string | null;
   /** @nullable */
@@ -76,4 +71,9 @@ export interface ApplicationDto {
   pronouns?: number | null;
   /** @nullable */
   pronounsText?: string | null;
+  /** @minLength 1 */
+  firstName: string;
+  /** @minLength 1 */
+  lastName: string;
+  birthDate: string;
 }

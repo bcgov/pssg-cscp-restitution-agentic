@@ -5,17 +5,17 @@
  * API for the Restitution Application
  * OpenAPI spec version: v1
  */
-import type { ApplicationDto } from './applicationDto';
 import type { CourtInfoDto } from './courtInfoDto';
 import type { DocumentDto } from './documentDto';
+import type { OffenderApplicationDto } from './offenderApplicationDto';
 import type { ParticipantDto } from './participantDto';
 
-export interface CreateRestitutionCaseRequestDto {
-  application?: ApplicationDto;
+export interface CreateOffenderRestitutionCaseRequestDto {
   /** @nullable */
   courtInfoCollection?: CourtInfoDto[] | null;
   /** @nullable */
   providerCollection?: ParticipantDto[] | null;
   /** @nullable */
   documentCollection?: DocumentDto[] | null;
+  application?: OffenderApplicationDto;
 }

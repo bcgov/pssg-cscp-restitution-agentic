@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using DataverseModel;
 using Gov.Cscp.VictimServices.Public.Models;
 using Gov.Cscp.VictimServices.Public.Models.Extensions;
 using Microsoft.AspNetCore.Mvc;
@@ -7,7 +8,7 @@ using Serilog;
 
 namespace Gov.Cscp.VictimServices.Public.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/restitutions")]
     public class RestitutionsController : Controller
     {
         private readonly IOrganizationServiceAsync _organizationService;
@@ -19,9 +20,33 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
             _logger = Log.Logger;
         }
 
-        [HttpPost]
-        public async Task<IActionResult> SubmitRestitution(
-            [FromBody] CreateRestitutionCaseRequestDto model
+        [HttpPost("victim")]
+        public async Task<IActionResult> SubmitVictimRestitution(
+            [FromBody] CreateVictimRestitutionCaseRequestDto model
+        )
+        {
+            return await SubmitRestitutionInternal(model, x => x.ConvertToDynamicsRequest());
+        }
+
+        [HttpPost("victim-entity")]
+        public async Task<IActionResult> SubmitVictimEntityRestitution(
+            [FromBody] CreateVictimEntityRestitutionCaseRequestDto model
+        )
+        {
+            return await SubmitRestitutionInternal(model, x => x.ConvertToDynamicsRequest());
+        }
+
+        [HttpPost("offender")]
+        public async Task<IActionResult> SubmitOffenderRestitution(
+            [FromBody] CreateOffenderRestitutionCaseRequestDto model
+        )
+        {
+            return await SubmitRestitutionInternal(model, x => x.ConvertToDynamicsRequest());
+        }
+
+        private async Task<IActionResult> SubmitRestitutionInternal<TModel>(
+            TModel model,
+            System.Func<TModel, VSd_CreateRestitutionCaseRequest> dynamicsRequestFactory
         )
         {
             try
@@ -34,7 +59,7 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
                     return BadRequest(ModelState);
                 }
 
-                var request = model.ConvertToDynamicsRequest();
+                var request = dynamicsRequestFactory(model);
                 var response = await _organizationService.ExecuteAsync(request);
 
                 if (response.Results["IsSuccess"] is not true)
