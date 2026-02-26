@@ -6,5 +6,6 @@ export interface Configuration {
 }
 
 export interface FeatureFlagConfiguration {
+  [key: string]: boolean;
   useUpdatedComplianceFields: boolean;
 }
