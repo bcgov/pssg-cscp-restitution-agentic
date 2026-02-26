@@ -19,7 +19,10 @@ export class AppComponent implements OnInit {
   public isDevMode: boolean;
   private readonly configurationStore = inject(ConfigurationStore);
 
-  constructor(private renderer: Renderer2, private router: Router) {
+  constructor(
+    private renderer: Renderer2,
+    private router: Router
+  ) {
     this.isDevMode = isDevMode();
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {

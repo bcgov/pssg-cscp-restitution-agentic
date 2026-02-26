@@ -22,8 +22,7 @@ export class ConfigurationLoaderService {
       const configuration = await firstValueFrom(this.configurationService.getApiConfiguration<Configuration>());
       this.configurationStore.setConfiguration(configuration);
     } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : 'Failed to fetch configuration.';
+      const errorMessage = error instanceof Error ? error.message : 'Failed to fetch configuration.';
       this.configurationStore.setError(errorMessage);
     }
   }
