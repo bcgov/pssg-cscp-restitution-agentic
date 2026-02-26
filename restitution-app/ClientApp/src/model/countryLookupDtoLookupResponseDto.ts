@@ -5,12 +5,9 @@
  * API for the Restitution Application
  * OpenAPI spec version: v1
  */
+import type { CountryLookupDto } from './countryLookupDto';
 
-export interface DocumentDto {
+export interface CountryLookupDtoLookupResponseDto {
   /** @nullable */
-  filename?: string | null;
-  /** @nullable */
-  body?: string | null;
-  /** @nullable */
-  subject?: string | null;
+  value?: CountryLookupDto[] | null;
 }

@@ -5,12 +5,9 @@
  * API for the Restitution Application
  * OpenAPI spec version: v1
  */
+import type { RelationshipLookupDto } from './relationshipLookupDto';
 
-export interface DocumentDto {
+export interface RelationshipLookupDtoLookupResponseDto {
   /** @nullable */
-  filename?: string | null;
-  /** @nullable */
-  body?: string | null;
-  /** @nullable */
-  subject?: string | null;
+  value?: RelationshipLookupDto[] | null;
 }

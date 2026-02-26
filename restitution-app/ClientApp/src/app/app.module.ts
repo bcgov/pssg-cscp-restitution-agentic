@@ -52,7 +52,6 @@ import { NotFoundComponent } from './not-found/not-found.component';
 import { PhonePipe } from './pipes/phone.pipe';
 import { QuickExitComponent } from './quick-exit/quick-exit.component';
 import { RestitutionApplicationComponent } from './restitution-application/restitution-application.component';
-import { LookupService } from './services/lookup.service';
 import { StateService } from './services/state.service';
 import { CancelApplicationDialog } from './shared/cancel-dialog/cancel-dialog.component';
 import { DateFieldComponent } from './shared/date-field/date-field.component';
@@ -199,7 +198,6 @@ import { SignPadDialog } from './sign-dialog/sign-dialog.component';
   ],
   providers: [
     provideNgxMask(),
-    LookupService,
     StateService,
     Title,
     provideHttpClient(withInterceptors([LoadingInterceptor]), withInterceptorsFromDi())

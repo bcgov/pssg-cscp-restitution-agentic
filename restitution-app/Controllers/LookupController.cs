@@ -1,44 +1,62 @@
 ﻿using System;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using System.Linq;
 using System.Threading.Tasks;
+using DataverseModel;
 using Gov.Cscp.VictimServices.Public.Models;
-using Gov.Cscp.VictimServices.Public.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.PowerPlatform.Dataverse.Client;
+using Microsoft.Xrm.Sdk.Query;
 using Serilog;
 
 namespace Gov.Cscp.VictimServices.Public.Controllers
 {
-    [Route("api/[controller]")]
-    public class LookupController : Controller
+    [Route("api/lookups")]
+    public class LookupsController : Controller
     {
-        private readonly IDynamicsResultService _dynamicsResultService;
+        private readonly IOrganizationServiceAsync _organizationService;
         private readonly ILogger _logger;
 
-        public LookupController(IDynamicsResultService dynamicsResultService)
+        public LookupsController(IOrganizationServiceAsync organizationService)
         {
-            this._dynamicsResultService = dynamicsResultService;
+            _organizationService = organizationService;
             _logger = Log.Logger;
         }
 
         [HttpGet("countries")]
-        public async Task<IActionResult> GetCountries()
+        [ProducesResponseType(typeof(LookupResponseDto<CountryLookupDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<LookupResponseDto<CountryLookupDto>>> GetCountries()
         {
             try
             {
-                // set the endpoint action
-                string endpointUrl = "vsd_countries?$select=vsd_name&$filter=statecode eq 0";
+                var query = new QueryExpression("vsd_country")
+                {
+                    ColumnSet = new ColumnSet("vsd_countryid", "vsd_name"),
+                };
 
-                // get the response
-                DynamicsResult result = await _dynamicsResultService.Get(endpointUrl);
+                query.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0);
+                query.Orders.Add(new OrderExpression("vsd_name", OrderType.Ascending));
 
-                return StatusCode((int)result.statusCode, result.result.ToString());
+                var result = await _organizationService.RetrieveMultipleAsync(query);
+
+                var response = new LookupResponseDto<CountryLookupDto>
+                {
+                    Value = result
+                        .Entities.Select(entity => new CountryLookupDto
+                        {
+                            vsd_countryid = entity.Id.ToString(),
+                            vsd_name = entity.GetAttributeValue<string>("vsd_name"),
+                        })
+                        .ToList(),
+                };
+
+                return Ok(response);
             }
             catch (Exception e)
             {
                 _logger.Error(
                     e,
-                    "Unexpected error while looking up countries in COAST. Source = Restitution"
+                    "Unexpected error while looking up countries in Dataverse. Source = Restitution"
                 );
                 return BadRequest();
             }
@@ -46,24 +64,57 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         }
 
         [HttpGet("provinces")]
-        public async Task<IActionResult> GetProvinces()
+        [ProducesResponseType(
+            typeof(LookupResponseDto<ProvinceLookupDto>),
+            StatusCodes.Status200OK
+        )]
+        public async Task<ActionResult<LookupResponseDto<ProvinceLookupDto>>> GetProvinces()
         {
             try
             {
-                // set the endpoint action
-                string endpointUrl =
-                    "vsd_provinces?$select=vsd_code,_vsd_countryid_value,vsd_name&$filter=statecode eq 0";
+                var query = new QueryExpression("vsd_province")
+                {
+                    ColumnSet = new ColumnSet(
+                        "vsd_provinceid",
+                        "vsd_code",
+                        "vsd_countryid",
+                        "vsd_name"
+                    ),
+                };
 
-                // get the response
-                DynamicsResult result = await _dynamicsResultService.Get(endpointUrl);
+                query.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0);
+                query.Orders.Add(new OrderExpression("vsd_name", OrderType.Ascending));
 
-                return StatusCode((int)result.statusCode, result.result.ToString());
+                var result = await _organizationService.RetrieveMultipleAsync(query);
+
+                var response = new LookupResponseDto<ProvinceLookupDto>
+                {
+                    Value = result
+                        .Entities.Select(entity =>
+                        {
+                            var countryReference =
+                                entity.GetAttributeValue<Microsoft.Xrm.Sdk.EntityReference>(
+                                    "vsd_countryid"
+                                );
+
+                            return new ProvinceLookupDto
+                            {
+                                vsd_provinceid = entity.Id.ToString(),
+                                vsd_code = entity.GetAttributeValue<string>("vsd_code"),
+                                _vsd_countryid_value = countryReference?.Id.ToString(),
+                                vsd_name = entity.GetAttributeValue<string>("vsd_name"),
+                            };
+                        })
+                        .ToList(),
+                };
+
+                return Ok(response);
             }
             catch (Exception e)
             {
                 _logger.Error(
                     e,
-                    "Unexpected error while looking up provinces in COAST. Source = Restitution"
+                    "Unexpected error while looking up provinces in Dataverse. Source = Restitution"
                 );
                 return BadRequest();
             }
@@ -71,23 +122,58 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         }
 
         [HttpGet("cities")]
-        public async Task<IActionResult> GetCities()
+        [ProducesResponseType(typeof(LookupResponseDto<CityLookupDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<LookupResponseDto<CityLookupDto>>> GetCities()
         {
             try
             {
-                // set the endpoint action
-                string endpointUrl =
-                    "vsd_cities?$select=_vsd_countryid_value,vsd_name,_vsd_stateid_value&$filter=statecode eq 0";
+                var query = new QueryExpression("vsd_city")
+                {
+                    ColumnSet = new ColumnSet(
+                        "vsd_cityid",
+                        "vsd_countryid",
+                        "vsd_stateid",
+                        "vsd_name"
+                    ),
+                };
 
-                // get the response
-                DynamicsResult result = await _dynamicsResultService.Get(endpointUrl);
-                return StatusCode((int)result.statusCode, result.result.ToString());
+                query.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0);
+                query.Orders.Add(new OrderExpression("vsd_name", OrderType.Ascending));
+
+                var result = await _organizationService.RetrieveMultipleAsync(query);
+
+                var response = new LookupResponseDto<CityLookupDto>
+                {
+                    Value = result
+                        .Entities.Select(entity =>
+                        {
+                            var countryReference =
+                                entity.GetAttributeValue<Microsoft.Xrm.Sdk.EntityReference>(
+                                    "vsd_countryid"
+                                );
+                            var provinceReference =
+                                entity.GetAttributeValue<Microsoft.Xrm.Sdk.EntityReference>(
+                                    "vsd_stateid"
+                                );
+
+                            return new CityLookupDto
+                            {
+                                vsd_cityid = entity.Id.ToString(),
+                                _vsd_countryid_value = countryReference?.Id.ToString(),
+                                vsd_name = entity.GetAttributeValue<string>("vsd_name"),
+                                _vsd_stateid_value = provinceReference?.Id.ToString(),
+                            };
+                        })
+                        .ToList(),
+                };
+
+                return Ok(response);
             }
             catch (Exception e)
             {
                 _logger.Error(
                     e,
-                    "Unexpected error while looking up cities in COAST. Source = Restitution"
+                    "Unexpected error while looking up cities in Dataverse. Source = Restitution"
                 );
                 return BadRequest();
             }
@@ -95,7 +181,8 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         }
 
         [HttpGet("cities/search")]
-        public async Task<IActionResult> SearchCities(
+        [ProducesResponseType(typeof(CitySearchResponseDto), StatusCodes.Status200OK)]
+        public async Task<ActionResult<CitySearchResponseDto>> SearchCities(
             string country,
             string province,
             string searchVal,
@@ -104,30 +191,87 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         {
             try
             {
-                var searchParameters = new CitySearchParameters()
+                var query = new QueryExpression("vsd_city")
                 {
-                    Country = country,
-                    Province = province,
-                    City = searchVal,
-                    TopCount = limit,
+                    ColumnSet = new ColumnSet(
+                        "vsd_cityid",
+                        "vsd_countryid",
+                        "vsd_stateid",
+                        "vsd_name"
+                    ),
+                    TopCount = limit > 0 ? limit : 15,
                 };
 
-                string endpointUrl = "vsd_GetCities";
+                query.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0);
 
-                JsonSerializerOptions options = new JsonSerializerOptions
+                if (
+                    !string.IsNullOrWhiteSpace(country)
+                    && Guid.TryParse(country, out Guid countryId)
+                )
                 {
-                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                };
-                string requestJson = JsonSerializer.Serialize(searchParameters, options);
+                    query.Criteria.AddCondition(
+                        "vsd_countryid",
+                        ConditionOperator.Equal,
+                        countryId
+                    );
+                }
 
-                DynamicsResult result = await _dynamicsResultService.Post(endpointUrl, requestJson);
-                return StatusCode((int)result.statusCode, result.result.ToString());
+                if (
+                    !string.IsNullOrWhiteSpace(province)
+                    && Guid.TryParse(province, out Guid provinceId)
+                )
+                {
+                    query.Criteria.AddCondition("vsd_stateid", ConditionOperator.Equal, provinceId);
+                }
+
+                if (!string.IsNullOrWhiteSpace(searchVal))
+                {
+                    query.Criteria.AddCondition(
+                        "vsd_name",
+                        ConditionOperator.Like,
+                        $"%{searchVal.Trim()}%"
+                    );
+                }
+
+                query.Orders.Add(new OrderExpression("vsd_name", OrderType.Ascending));
+
+                var result = await _organizationService.RetrieveMultipleAsync(query);
+
+                var response = new CitySearchResponseDto
+                {
+                    Result = "success",
+                    CityCollection = result
+                        .Entities.Select(entity =>
+                        {
+                            var countryReference =
+                                entity.GetAttributeValue<Microsoft.Xrm.Sdk.EntityReference>(
+                                    "vsd_countryid"
+                                );
+                            var provinceReference =
+                                entity.GetAttributeValue<Microsoft.Xrm.Sdk.EntityReference>(
+                                    "vsd_stateid"
+                                );
+
+                            return new CityLookupDto
+                            {
+                                vsd_cityid = entity.Id.ToString(),
+                                _vsd_countryid_value = countryReference?.Id.ToString(),
+                                vsd_name = entity.GetAttributeValue<string>("vsd_name"),
+                                _vsd_stateid_value = provinceReference?.Id.ToString(),
+                            };
+                        })
+                        .ToList(),
+                    CountryCollection = Array.Empty<CountryLookupDto>(),
+                    ProvinceCollection = Array.Empty<ProvinceLookupDto>(),
+                };
+
+                return Ok(response);
             }
             catch (Exception e)
             {
                 _logger.Error(
                     e,
-                    "Unexpected error while searching cities in COAST. Source = Restitution"
+                    "Unexpected error while searching cities in Dataverse. Source = Restitution"
                 );
                 return BadRequest();
             }
@@ -135,24 +279,66 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         }
 
         [HttpGet("country/{country}/cities")]
-        public async Task<IActionResult> GetCitiesByCountry(string country)
+        [ProducesResponseType(typeof(LookupResponseDto<CityLookupDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<LookupResponseDto<CityLookupDto>>> GetCitiesByCountry(
+            string country
+        )
         {
             try
             {
-                string requestJson = "{\"Country\":\"" + country + "\"}";
-                // set the endpoint action
-                string endpointUrl =
-                    $"vsd_cities?$select=_vsd_countryid_value,vsd_name,_vsd_stateid_value&$filter=statecode eq 0 and _vsd_countryid_value eq {country}";
+                if (!Guid.TryParse(country, out Guid countryId))
+                {
+                    return BadRequest();
+                }
 
-                // get the response
-                DynamicsResult result = await _dynamicsResultService.Get(endpointUrl);
-                return StatusCode((int)result.statusCode, result.result.ToString());
+                var query = new QueryExpression("vsd_city")
+                {
+                    ColumnSet = new ColumnSet(
+                        "vsd_cityid",
+                        "vsd_countryid",
+                        "vsd_stateid",
+                        "vsd_name"
+                    ),
+                };
+
+                query.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0);
+                query.Criteria.AddCondition("vsd_countryid", ConditionOperator.Equal, countryId);
+                query.Orders.Add(new OrderExpression("vsd_name", OrderType.Ascending));
+
+                var result = await _organizationService.RetrieveMultipleAsync(query);
+
+                var response = new LookupResponseDto<CityLookupDto>
+                {
+                    Value = result
+                        .Entities.Select(entity =>
+                        {
+                            var countryReference =
+                                entity.GetAttributeValue<Microsoft.Xrm.Sdk.EntityReference>(
+                                    "vsd_countryid"
+                                );
+                            var provinceReference =
+                                entity.GetAttributeValue<Microsoft.Xrm.Sdk.EntityReference>(
+                                    "vsd_stateid"
+                                );
+
+                            return new CityLookupDto
+                            {
+                                vsd_cityid = entity.Id.ToString(),
+                                _vsd_countryid_value = countryReference?.Id.ToString(),
+                                vsd_name = entity.GetAttributeValue<string>("vsd_name"),
+                                _vsd_stateid_value = provinceReference?.Id.ToString(),
+                            };
+                        })
+                        .ToList(),
+                };
+
+                return Ok(response);
             }
             catch (Exception e)
             {
                 _logger.Error(
                     e,
-                    "Unexpected error while looking up citites by country in COAST. Source = Restitution"
+                    "Unexpected error while looking up cities by country in Dataverse. Source = Restitution"
                 );
                 return BadRequest();
             }
@@ -160,23 +346,81 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         }
 
         [HttpGet("country/{countryId}/province/{provinceId}/cities")]
-        public async Task<IActionResult> GetCitiesByProvince(string countryId, string provinceId)
+        [ProducesResponseType(typeof(LookupResponseDto<CityLookupDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<LookupResponseDto<CityLookupDto>>> GetCitiesByProvince(
+            string countryId,
+            string provinceId
+        )
         {
             try
             {
-                // set the endpoint action
-                string endpointUrl =
-                    $"vsd_cities?$select=_vsd_countryid_value,vsd_name,_vsd_stateid_value&$filter=statecode eq 0 and _vsd_countryid_value eq {countryId} and _vsd_stateid_value eq {provinceId}";
+                if (!Guid.TryParse(countryId, out Guid parsedCountryId))
+                {
+                    return BadRequest();
+                }
 
-                // get the response
-                DynamicsResult result = await _dynamicsResultService.Get(endpointUrl);
-                return StatusCode((int)result.statusCode, result.result.ToString());
+                if (!Guid.TryParse(provinceId, out Guid parsedProvinceId))
+                {
+                    return BadRequest();
+                }
+
+                var query = new QueryExpression("vsd_city")
+                {
+                    ColumnSet = new ColumnSet(
+                        "vsd_cityid",
+                        "vsd_countryid",
+                        "vsd_stateid",
+                        "vsd_name"
+                    ),
+                };
+
+                query.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0);
+                query.Criteria.AddCondition(
+                    "vsd_countryid",
+                    ConditionOperator.Equal,
+                    parsedCountryId
+                );
+                query.Criteria.AddCondition(
+                    "vsd_stateid",
+                    ConditionOperator.Equal,
+                    parsedProvinceId
+                );
+                query.Orders.Add(new OrderExpression("vsd_name", OrderType.Ascending));
+
+                var result = await _organizationService.RetrieveMultipleAsync(query);
+
+                var response = new LookupResponseDto<CityLookupDto>
+                {
+                    Value = result
+                        .Entities.Select(entity =>
+                        {
+                            var countryReference =
+                                entity.GetAttributeValue<Microsoft.Xrm.Sdk.EntityReference>(
+                                    "vsd_countryid"
+                                );
+                            var provinceReference =
+                                entity.GetAttributeValue<Microsoft.Xrm.Sdk.EntityReference>(
+                                    "vsd_stateid"
+                                );
+
+                            return new CityLookupDto
+                            {
+                                vsd_cityid = entity.Id.ToString(),
+                                _vsd_countryid_value = countryReference?.Id.ToString(),
+                                vsd_name = entity.GetAttributeValue<string>("vsd_name"),
+                                _vsd_stateid_value = provinceReference?.Id.ToString(),
+                            };
+                        })
+                        .ToList(),
+                };
+
+                return Ok(response);
             }
             catch (Exception e)
             {
                 _logger.Error(
                     e,
-                    "Unexpected error while looking up cities by province in COAST. Source = Restitution"
+                    "Unexpected error while looking up cities by province in Dataverse. Source = Restitution"
                 );
                 return BadRequest();
             }
@@ -184,22 +428,42 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         }
 
         [HttpGet("relationships")]
-        public async Task<IActionResult> GetRelationships()
+        [ProducesResponseType(
+            typeof(LookupResponseDto<RelationshipLookupDto>),
+            StatusCodes.Status200OK
+        )]
+        public async Task<ActionResult<LookupResponseDto<RelationshipLookupDto>>> GetRelationships()
         {
             try
             {
-                // set the endpoint action
-                string endpointUrl = "vsd_relationships?$select=vsd_name&$filter=statecode eq 0";
+                var query = new QueryExpression("vsd_relationship")
+                {
+                    ColumnSet = new ColumnSet("vsd_relationshipid", "vsd_name"),
+                };
 
-                // get the response
-                DynamicsResult result = await _dynamicsResultService.Get(endpointUrl);
-                return StatusCode((int)result.statusCode, result.result.ToString());
+                query.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0);
+                query.Orders.Add(new OrderExpression("vsd_name", OrderType.Ascending));
+
+                var result = await _organizationService.RetrieveMultipleAsync(query);
+
+                var response = new LookupResponseDto<RelationshipLookupDto>
+                {
+                    Value = result
+                        .Entities.Select(entity => new RelationshipLookupDto
+                        {
+                            vsd_relationshipid = entity.Id.ToString(),
+                            vsd_name = entity.GetAttributeValue<string>("vsd_name"),
+                        })
+                        .ToList(),
+                };
+
+                return Ok(response);
             }
             catch (Exception e)
             {
                 _logger.Error(
                     e,
-                    "Unexpected error while looking up relationships in COAST. Source = Restitution"
+                    "Unexpected error while looking up relationships in Dataverse. Source = Restitution"
                 );
                 return BadRequest();
             }
@@ -207,23 +471,49 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         }
 
         [HttpGet("auth_relationships")]
-        public async Task<IActionResult> GetOptionalAuthorizationRelationships()
+        [ProducesResponseType(
+            typeof(LookupResponseDto<RelationshipLookupDto>),
+            StatusCodes.Status200OK
+        )]
+        public async Task<
+            ActionResult<LookupResponseDto<RelationshipLookupDto>>
+        > GetOptionalAuthorizationRelationships()
         {
             try
             {
-                // set the endpoint action
-                string endpointUrl =
-                    "vsd_relationships?$select=vsd_name&$filter=statecode eq 0 and vsd_optionalauthorizedrelationship eq true";
+                var query = new QueryExpression("vsd_relationship")
+                {
+                    ColumnSet = new ColumnSet("vsd_relationshipid", "vsd_name"),
+                };
 
-                // get the response
-                DynamicsResult result = await _dynamicsResultService.Get(endpointUrl);
-                return StatusCode((int)result.statusCode, result.result.ToString());
+                query.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0);
+                query.Criteria.AddCondition(
+                    "vsd_optionalauthorizedrelationship",
+                    ConditionOperator.Equal,
+                    true
+                );
+                query.Orders.Add(new OrderExpression("vsd_name", OrderType.Ascending));
+
+                var result = await _organizationService.RetrieveMultipleAsync(query);
+
+                var response = new LookupResponseDto<RelationshipLookupDto>
+                {
+                    Value = result
+                        .Entities.Select(entity => new RelationshipLookupDto
+                        {
+                            vsd_relationshipid = entity.Id.ToString(),
+                            vsd_name = entity.GetAttributeValue<string>("vsd_name"),
+                        })
+                        .ToList(),
+                };
+
+                return Ok(response);
             }
             catch (Exception e)
             {
                 _logger.Error(
                     e,
-                    "Unexpected error while looking up optional auth relationships in COAST. Source = Restitution"
+                    "Unexpected error while looking up optional auth relationships in Dataverse. Source = Restitution"
                 );
                 return BadRequest();
             }
@@ -231,23 +521,49 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         }
 
         [HttpGet("representative_relationships")]
-        public async Task<IActionResult> GetRepresentativeRelationships()
+        [ProducesResponseType(
+            typeof(LookupResponseDto<RelationshipLookupDto>),
+            StatusCodes.Status200OK
+        )]
+        public async Task<
+            ActionResult<LookupResponseDto<RelationshipLookupDto>>
+        > GetRepresentativeRelationships()
         {
             try
             {
-                // set the endpoint action
-                string endpointUrl =
-                    "vsd_relationships?$select=vsd_name&$filter=statecode eq 0 and vsd_cvap_representativerelationship eq true";
+                var query = new QueryExpression("vsd_relationship")
+                {
+                    ColumnSet = new ColumnSet("vsd_relationshipid", "vsd_name"),
+                };
 
-                // get the response
-                DynamicsResult result = await _dynamicsResultService.Get(endpointUrl);
-                return StatusCode((int)result.statusCode, result.result.ToString());
+                query.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0);
+                query.Criteria.AddCondition(
+                    "vsd_cvap_representativerelationship",
+                    ConditionOperator.Equal,
+                    true
+                );
+                query.Orders.Add(new OrderExpression("vsd_name", OrderType.Ascending));
+
+                var result = await _organizationService.RetrieveMultipleAsync(query);
+
+                var response = new LookupResponseDto<RelationshipLookupDto>
+                {
+                    Value = result
+                        .Entities.Select(entity => new RelationshipLookupDto
+                        {
+                            vsd_relationshipid = entity.Id.ToString(),
+                            vsd_name = entity.GetAttributeValue<string>("vsd_name"),
+                        })
+                        .ToList(),
+                };
+
+                return Ok(response);
             }
             catch (Exception e)
             {
                 _logger.Error(
                     e,
-                    "Unexpected error while looking up representative relationships in COAST. Source = Restitution"
+                    "Unexpected error while looking up representative relationships in Dataverse. Source = Restitution"
                 );
                 return BadRequest();
             }
@@ -255,23 +571,49 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         }
 
         [HttpGet("restitution_relationships")]
-        public async Task<IActionResult> GetRestitutionRelationships()
+        [ProducesResponseType(
+            typeof(LookupResponseDto<RelationshipLookupDto>),
+            StatusCodes.Status200OK
+        )]
+        public async Task<
+            ActionResult<LookupResponseDto<RelationshipLookupDto>>
+        > GetRestitutionRelationships()
         {
             try
             {
-                // set the endpoint action
-                string endpointUrl =
-                    "vsd_relationships?$select=vsd_name&$filter=statecode eq 0 and vsd_rest_offenderrelationship eq true";
+                var query = new QueryExpression("vsd_relationship")
+                {
+                    ColumnSet = new ColumnSet("vsd_relationshipid", "vsd_name"),
+                };
 
-                // get the response
-                DynamicsResult result = await _dynamicsResultService.Get(endpointUrl);
-                return StatusCode((int)result.statusCode, result.result.ToString());
+                query.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0);
+                query.Criteria.AddCondition(
+                    "vsd_rest_offenderrelationship",
+                    ConditionOperator.Equal,
+                    true
+                );
+                query.Orders.Add(new OrderExpression("vsd_name", OrderType.Ascending));
+
+                var result = await _organizationService.RetrieveMultipleAsync(query);
+
+                var response = new LookupResponseDto<RelationshipLookupDto>
+                {
+                    Value = result
+                        .Entities.Select(entity => new RelationshipLookupDto
+                        {
+                            vsd_relationshipid = entity.Id.ToString(),
+                            vsd_name = entity.GetAttributeValue<string>("vsd_name"),
+                        })
+                        .ToList(),
+                };
+
+                return Ok(response);
             }
             catch (Exception e)
             {
                 _logger.Error(
                     e,
-                    "Unexpected error while looking up representative relationships in COAST. Source = Restitution"
+                    "Unexpected error while looking up restitution relationships in Dataverse. Source = Restitution"
                 );
                 return BadRequest();
             }
@@ -279,23 +621,44 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         }
 
         [HttpGet("police_detachments")]
-        public async Task<IActionResult> GetPoliceDetachments()
+        [ProducesResponseType(
+            typeof(LookupResponseDto<PoliceDetachmentLookupDto>),
+            StatusCodes.Status200OK
+        )]
+        public async Task<
+            ActionResult<LookupResponseDto<PoliceDetachmentLookupDto>>
+        > GetPoliceDetachments()
         {
             try
             {
-                // set the endpoint action
-                string endpointUrl =
-                    "vsd_policedetachments?$select=vsd_name&$filter=statecode eq 0";
+                var query = new QueryExpression("vsd_policedetachment")
+                {
+                    ColumnSet = new ColumnSet("vsd_policedetachmentid", "vsd_name"),
+                };
 
-                // get the response
-                DynamicsResult result = await _dynamicsResultService.Get(endpointUrl);
-                return StatusCode((int)result.statusCode, result.result.ToString());
+                query.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0);
+                query.Orders.Add(new OrderExpression("vsd_name", OrderType.Ascending));
+
+                var result = await _organizationService.RetrieveMultipleAsync(query);
+
+                var response = new LookupResponseDto<PoliceDetachmentLookupDto>
+                {
+                    Value = result
+                        .Entities.Select(entity => new PoliceDetachmentLookupDto
+                        {
+                            vsd_policedetachmentid = entity.Id.ToString(),
+                            vsd_name = entity.GetAttributeValue<string>("vsd_name"),
+                        })
+                        .ToList(),
+                };
+
+                return Ok(response);
             }
             catch (Exception e)
             {
                 _logger.Error(
                     e,
-                    "Unexpected error while looking up police detachments in COAST. Source = Restitution"
+                    "Unexpected error while looking up police detachments in Dataverse. Source = Restitution"
                 );
                 return BadRequest();
             }
@@ -303,34 +666,52 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         }
 
         [HttpGet("courts")]
-        public async Task<IActionResult> GetCourts()
+        [ProducesResponseType(typeof(LookupResponseDto<LookupItemDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<LookupResponseDto<LookupItemDto>>> GetCourts()
         {
             try
             {
-                // set the endpoint action
-                string endpointUrl = "vsd_courts?$select=vsd_name&$filter=statecode eq 0";
+                var query = new QueryExpression(VSd_Court.EntityLogicalName)
+                {
+                    ColumnSet = new ColumnSet(
+                        VSd_Court.Fields.VSd_CourtId,
+                        VSd_Court.Fields.VSd_Name
+                    ),
+                };
 
-                // get the response
-                DynamicsResult result = await _dynamicsResultService.Get(endpointUrl);
-                return StatusCode((int)result.statusCode, result.result.ToString());
+                query.Criteria.AddCondition(
+                    VSd_Court.Fields.StateCode,
+                    ConditionOperator.Equal,
+                    (int)VSd_Court_StateCode.Active
+                );
+                query.Orders.Add(
+                    new OrderExpression(VSd_Court.Fields.VSd_Name, OrderType.Ascending)
+                );
+
+                var result = await _organizationService.RetrieveMultipleAsync(query);
+
+                var response = new LookupResponseDto<LookupItemDto>
+                {
+                    Value = result
+                        .Entities.Select(entity => new LookupItemDto
+                        {
+                            Id = entity.Id.ToString(),
+                            Name = entity.GetAttributeValue<string>(VSd_Court.Fields.VSd_Name),
+                        })
+                        .ToList(),
+                };
+
+                return Ok(response);
             }
             catch (Exception e)
             {
                 _logger.Error(
                     e,
-                    "Unexpected error while looking up courts in COAST. Source = Restitution"
+                    "Unexpected error while looking up courts in Dataverse. Source = Restitution"
                 );
                 return BadRequest();
             }
             finally { }
         }
-    }
-
-    public class CitySearchParameters
-    {
-        public string Country { get; set; }
-        public string Province { get; set; }
-        public string City { get; set; }
-        public int TopCount { get; set; }
     }
 }

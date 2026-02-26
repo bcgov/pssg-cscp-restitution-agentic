@@ -5,12 +5,9 @@
  * API for the Restitution Application
  * OpenAPI spec version: v1
  */
+import type { LookupItemDto } from './lookupItemDto';
 
-export interface DocumentDto {
+export interface LookupItemDtoLookupResponseDto {
   /** @nullable */
-  filename?: string | null;
-  /** @nullable */
-  body?: string | null;
-  /** @nullable */
-  subject?: string | null;
+  value?: LookupItemDto[] | null;
 }

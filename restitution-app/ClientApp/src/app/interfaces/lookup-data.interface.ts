@@ -1,3 +1,5 @@
+import type { CountryLookupDto } from '../../model';
+
 export interface iLookupData {
   countries: iCountry[];
   provinces: iProvince[];
@@ -8,10 +10,7 @@ export interface iLookupData {
   police_detachments?: iPoliceDetachment[];
 }
 
-export interface iCountry {
-  vsd_name: string;
-  vsd_countryid: string;
-}
+export type iCountry = CountryLookupDto;
 
 export interface iProvince {
   vsd_code: string;

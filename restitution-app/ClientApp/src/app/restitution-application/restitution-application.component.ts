@@ -15,7 +15,6 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatStepper } from '@angular/material/stepper';
 import { ActivatedRoute, Router } from '@angular/router';
 import { RestitutionsService } from '../../api/restitutions/restitutions.service';
-import { config } from '../../config';
 import {
   CreateOffenderRestitutionCaseRequestDto,
   CreateVictimEntityRestitutionCaseRequestDto,
@@ -25,15 +24,12 @@ import {
   VictimApplicationDto,
   VictimEntityApplicationDto
 } from '../../model';
-import { iLookupData } from '../interfaces/lookup-data.interface';
 import { iRestitutionApplication } from '../interfaces/restitution.interface';
-import { LookupService } from '../services/lookup.service';
 import { StateService } from '../services/state.service';
 import { CancelDialog } from '../shared/dialogs/cancel/cancel.dialog';
 import { ApplicationType, CRMBoolean, IOptionSetVal, MY_FORMATS, ResitutionForm } from '../shared/enums-list';
 import { FormBase } from '../shared/form-base';
 import { RestitutionInfoHelper } from '../shared/restitution/restitution-information/restitution-information.helper';
-import { ServiceNotAvailableComponent } from '../shared/service-not-available.component';
 
 type RestitutionApplicationPayload = VictimApplicationDto | VictimEntityApplicationDto | OffenderApplicationDto;
 
@@ -65,16 +61,9 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
   ApplicationType = ApplicationType;
   ResitutionForm = ResitutionForm;
   isIE: boolean = false;
-  didLoad: boolean = false;
   public showPrintView: boolean = false;
 
   PAGES = RESTITUTION_PAGES;
-
-  lookupData: iLookupData = {
-    countries: [],
-    provinces: [],
-    cities: []
-  };
 
   courtList: string[] = [];
 
@@ -86,8 +75,7 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
     private route: ActivatedRoute,
     public snackBar: MatSnackBar,
     private matDialog: MatDialog,
-    public state: StateService,
-    public lookupService: LookupService
+    public state: StateService
   ) {
     super();
   }
@@ -106,71 +94,6 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
     } else {
       this.form = this.buildApplicationForm();
     }
-
-    let promise_array = [];
-
-    promise_array.push(
-      new Promise<void>((resolve, reject) => {
-        this.lookupService.getCountries().subscribe(
-          (res) => {
-            this.lookupData.countries = res.value;
-            if (this.lookupData.countries) {
-              this.lookupData.countries.sort((a, b) => a.vsd_name.localeCompare(b.vsd_name));
-            }
-            resolve();
-          },
-          (error) => {
-            reject(error);
-          }
-        );
-      })
-    );
-
-    promise_array.push(
-      new Promise<void>((resolve, reject) => {
-        this.lookupService.getProvinces().subscribe(
-          (res) => {
-            this.lookupData.provinces = res.value;
-            if (this.lookupData.provinces) {
-              this.lookupData.provinces.sort((a, b) => a.vsd_name.localeCompare(b.vsd_name));
-            }
-            resolve();
-          },
-          (error) => {
-            reject(error);
-          }
-        );
-      })
-    );
-
-    promise_array.push(
-      new Promise<void>((resolve, reject) => {
-        this.lookupService.getCitiesByProvince(config.canada_crm_id, config.bc_crm_id).subscribe(
-          (res) => {
-            this.lookupData.cities = res.value;
-            if (this.lookupData.cities) {
-              this.lookupData.cities.sort((a, b) => a.vsd_name.localeCompare(b.vsd_name));
-            }
-            resolve();
-          },
-          (error) => {
-            reject(error);
-          }
-        );
-      })
-    );
-
-    Promise.all(promise_array)
-      .then((res) => {
-        this.didLoad = true;
-      })
-      .catch((err) => {
-        this.snackBar.openFromComponent(ServiceNotAvailableComponent, {
-          panelClass: ['red-snackbar'],
-          horizontalPosition: 'center',
-          verticalPosition: 'top'
-        });
-      });
 
     this.form.valueChanges.subscribe((val) => {
       this.showValidationMessage = this.hasInvalidTouchedControls(this.form);

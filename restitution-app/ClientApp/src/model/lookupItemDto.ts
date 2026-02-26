@@ -6,11 +6,9 @@
  * OpenAPI spec version: v1
  */
 
-export interface DocumentDto {
+export interface LookupItemDto {
   /** @nullable */
-  filename?: string | null;
+  id?: string | null;
   /** @nullable */
-  body?: string | null;
-  /** @nullable */
-  subject?: string | null;
+  name?: string | null;
 }

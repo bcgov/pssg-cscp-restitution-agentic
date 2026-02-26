@@ -1,11 +1,12 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { noop, Observable, Observer, of, throwError } from 'rxjs';
+import { noop, Observable, Observer, of } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
+import { LookupsService as ApiLookupsService } from '../../../api/lookups/lookups.service';
 import { config } from '../../../config';
-import { CitiesSearchResponse, iCity, iCountry, iLookupData, iProvince } from '../../interfaces/lookup-data.interface';
-import { LookupService } from '../../services/lookup.service';
+import { CitySearchResponseDto } from '../../../model';
+import { iCity, iCountry, iLookupData, iProvince } from '../../interfaces/lookup-data.interface';
+import { LookupsStore } from '../../store/lookups/lookups.store';
 import { COUNTRIES_ADDRESS } from '../address/country-list';
 import { POSTAL_CODE, ZIP_CODE } from '../regex.constants';
 
@@ -36,34 +37,22 @@ export class RestitutionAddressComponent implements OnInit {
   isProvinceDisabled: boolean = false;
   isCityDisabled: boolean = false;
 
-  apiUrl = 'api/Lookup';
-
   @Input() group = UntypedFormGroup;
   @Input() showChildrenAsRequired: boolean = true;
   @Input() isDisabled: boolean = false;
-  @Input() lookupData: iLookupData;
+  lookupData: iLookupData = {
+    countries: [],
+    provinces: [],
+    cities: []
+  };
+  private readonly lookupsStore = inject(LookupsStore);
+  private readonly apiLookupsService = inject(ApiLookupsService);
 
-  constructor(public lookupService: LookupService, private http: HttpClient) {
+  constructor() {
     let canada = COUNTRIES_ADDRESS.filter((c) => c.name.toLowerCase() == 'canada')[0];
     this.provinceType = canada.areaType;
     this.postalCodeType = canada.postalCodeName;
     this.postalCodeSample = canada.postalCodeSample;
-  }
-
-  get headers(): HttpHeaders {
-    return new HttpHeaders({ 'Content-Type': 'application/json' });
-  }
-  protected handleError(err): Observable<never> {
-    let errorMessage = '';
-    if (err.error instanceof ErrorEvent) {
-      // A client-side or network error occurred. Handle it accordingly.
-      errorMessage = err.error.message;
-    } else {
-      // The backend returned an unsuccessful response code.
-      // The response body may contain clues as to what went wrong,
-      errorMessage = `Backend returned code ${err.status}, body was: ${err.message}`;
-    }
-    return throwError(errorMessage);
   }
 
   ngOnInit() {
@@ -76,21 +65,29 @@ export class RestitutionAddressComponent implements OnInit {
           let countryVal = this.group['controls']['country'].value.toString();
           let provinceVal = this.group['controls']['province'].value.toString();
           let searchVal = this.group['controls']['city'].value.toString();
-          return this.lookupService.searchCities(countryVal, provinceVal, searchVal).pipe(
-            map((data: CitiesSearchResponse) => {
-              if (data && data.CityCollection) {
-                data.CityCollection.sort((a, b) => a.vsd_name.localeCompare(b.vsd_name));
-                return data.CityCollection;
-              } else return [];
-            }),
-            tap(
-              () => noop,
-              (err) => {
-                // in case of http error
-                this.errorMessage = (err && err.message) || 'Something goes wrong';
-              }
-            )
-          );
+          return this.apiLookupsService
+            .getApiLookupsCitiesSearch('application/json', {
+              country: countryVal,
+              province: provinceVal,
+              searchVal,
+              limit: 15
+            })
+            .pipe(
+              map((data: CitySearchResponseDto) => {
+                if (data && data.cityCollection) {
+                  const cityCollection = [...data.cityCollection] as iCity[];
+                  cityCollection.sort((a, b) => a.vsd_name.localeCompare(b.vsd_name));
+                  return cityCollection;
+                } else return [];
+              }),
+              tap(
+                () => noop,
+                (err) => {
+                  // in case of http error
+                  this.errorMessage = (err && err.message) || 'Something goes wrong';
+                }
+              )
+            );
         }
         return of([]);
       })
@@ -102,32 +99,60 @@ export class RestitutionAddressComponent implements OnInit {
     let promise_array = [];
     if (!this.lookupData.countries || this.lookupData.countries.length == 0) {
       promise_array.push(
-        new Promise<void>((resolve, reject) => {
-          this.lookupService.getCountries().subscribe((res) => {
-            this.lookupData.countries = res.value;
-            if (this.lookupData.countries) {
-              this.lookupData.countries.sort(function (a, b) {
-                return a.vsd_name.localeCompare(b.vsd_name);
-              });
-            }
-            resolve();
-          });
+        new Promise<void>(async (resolve) => {
+          if (!this.lookupsStore.isCountriesLoaded()) {
+            await this.lookupsStore.loadCountries();
+          }
+
+          this.lookupData.countries = [...this.lookupsStore.countries()];
+
+          if (this.lookupData.countries) {
+            this.lookupData.countries.sort(function (a, b) {
+              return (a.vsd_name ?? '').localeCompare(b.vsd_name ?? '');
+            });
+          }
+
+          resolve();
         })
       );
     }
 
     if (!this.lookupData.provinces || this.lookupData.provinces.length == 0) {
       promise_array.push(
-        new Promise<void>((resolve, reject) => {
-          this.lookupService.getProvinces().subscribe((res) => {
-            this.lookupData.provinces = res.value;
-            if (this.lookupData.provinces) {
-              this.lookupData.provinces.sort(function (a, b) {
-                return a.vsd_name.localeCompare(b.vsd_name);
-              });
-            }
-            resolve();
-          });
+        new Promise<void>(async (resolve) => {
+          if (!this.lookupsStore.isProvincesLoaded()) {
+            await this.lookupsStore.loadProvinces();
+          }
+
+          this.lookupData.provinces = [...this.lookupsStore.provinces()];
+
+          if (this.lookupData.provinces) {
+            this.lookupData.provinces.sort(function (a, b) {
+              return (a.vsd_name ?? '').localeCompare(b.vsd_name ?? '');
+            });
+          }
+
+          resolve();
+        })
+      );
+    }
+
+    if (!this.lookupData.cities || this.lookupData.cities.length == 0) {
+      promise_array.push(
+        new Promise<void>(async (resolve) => {
+          if (!this.lookupsStore.isCitiesLoaded()) {
+            await this.lookupsStore.loadCities();
+          }
+
+          this.lookupData.cities = [...this.lookupsStore.cities()];
+
+          if (this.lookupData.cities) {
+            this.lookupData.cities.sort(function (a, b) {
+              return (a.vsd_name ?? '').localeCompare(b.vsd_name ?? '');
+            });
+          }
+
+          resolve();
         })
       );
     }
@@ -275,11 +300,15 @@ export class RestitutionAddressComponent implements OnInit {
       this.selectedCountry.vsd_countryid &&
       this.selectedProvince.vsd_provinceid
     ) {
-      this.lookupService
-        .getCitiesByProvince(this.selectedCountry.vsd_countryid, this.selectedProvince.vsd_provinceid)
+      this.apiLookupsService
+        .getApiLookupsCountryCountryIdProvinceProvinceIdCities(
+          this.selectedCountry.vsd_countryid,
+          this.selectedProvince.vsd_provinceid,
+          'application/json'
+        )
         .subscribe((city_res) => {
           if (city_res.value) {
-            this.cityList = city_res.value;
+            this.cityList = city_res.value as iCity[];
             if (this.cityList) {
               this.cityList.sort((a, b) => a.vsd_name.localeCompare(b.vsd_name));
             }
@@ -296,24 +325,26 @@ export class RestitutionAddressComponent implements OnInit {
           this.setCityValidators();
         });
     } else if (this.provinceList.length == 1 && this.selectedCountry && this.selectedCountry.vsd_countryid) {
-      this.lookupService.getCitiesByCountry(this.selectedCountry.vsd_countryid).subscribe((city_res) => {
-        if (city_res.value) {
-          this.cityList = city_res.value;
-          if (this.cityList) {
-            this.cityList.sort((a, b) => a.vsd_name.localeCompare(b.vsd_name));
-          }
-          let other_city_index = this.getOtherIndex(this.cityList);
-          if (other_city_index < 0) {
-            this.cityList.unshift(config.other_city);
+      this.apiLookupsService
+        .getApiLookupsCountryCountryCities(this.selectedCountry.vsd_countryid, 'application/json')
+        .subscribe((city_res) => {
+          if (city_res.value) {
+            this.cityList = city_res.value as iCity[];
+            if (this.cityList) {
+              this.cityList.sort((a, b) => a.vsd_name.localeCompare(b.vsd_name));
+            }
+            let other_city_index = this.getOtherIndex(this.cityList);
+            if (other_city_index < 0) {
+              this.cityList.unshift(config.other_city);
+            } else {
+              let other_city = this.cityList.splice(other_city_index, 1)[0];
+              this.cityList.unshift(other_city);
+            }
           } else {
-            let other_city = this.cityList.splice(other_city_index, 1)[0];
-            this.cityList.unshift(other_city);
+            this.cityList = [config.other_city];
           }
-        } else {
-          this.cityList = [config.other_city];
-        }
-        this.setCityValidators();
-      });
+          this.setCityValidators();
+        });
     } else {
       this.cityList = [config.other_city];
       this.setCityValidators();

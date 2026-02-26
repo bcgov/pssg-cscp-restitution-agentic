@@ -60,13 +60,13 @@
         <div class="pagebreak"> </div>
         @if (this.currentFormStep == PAGES.RESTITUTION_INFORMATION || showPrintView) {
           @if (FORM_TYPE.val === ResitutionForm.Victim.val) {
-            <app-victim-restitution-information [formGroup]="form" formGroupName="restitutionInformation" [lookupData]="lookupData"></app-victim-restitution-information>
+            <app-victim-form [formGroup]="form" formGroupName="restitutionInformation"></app-victim-form>
           }
           @if (FORM_TYPE.val === ResitutionForm.Offender.val) {
-            <app-offender-restitution-information [formGroup]="form" formGroupName="restitutionInformation" [lookupData]="lookupData"></app-offender-restitution-information>
+            <app-offender-form [formGroup]="form" formGroupName="restitutionInformation"></app-offender-form>
           }
           @if (FORM_TYPE.val === ResitutionForm.VictimEntity.val) {
-            <app-victim-entity-restitution-information [formGroup]="form" formGroupName="restitutionInformation" [lookupData]="lookupData"></app-victim-entity-restitution-information>
+            <app-victim-entity-form [formGroup]="form" formGroupName="restitutionInformation"></app-victim-entity-form>
           }
         }
 

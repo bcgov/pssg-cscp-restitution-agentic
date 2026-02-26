@@ -6,11 +6,9 @@
  * OpenAPI spec version: v1
  */
 
-export interface DocumentDto {
+export interface RelationshipLookupDto {
   /** @nullable */
-  filename?: string | null;
+  vsd_name?: string | null;
   /** @nullable */
-  body?: string | null;
-  /** @nullable */
-  subject?: string | null;
+  vsd_relationshipid?: string | null;
 }

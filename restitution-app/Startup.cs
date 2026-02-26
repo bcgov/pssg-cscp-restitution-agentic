@@ -44,9 +44,6 @@ namespace Gov.Cscp.VictimServices.Public
             services.AddTransient<TokenHandler>();
 
             services.AddHttpClient<ICOASTAuthService, COASTAuthService>();
-            services
-                .AddHttpClient<IDynamicsResultService, DynamicsResultService>()
-                .AddHttpMessageHandler<TokenHandler>();
 
             services.AddMemoryCache();
 
