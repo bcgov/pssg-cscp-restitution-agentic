@@ -8,9 +8,8 @@ describe('RaceSelectorComponent', () => {
 
   beforeEach(async () => {
     TestBed.configureTestingModule({
-      declarations: [ RaceSelectorComponent ]
-    })
-    .compileComponents();
+      declarations: [RaceSelectorComponent]
+    }).compileComponents();
   });
 
   beforeEach(() => {

@@ -1,5 +1,5 @@
-import { TestBed, ComponentFixture, ComponentFixtureAutoDetect } from '@angular/core/testing';
-import { BrowserModule, By } from '@angular/platform-browser';
+import { ComponentFixture, ComponentFixtureAutoDetect, TestBed } from '@angular/core/testing';
+import { BrowserModule } from '@angular/platform-browser';
 import { NotFoundComponent } from './not-found.component';
 
 let component: NotFoundComponent;
