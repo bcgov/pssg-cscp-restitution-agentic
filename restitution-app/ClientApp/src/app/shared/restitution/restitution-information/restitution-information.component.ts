@@ -12,14 +12,16 @@ import { FormBase } from '../../form-base';
 import { POSTAL_CODE } from '../../regex.constants';
 import { RestitutionInfoHelper } from './restitution-information.helper';
 
+export const RESTITUTION_INFORMATION_PROVIDERS = [
+  { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+  { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS }
+];
+
 @Component({
   selector: 'app-restitution-information',
   templateUrl: './restitution-information.component.html',
   styleUrls: ['./restitution-information.component.scss'],
-  providers: [
-    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
-    { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS }
-  ],
+  providers: RESTITUTION_INFORMATION_PROVIDERS,
   standalone: false
 })
 export class RestitutionInformationComponent extends FormBase implements OnInit {

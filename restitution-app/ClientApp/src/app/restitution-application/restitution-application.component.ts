@@ -44,15 +44,17 @@ export enum RESTITUTION_PAGES {
   CONFIRMATION
 }
 
+export const RESTITUTION_APPLICATION_PROVIDERS = [
+  { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+  { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS },
+  { provide: STEPPER_GLOBAL_OPTIONS, useValue: { showError: true } }
+];
+
 @Component({
   selector: 'app-restitution-application',
   templateUrl: './restitution-application.component.html',
   styleUrls: ['./restitution-application.component.scss'],
-  providers: [
-    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
-    { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS },
-    { provide: STEPPER_GLOBAL_OPTIONS, useValue: { showError: true } }
-  ],
+  providers: RESTITUTION_APPLICATION_PROVIDERS,
   standalone: false
 })
 export class RestitutionApplicationComponent extends FormBase implements OnInit {
@@ -61,6 +63,7 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
   @ViewChild('stepper', { static: false }) restitutionStepper: MatStepper;
   FORM_TYPE: IOptionSetVal = { val: -1, name: '' };
   ApplicationType = ApplicationType;
+  ResitutionForm = ResitutionForm;
   isIE: boolean = false;
   didLoad: boolean = false;
   public showPrintView: boolean = false;

@@ -64,7 +64,10 @@ import { GenderSelectorComponent } from './shared/gender-selector/gender-selecto
 import { RaceSelectorComponent } from './shared/race-selector/race-selector.component';
 import { RestitutionAddressComponent } from './shared/restitution-address/address.component';
 import { RestitutionContactInformationComponent } from './shared/restitution/contact-information/contact-information.component';
+import { OffenderFormComponent } from './shared/restitution/restitution-information/offender-form.component';
 import { RestitutionInformationComponent } from './shared/restitution/restitution-information/restitution-information.component';
+import { VictimEntityFormComponent } from './shared/restitution/restitution-information/victim-entity-form.component';
+import { VictimFormComponent } from './shared/restitution/restitution-information/victim-form.component';
 import { RestitutionOverviewComponent } from './shared/restitution/restitution-overview/restitution-overview.component';
 import { RestitutionReviewComponent } from './shared/restitution/review/restitution-review.component';
 import { RestitutionSuccessComponent } from './shared/restitution/success/restitution-success.component';
@@ -89,6 +92,9 @@ import { SignPadDialog } from './sign-dialog/sign-dialog.component';
     RestitutionApplicationComponent,
     RestitutionContactInformationComponent,
     RestitutionInformationComponent,
+    VictimFormComponent,
+    OffenderFormComponent,
+    VictimEntityFormComponent,
     RestitutionOverviewComponent,
     RestitutionReviewComponent,
     RestitutionSuccessComponent,

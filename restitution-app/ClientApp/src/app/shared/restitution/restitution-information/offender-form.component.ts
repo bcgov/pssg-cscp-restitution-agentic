@@ -1,0 +1,33 @@
+import { Component } from '@angular/core';
+import { ControlContainer, UntypedFormBuilder } from '@angular/forms';
+import { MatDialog } from '@angular/material/dialog';
+import { iLookupData } from '../../../interfaces/lookup-data.interface';
+import { LookupService } from '../../../services/lookup.service';
+import { ResitutionForm } from '../../enums-list';
+import {
+  RESTITUTION_INFORMATION_PROVIDERS,
+  RestitutionInformationComponent
+} from './restitution-information.component';
+
+@Component({
+  selector: 'app-offender-form',
+  templateUrl: './offender-form.component.html',
+  styleUrls: ['./restitution-information.component.scss'],
+  providers: RESTITUTION_INFORMATION_PROVIDERS,
+  standalone: false
+})
+export class OffenderFormComponent extends RestitutionInformationComponent {
+  override formType = ResitutionForm.Offender;
+  override lookupData: iLookupData;
+
+  constructor(
+    controlContainer: ControlContainer,
+    fb: UntypedFormBuilder,
+    matDialog: MatDialog,
+    lookupService: LookupService
+  ) {
+    super(controlContainer, fb, matDialog, lookupService);
+  }
+
+  // TODO: create form class, move form logic
+}

@@ -1,0 +1,235 @@
+<div [formGroup]="form">
+  <div class="page-header">
+    <h1>{{page_header}}</h1>
+  </div>
+
+  <p>
+    This application must be completed by an individual who has signing authority for the entity.
+  </p>
+
+  <h2 class="blue-header" id="ApplicantInformation" [class.mt-0]="ResitutionForm.Victim.val">{{applicant_type}} Information</h2>
+  <h3>{{applicant_type}} Information</h3>
+
+  <div class="row">
+    <div class="col-md-6">
+      <app-field label="Entity Name" [required]="true" [valid]="isFieldValid('lastName')" errorMessage="Please enter your Entity name" [disabled]="isDisabled">
+        <input class="form-control" type="text" formControlName="lastName" maxlength="100">
+      </app-field>
+    </div>
+  </div>
+
+  <app-restitution-contact-information [formGroup]="form.get('contactInformation')" [formType]="formType" [lookupData]="lookupData" formGroupName="contactInformation" [isDisabled]="isDisabled"></app-restitution-contact-information>
+
+  <h2 class="blue-header" id="CourtFileInformation">Restitution Order Information</h2>
+
+  @for (item of form.get('courtFiles')['controls']; track item; let i = $index) {
+    <div formArrayName="courtFiles">
+      <div [formGroupName]="i" class="court-file-info">
+        <div class="row remove-row">
+          <div class="col">
+            <app-field label="Offender First Name" [valid]="isMyControlValid(item.get('firstName'))" errorMessage="Please enter first name" [disabled]="isDisabled">
+              <input class="form-control" type="text" formControlName="firstName" maxlength="100">
+            </app-field>
+          </div>
+          <div class="col">
+            <app-field label="Offender Middle Name" [valid]="isMyControlValid(item.get('middleName'))" errorMessage="Please enter middle name" [disabled]="isDisabled">
+              <input class="form-control" type="text" formControlName="middleName" maxlength="100">
+            </app-field>
+          </div>
+          <div class="col">
+            <app-field label="Offender Last Name" [valid]="isMyControlValid(item.get('lastName'))" errorMessage="Please enter last name" [disabled]="isDisabled">
+              <input class="form-control" type="text" formControlName="lastName" maxlength="100">
+            </app-field>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+            <app-field label="Relationship to the Offender" [valid]="isMyControlValid(item.get('relationship'))" errorMessage="Please enter relationship" [disabled]="isDisabled" [tooltipReference]="relationshipToAccusedToolTip">
+              <select class="form-control" formControlName="relationship">
+                <option value="">Select...</option>
+                @for (rel of relationshipList; track rel) {
+                  <option [value]="rel">{{ rel }} </option>
+                }
+              </select>
+              @if (item.get('relationship').value === 'Acquaintance') {
+                <app-tool-tip [trigger]="relationshipToolTip" class="relationshipToolTip"></app-tool-tip>
+              }
+            </app-field>
+          </div>
+        </div>
+        <ng-template #relationshipToolTip>Use this category for close friends, neighbours, authority figures, reverse authority figures, business relationships and casual acquaintances.</ng-template>
+
+        <div class="row">
+          <div class="col-md-4">
+            <app-field label="Court File Number" [valid]="isMyControlValid(item.get('fileNumber'))" errorMessage="Please enter file number" [disabled]="isDisabled">
+              <input class="form-control" type="text" formControlName="fileNumber" maxlength="100">
+            </app-field>
+          </div>
+          <div class="col-md-8">
+            <app-field label="Court Location" [valid]="isMyControlValid(item.get('location'))" errorMessage="Please enter location" [disabled]="isDisabled">
+              <select class="form-control" formControlName="location">
+                <option value="">Choose a court</option>
+                @for (item of courtList; track $index) {
+                  <option [value]="item">
+                    {{ item }}
+                  </option>
+                }
+              </select>
+            </app-field>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <h2 class="blue-header" id="VSWInformation">Victim Service Worker</h2>
+  @for (item of form.get('vsw')['controls']; track item; let i = $index) {
+    <div formArrayName="vsw">
+      <div [formGroupName]="i" class="vsw-info">
+        <div class="row">
+          <div class="col-md-6">
+            <app-field label="Victim Service Worker First Name" [valid]="isMyControlValid(item.get('firstName'))" [disabled]="isDisabled">
+              <input class="form-control" type="text" formControlName="firstName" maxlength="100">
+            </app-field>
+          </div>
+          <div class="col-md-6">
+            <app-field label="Victim Service Worker Last Name" [valid]="isMyControlValid(item.get('lastName'))" [disabled]="isDisabled">
+              <input class="form-control" type="text" formControlName="lastName" maxlength="100">
+            </app-field>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <app-field label="Program Name" [valid]="isMyControlValid(item.get('program'))" [disabled]="isDisabled">
+              <input class="form-control" type="text" formControlName="program" maxlength="100">
+            </app-field>
+          </div>
+          <div class="col-md-6">
+            <app-field label="Phone Number" [valid]="isMyControlValid(item.get('phoneNumber'))" errorMessage="Please enter your vsw's phone number" [disabled]="isDisabled">
+              <input class="form-control" mask='(000) 000 0000' type="text" formControlName="phoneNumber">
+            </app-field>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <app-field label="Email Address" [valid]="isMyControlValid(item.get('email'))" errorMessage="Please enter your email address" [disabled]="isDisabled">
+              <input class="form-control" type="text" formControlName="email" maxlength="100">
+            </app-field>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <h2 class="blue-header" id="DocumentInformation">Copy of Restitution Order</h2>
+  <p>Where possible, please include a copy of the Restitution Order when submitting this application. <strong>File size limit:</strong> one file cannot exceed 2MB and all files uploaded to application cannot exceed 3.5MB</p>
+  <app-file-uploader [formGroup]="form" [formType]="formType" [documents]="form.get('documents')"></app-file-uploader>
+
+  <h2 class="blue-header" id="CollectionNotice">Collection Notice</h2>
+  <p>
+    The collection of your personal information as part of the Restitution Program is authorized under section 26(c) of the Freedom of Information and Protection of Privacy Act for the purpose of facilitating restitution payments. The Restitution Program may also collect personal information under section 26(e) of FoIPPA for the purpose of evaluating the program and activities to better serve you. If you have any questions about the collection of your personal information, please contact:
+    <br />
+    <br />
+    Restitution Program Manager <br />
+    PH: (604) 660-4898, Toll Free: 1-844-660-4898 <br />
+    PO Box 5550 Station Terminal, Vancouver, BC V6B 1H1
+  </p>
+
+  <h2 class="blue-header" id="SignatureInformation">Declaration & Signature</h2>
+  <app-field [required]="true" [valid]="isFieldValid('declaredAndSigned')" errorMessage="Please check this box to indicate that you accept Declaration">
+    <label class="inline-label inline-checkbox-label">
+      <input type="checkbox" [value]="true" name="declaredAndSigned" formControlName="declaredAndSigned">
+      <span>By signing this form, I confirm that I have signing authority for the subject of the above noted restitution order and I am applying to the Restitution Program for assistance in the facilitation of the restitution order. Where applicable, I give permission to the Restitution Program to release information to the contacts I have named above.<span class="error-states">*</span></span>
+    </label>
+  </app-field>
+
+  <div class="row">
+    <div class="col-md-4">
+      <app-field label="Signing Officer Full Name" [required]="true" [valid]="isMyControlValid(form.get('signatureName'))" errorMessage="Please enter the Signing Officer Full Name" [disabled]="isDisabled">
+        <input class="form-control" type="text" formControlName="signatureName" maxlength="100">
+      </app-field>
+    </div>
+    <div class="col-md-4">
+      <app-field label="Signing Officer Title" [required]="true" [valid]="isFieldValid('signerTitle')" errorMessage="Please enter Signing Officer Title" [disabled]="isDisabled">
+        <input class="form-control" type="text" formControlName="signerTitle" maxlength="50">
+      </app-field>
+    </div>
+    <div class="col-md-4">
+      <app-field label="Date" [required]="true" [valid]="isFieldValid('signatureDate')" errorMessage="Please enter the date" [disabled]="isDisabled">
+        <input type="text" [max]="today" class="form-control date-picker" formControlName="signatureDate" placeholder="yyyy/mm/dd" [matDatepicker]="datePicker" (focus)="datePicker.open()" (click)="datePicker.open()" readonly>
+        <mat-datepicker #datePicker></mat-datepicker>
+      </app-field>
+    </div>
+  </div>
+
+  <app-field label="Signature" [required]="true" [valid]="isFieldValid('signature')" errorMessage="Please provide your digital signature">
+    @if (!hasSignature('signature')) {
+      <div class="signature-trigger" (click)="showSignPad('signature')">
+        <p>Click this box to sign</p>
+      </div>
+    }
+    @if (hasSignature('signature')) {
+      <div class="signature-preview">
+        <img src="{{ valueOrEmpty('signature') }}" />
+        <a class="redo" (click)="showSignPad('signature')">Redo Signature</a>
+      </div>
+    }
+  </app-field>
+
+  <ng-template #relationshipToAccusedToolTip>
+    <table class="table relationship-table">
+      <thead>
+        <tr>
+          <th>Classification</th>
+          <th class="description-column">Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            Intimate Partner Relationship
+          </td>
+          <td>
+            Refers to current and former spouses (legally married, separated, divorced and common-law), and dating partners.
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            Other Family Relationship
+          </td>
+          <td>
+            Refers to parents (biological, step, adoptive and foster), children (biological, step, adopted and foster), siblings (biological, step, half, adopted and foster) and extended family members (e.g., grandparents, uncles, aunts, cousins and in-laws).
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            Acquaintance
+          </td>
+          <td>
+            Refers to friends, neighbours, authority figures, business relationships, casual acquaintances.
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            Stranger
+          </td>
+          <td>
+            Refers to individuals who do not know one another.
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            Other Victim-Accused Relationship
+          </td>
+          <td>
+            Refers to relationships that are other than the above categories, or is unknown.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </ng-template>
+</div>
