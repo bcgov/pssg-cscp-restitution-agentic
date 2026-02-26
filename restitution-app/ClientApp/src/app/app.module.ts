@@ -1,6 +1,6 @@
 import { AngularSignaturePadModule } from '@almothafar/angular-signature-pad';
 import { CdkTableModule } from '@angular/cdk/table';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -42,10 +42,12 @@ import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
 import { NgxFileDropModule } from 'ngx-file-drop';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
+import { NgxSpinnerModule } from 'ngx-spinner';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { FeatureEnabledDirective } from './directives/feature-enabled.directive';
+import { LoadingInterceptor } from './interceptors/loading.interceptor';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { PhonePipe } from './pipes/phone.pipe';
 import { QuickExitComponent } from './quick-exit/quick-exit.component';
@@ -103,8 +105,8 @@ import { SignPadDialog } from './sign-dialog/sign-dialog.component';
     BrowserModule,
     CdkTableModule,
     NgxFileDropModule,
+    NgxSpinnerModule,
     FormsModule,
-    // HttpModule,
     MatAutocompleteModule,
     MatButtonModule,
     MatButtonToggleModule,
@@ -143,12 +145,12 @@ import { SignPadDialog } from './sign-dialog/sign-dialog.component';
   bootstrap: [AppComponent],
   imports: [
     AppRoutingModule,
-    BrowserAnimationsModule,
     BrowserModule,
     CdkTableModule,
     NgxFileDropModule,
     NgxMaskDirective,
     NgxMaskPipe,
+    NgxSpinnerModule,
     FormsModule,
     MatAutocompleteModule,
     MatButtonModule,
@@ -189,6 +191,12 @@ import { SignPadDialog } from './sign-dialog/sign-dialog.component';
     TooltipModule.forRoot(),
     TypeaheadModule.forRoot()
   ],
-  providers: [provideNgxMask(), LookupService, StateService, Title, provideHttpClient(withInterceptorsFromDi())]
+  providers: [
+    provideNgxMask(),
+    LookupService,
+    StateService,
+    Title,
+    provideHttpClient(withInterceptors([LoadingInterceptor]), withInterceptorsFromDi())
+  ]
 })
 export class AppModule {}

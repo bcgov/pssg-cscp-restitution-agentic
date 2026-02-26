@@ -63,7 +63,6 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
   ApplicationType = ApplicationType;
   isIE: boolean = false;
   didLoad: boolean = false;
-  submitting: boolean = false;
   public showPrintView: boolean = false;
 
   PAGES = RESTITUTION_PAGES;
@@ -239,9 +238,6 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
     if (this.form.invalid) {
       return;
     }
-
-    // TODO: introduce interceptor to handle loading state
-    // this.submitting = true;
 
     const restitutionData = this.getRestitutionCreateRequest();
     this.submitRestitutionByType(restitutionData).subscribe({

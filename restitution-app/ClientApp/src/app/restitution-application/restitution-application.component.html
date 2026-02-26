@@ -1,16 +1,10 @@
-<div class="form-wrapper" style="position: relative;" [class.dark-overlay]="submitting">
-  @if (submitting) {
-    <div class="loading-indicator">
-      <mat-spinner mode="indeterminate"></mat-spinner>
-    </div>
-  }
-
+<div class="form-wrapper" style="position: relative;">
   <div class="row" [formGroup]="form">
     <div class="col-lg-3 col-sm-12 application-gutter" [class.hidden]="showPrintView">
       <h3>Restitution Program - {{FORM_TYPE.name}} Application</h3>
       <section class="application-nav sticky-top">
         <div>
-          <mat-vertical-stepper linear (selectionChange)="gotoPage($event)" #stepper [class.disabled-stepper]="submitting">
+          <mat-vertical-stepper linear (selectionChange)="gotoPage($event)" #stepper>
             <ng-template matStepperIcon="edit">
               <i class="fa fa-check"></i>
             </ng-template>
@@ -89,14 +83,14 @@
               @if (stepper.selectedIndex < PAGES.REVIEW) {
                 <button (click)="gotoNextStep(stepper);" class="btn btn-primary continue-btn">CONTINUE <i class="fas fa-chevron-right"></i></button>
               }
-              <div class="left-buttons download-grid" [class.disabled-wrapper]="submitting">
+              <div class="left-buttons download-grid">
                 @if (stepper.selectedIndex == PAGES.REVIEW) {
-                  <button (click)="printApplication();" class="btn btn-primary print-button" [class.is-disabled]="submitting">PRINT PDF</button>
+                  <button (click)="printApplication();" class="btn btn-primary print-button">PRINT PDF</button>
                 }
               </div>
-              <div class="submit-grid" [class.disabled-wrapper]="submitting">
+              <div class="submit-grid">
                 @if (stepper.selectedIndex == PAGES.REVIEW) {
-                  <button (click)="submit();" class="btn btn-primary" [class.is-disabled]="submitting">SUBMIT APPLICATION <i class="fas fa-chevron-right"></i></button>
+                  <button (click)="submit();" class="btn btn-primary">SUBMIT APPLICATION <i class="fas fa-chevron-right"></i></button>
                 }
               </div>
             </span>
