@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { GenderSelectorComponent } from './gender-selector.component';
 
@@ -6,12 +6,12 @@ describe('GenderSelectorComponent', () => {
   let component: GenderSelectorComponent;
   let fixture: ComponentFixture<GenderSelectorComponent>;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     TestBed.configureTestingModule({
       declarations: [ GenderSelectorComponent ]
     })
     .compileComponents();
-  }));
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(GenderSelectorComponent);
