@@ -8,11 +8,11 @@
 
 export interface ProvinceLookupDto {
   /** @nullable */
-  vsd_code?: string | null;
+  code?: string | null;
   /** @nullable */
-  _vsd_countryid_value?: string | null;
+  countryId?: string | null;
   /** @nullable */
-  vsd_name?: string | null;
+  name?: string | null;
   /** @nullable */
-  vsd_provinceid?: string | null;
+  id?: string | null;
 }

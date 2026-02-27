@@ -8,7 +8,7 @@
 
 export interface PoliceDetachmentLookupDto {
   /** @nullable */
-  vsd_name?: string | null;
+  name?: string | null;
   /** @nullable */
-  vsd_policedetachmentid?: string | null;
+  id?: string | null;
 }

@@ -78,8 +78,8 @@ export class RestitutionInformationComponent extends FormBase implements OnInit 
     this.initializeCourts();
 
     this.apiLookupsService.getApiLookupsRestitutionRelationships('application/json').subscribe((res) => {
-      const relationships = [...(res.value ?? [])].sort((a, b) => (a.vsd_name ?? '').localeCompare(b.vsd_name ?? ''));
-      this.relationshipList = relationships.map((r) => r.vsd_name);
+      const relationships = [...(res.value ?? [])].sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
+      this.relationshipList = relationships.map((r) => r.name);
     });
   }
 

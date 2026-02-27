@@ -2,19 +2,18 @@ import { inject } from '@angular/core';
 import { patchState, signalStore, withMethods, withState } from '@ngrx/signals';
 import { firstValueFrom } from 'rxjs';
 import { LookupsService as ApiLookupsService } from '../../../api/lookups/lookups.service';
-import { CountryLookupDto, LookupItemDto } from '../../../model';
-import { iCity, iProvince } from '../../interfaces/lookup-data.interface';
+import { CityLookupDto, CountryLookupDto, LookupItemDto, ProvinceLookupDto } from '../../../model';
 
 export interface LookupsStoreState {
   countries: CountryLookupDto[];
   isCountriesLoaded: boolean;
   isCountriesLoading: boolean;
   countriesError: string | null;
-  provinces: iProvince[];
+  provinces: ProvinceLookupDto[];
   isProvincesLoaded: boolean;
   isProvincesLoading: boolean;
   provincesError: string | null;
-  cities: iCity[];
+  cities: CityLookupDto[];
   isCitiesLoaded: boolean;
   isCitiesLoading: boolean;
   citiesError: string | null;
@@ -70,7 +69,7 @@ export const LookupsStore = signalStore(
       setProvincesLoading(isProvincesLoading: boolean) {
         patchState(store, { isProvincesLoading });
       },
-      setProvinces(provinces: iProvince[]) {
+      setProvinces(provinces: ProvinceLookupDto[]) {
         patchState(store, {
           provinces,
           isProvincesLoaded: true,
@@ -87,7 +86,7 @@ export const LookupsStore = signalStore(
       setCitiesLoading(isCitiesLoading: boolean) {
         patchState(store, { isCitiesLoading });
       },
-      setCities(cities: iCity[]) {
+      setCities(cities: CityLookupDto[]) {
         patchState(store, {
           cities,
           isCitiesLoaded: true,
@@ -127,9 +126,7 @@ export const LookupsStore = signalStore(
 
         try {
           const response = await firstValueFrom(apiLookupsService.getApiLookupsCountries('application/json'));
-          const countries = [...(response.value ?? [])].sort((a, b) =>
-            (a.vsd_name ?? '').localeCompare(b.vsd_name ?? '')
-          );
+          const countries = [...(response.value ?? [])].sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
 
           patchState(store, {
             countries,
@@ -154,12 +151,10 @@ export const LookupsStore = signalStore(
 
         try {
           const response = await firstValueFrom(apiLookupsService.getApiLookupsProvinces('application/json'));
-          const provinces = [...(response.value ?? [])].sort((a, b) =>
-            (a.vsd_name ?? '').localeCompare(b.vsd_name ?? '')
-          );
+          const provinces = [...(response.value ?? [])].sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
 
           patchState(store, {
-            provinces: provinces as iProvince[],
+            provinces: provinces as ProvinceLookupDto[],
             isProvincesLoaded: true,
             isProvincesLoading: false,
             provincesError: null
@@ -181,10 +176,10 @@ export const LookupsStore = signalStore(
 
         try {
           const response = await firstValueFrom(apiLookupsService.getApiLookupsCities('application/json'));
-          const cities = [...(response.value ?? [])].sort((a, b) => (a.vsd_name ?? '').localeCompare(b.vsd_name ?? ''));
+          const cities = [...(response.value ?? [])].sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
 
           patchState(store, {
-            cities: cities as iCity[],
+            cities: cities as CityLookupDto[],
             isCitiesLoaded: true,
             isCitiesLoading: false,
             citiesError: null

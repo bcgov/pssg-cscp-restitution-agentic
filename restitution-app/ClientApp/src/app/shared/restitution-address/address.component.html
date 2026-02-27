@@ -5,8 +5,8 @@
         <select class="form-control" formControlName="country" (change)="onCountryChange($event)">
           <option value="">Choose a country</option>
           @for (item of countryList; track item) {
-            <option [value]="item.vsd_name">
-              {{ item.vsd_name }}
+            <option [value]="item.name">
+              {{ item.name }}
             </option>
           }
         </select>
@@ -14,7 +14,7 @@
     </div>
     <div class="col-md-6">
       <app-field label="{{ provinceType }}" [required]="showChildrenAsRequired && provinceList.length > 0" [valid]="isSubFieldValid('province', isDisabled || isProvinceDisabled)" errorMessage="Please select your {{provinceType.toLowerCase()}}">
-        <input formControlName="province" typeaheadOptionField="vsd_name" [typeahead]="provinceList" class="form-control">
+        <input formControlName="province" typeaheadOptionField="name" [typeahead]="provinceList" class="form-control">
       </app-field>
     </div>
   </div>
@@ -35,7 +35,7 @@
   <div class="row">
     <div class="col-md-6">
       <app-field label="City" [required]="showChildrenAsRequired && cityList.length > 0" [valid]="isSubFieldValid('city', isDisabled || isCityDisabled)" errorMessage="Please select your city">
-        <input formControlName="city" typeaheadOptionField="vsd_name" [typeahead]="citySuggestions$" [typeaheadAsync]="true" class="form-control">
+        <input formControlName="city" typeaheadOptionField="name" [typeahead]="citySuggestions$" [typeaheadAsync]="true" class="form-control">
       </app-field>
     </div>
     <div class="col-md-6">

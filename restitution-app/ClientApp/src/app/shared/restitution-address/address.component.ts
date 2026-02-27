@@ -4,8 +4,7 @@ import { noop, Observable, Observer, of } from 'rxjs';
 import { map, switchMap, tap } from 'rxjs/operators';
 import { LookupsService as ApiLookupsService } from '../../../api/lookups/lookups.service';
 import { config } from '../../../config';
-import { CitySearchResponseDto } from '../../../model';
-import { iCity, iCountry, iLookupData, iProvince } from '../../interfaces/lookup-data.interface';
+import { CityLookupDto, CitySearchResponseDto, CountryLookupDto, ProvinceLookupDto } from '../../../model';
 import { LookupsStore } from '../../store/lookups/lookups.store';
 import { COUNTRIES_ADDRESS } from '../address/country-list';
 import { POSTAL_CODE, ZIP_CODE } from '../regex.constants';
@@ -16,23 +15,23 @@ import { POSTAL_CODE, ZIP_CODE } from '../regex.constants';
   standalone: false
 })
 export class RestitutionAddressComponent implements OnInit {
-  countryList: iCountry[] = config.preferred_countries;
-  preferred_countries: iCountry[] = config.preferred_countries;
+  countryList: CountryLookupDto[] = config.preferred_countries;
+  preferred_countries: CountryLookupDto[] = config.preferred_countries;
   postalRegex = POSTAL_CODE;
   zipRegex = ZIP_CODE;
 
-  provinceList: iProvince[];
+  provinceList: ProvinceLookupDto[];
   provinceType: string;
   postalCodeType: string;
   postalCodeSample: string;
 
-  cityList: iCity[] = [];
+  cityList: CityLookupDto[] = [];
   search: string;
-  citySuggestions$: Observable<iCity[]>;
+  citySuggestions$: Observable<CityLookupDto[]>;
   errorMessage: string;
 
-  selectedCountry: iCountry;
-  selectedProvince: iProvince;
+  selectedCountry: CountryLookupDto;
+  selectedProvince: ProvinceLookupDto;
 
   isProvinceDisabled: boolean = false;
   isCityDisabled: boolean = false;
@@ -40,7 +39,11 @@ export class RestitutionAddressComponent implements OnInit {
   @Input() group = UntypedFormGroup;
   @Input() showChildrenAsRequired: boolean = true;
   @Input() isDisabled: boolean = false;
-  lookupData: iLookupData = {
+  lookupData: {
+    countries: CountryLookupDto[];
+    provinces: ProvinceLookupDto[];
+    cities: CityLookupDto[];
+  } = {
     countries: [],
     provinces: [],
     cities: []
@@ -70,12 +73,12 @@ export class RestitutionAddressComponent implements OnInit {
           const normalizedProvinceVal = (provinceVal ?? '').trim().toLowerCase();
 
           const countryFromControl = this.lookupData.countries.find(
-            (country) => (country.vsd_name ?? '').toLowerCase() === normalizedCountryVal
+            (country) => (country.name ?? '').toLowerCase() === normalizedCountryVal
           );
-          const selectedCountryId = countryFromControl?.vsd_countryid ?? this.selectedCountry?.vsd_countryid;
+          const selectedCountryId = countryFromControl?.id ?? this.selectedCountry?.id;
 
           const provinceFromControl = this.lookupData.provinces.find((province) => {
-            if ((province.vsd_name ?? '').toLowerCase() !== normalizedProvinceVal) {
+            if ((province.name ?? '').toLowerCase() !== normalizedProvinceVal) {
               return false;
             }
 
@@ -83,10 +86,10 @@ export class RestitutionAddressComponent implements OnInit {
               return true;
             }
 
-            return province._vsd_countryid_value === selectedCountryId;
+            return province.countryId === selectedCountryId;
           });
 
-          const selectedProvinceId = provinceFromControl?.vsd_provinceid ?? this.selectedProvince?.vsd_provinceid;
+          const selectedProvinceId = provinceFromControl?.id ?? this.selectedProvince?.id;
 
           return this.apiLookupsService
             .getApiLookupsCitiesSearch('application/json', {
@@ -99,10 +102,10 @@ export class RestitutionAddressComponent implements OnInit {
               map((data: CitySearchResponseDto) => {
                 if (data && data.cityCollection) {
                   const normalizedSearch = (searchVal ?? '').trim().toLowerCase();
-                  const cityCollection = [...data.cityCollection] as iCity[];
+                  const cityCollection = [...data.cityCollection] as CityLookupDto[];
                   cityCollection.sort((a, b) => {
-                    const cityA = (a.vsd_name ?? '').toLowerCase();
-                    const cityB = (b.vsd_name ?? '').toLowerCase();
+                    const cityA = (a.name ?? '').toLowerCase();
+                    const cityB = (b.name ?? '').toLowerCase();
 
                     const aStartsWithSearch = normalizedSearch ? cityA.startsWith(normalizedSearch) : false;
                     const bStartsWithSearch = normalizedSearch ? cityB.startsWith(normalizedSearch) : false;
@@ -111,7 +114,7 @@ export class RestitutionAddressComponent implements OnInit {
                       return aStartsWithSearch ? -1 : 1;
                     }
 
-                    return (a.vsd_name ?? '').localeCompare(b.vsd_name ?? '');
+                    return (a.name ?? '').localeCompare(b.name ?? '');
                   });
                   return cityCollection;
                 } else return [];
@@ -144,7 +147,7 @@ export class RestitutionAddressComponent implements OnInit {
 
           if (this.lookupData.countries) {
             this.lookupData.countries.sort(function (a, b) {
-              return (a.vsd_name ?? '').localeCompare(b.vsd_name ?? '');
+              return (a.name ?? '').localeCompare(b.name ?? '');
             });
           }
 
@@ -164,7 +167,7 @@ export class RestitutionAddressComponent implements OnInit {
 
           if (this.lookupData.provinces) {
             this.lookupData.provinces.sort(function (a, b) {
-              return (a.vsd_name ?? '').localeCompare(b.vsd_name ?? '');
+              return (a.name ?? '').localeCompare(b.name ?? '');
             });
           }
 
@@ -184,22 +187,22 @@ export class RestitutionAddressComponent implements OnInit {
     }
 
     let pref_countries = this.lookupData.countries.filter(
-      (c) => config.preferred_countries.findIndex((pc) => pc.vsd_countryid == c.vsd_countryid) >= 0
+      (c) => config.preferred_countries.findIndex((pc) => pc.id == c.id) >= 0
     );
     let remaining_countries = this.lookupData.countries.filter(
-      (c) => config.preferred_countries.findIndex((pc) => pc.vsd_countryid == c.vsd_countryid) < 0
+      (c) => config.preferred_countries.findIndex((pc) => pc.id == c.id) < 0
     );
 
     pref_countries.sort(function (a, b) {
       return (
-        config.preferred_countries.findIndex((c) => c.vsd_countryid == a.vsd_countryid) -
-        config.preferred_countries.findIndex((c) => c.vsd_countryid == b.vsd_countryid)
+        config.preferred_countries.findIndex((c) => c.id == a.id) -
+        config.preferred_countries.findIndex((c) => c.id == b.id)
       );
     });
     if (!this.alreadyHasOtherOption(pref_countries) && !this.alreadyHasOtherOption(remaining_countries))
       pref_countries.unshift(config.other_country);
 
-    remaining_countries.sort((a, b) => a.vsd_name.localeCompare(b.vsd_name));
+    remaining_countries.sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
 
     this.countryList = pref_countries.concat(remaining_countries);
     this.cityList = [config.other_city];
@@ -211,18 +214,16 @@ export class RestitutionAddressComponent implements OnInit {
 
     let countryVal = this.group['controls']['country'].value.toString();
     this.selectedCountry = this.lookupData.countries.filter(
-      (c) => c.vsd_name.toLowerCase() == countryVal.toLowerCase()
+      (c) => (c.name ?? '').toLowerCase() == countryVal.toLowerCase()
     )[0];
-    if (countryVal === 'Other') this.selectedCountry = { vsd_name: 'Other', vsd_countryid: '123' };
+    if (countryVal === 'Other') this.selectedCountry = { name: 'Other', id: '123' };
     if (!this.selectedCountry) {
-      this.selectedCountry = this.lookupData.countries.filter((p) => p.vsd_name.toLowerCase() === 'canada')[0];
+      this.selectedCountry = this.lookupData.countries.filter((p) => (p.name ?? '').toLowerCase() === 'canada')[0];
     }
 
     if (this.selectedCountry) {
-      this.provinceList = this.lookupData.provinces.filter(
-        (p) => p._vsd_countryid_value === this.selectedCountry.vsd_countryid
-      );
-      this.provinceList.sort((a, b) => a.vsd_name.localeCompare(b.vsd_name));
+      this.provinceList = this.lookupData.provinces.filter((p) => p.countryId === this.selectedCountry.id);
+      this.provinceList.sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
       let other_province_index = this.getOtherIndex(this.provinceList);
       if (other_province_index < 0) {
         this.provinceList.unshift(config.other_province);
@@ -233,14 +234,14 @@ export class RestitutionAddressComponent implements OnInit {
     }
 
     if (this.selectedCountry) {
-      this.setProvinceAndPostalType(this.selectedCountry.vsd_name);
+      this.setProvinceAndPostalType(this.selectedCountry.name ?? '');
     }
 
     let provinceVal = this.group['controls']['province'].value.toString();
     this.selectedProvince = this.lookupData.provinces.filter(
-      (c) => c.vsd_name.toLowerCase() == provinceVal.toLowerCase()
+      (c) => (c.name ?? '').toLowerCase() == provinceVal.toLowerCase()
     )[0];
-    if (this.selectedProvince && this.selectedProvince.vsd_name != 'British Columbia') this.updateCityList();
+    if (this.selectedProvince && this.selectedProvince.name != 'British Columbia') this.updateCityList();
     else this.setCityValidators();
     this.setProvinceValidators();
   }
@@ -256,18 +257,16 @@ export class RestitutionAddressComponent implements OnInit {
   onCountryChange(event) {
     let provinceControl = this.group['controls']['province'] as UntypedFormControl;
     provinceControl.patchValue('');
-    this.selectedProvince = { vsd_name: '', _vsd_countryid_value: '', vsd_code: '', vsd_provinceid: '' };
+    this.selectedProvince = { name: '', countryId: '', code: '', id: '' };
     let cityControl = this.group['controls']['city'] as UntypedFormControl;
     cityControl.patchValue('');
 
     let selection = event.target.value.toLowerCase();
-    this.selectedCountry = this.lookupData.countries.filter((c) => c.vsd_name.toLowerCase() == selection)[0];
+    this.selectedCountry = this.lookupData.countries.filter((c) => (c.name ?? '').toLowerCase() == selection)[0];
     if (this.selectedCountry) {
-      this.provinceList = this.lookupData.provinces.filter(
-        (p) => p._vsd_countryid_value === this.selectedCountry.vsd_countryid
-      );
+      this.provinceList = this.lookupData.provinces.filter((p) => p.countryId === this.selectedCountry.id);
       if (this.provinceList) {
-        this.provinceList.sort((a, b) => a.vsd_name.localeCompare(b.vsd_name));
+        this.provinceList.sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
       }
       let other_province_index = this.getOtherIndex(this.provinceList);
       if (other_province_index < 0) {
@@ -283,7 +282,7 @@ export class RestitutionAddressComponent implements OnInit {
       let postalControl = this.group['controls']['postalCode'] as UntypedFormControl;
       postalControl.patchValue('');
 
-      this.setProvinceAndPostalType(this.selectedCountry.vsd_name);
+      this.setProvinceAndPostalType(this.selectedCountry.name ?? '');
       this.updateCityList();
     } else {
       this.provinceList = [config.other_province];
@@ -297,28 +296,23 @@ export class RestitutionAddressComponent implements OnInit {
     let cityControl = this.group['controls']['city'] as UntypedFormControl;
     cityControl.patchValue('');
     let selection = event.target.value.toLowerCase();
-    this.selectedProvince = this.lookupData.provinces.filter((c) => c.vsd_name.toLowerCase() == selection)[0];
+    this.selectedProvince = this.lookupData.provinces.filter((c) => (c.name ?? '').toLowerCase() == selection)[0];
     this.updateCityList();
   }
 
   updateCityList() {
-    if (
-      this.selectedProvince &&
-      this.selectedCountry &&
-      this.selectedCountry.vsd_countryid &&
-      this.selectedProvince.vsd_provinceid
-    ) {
+    if (this.selectedProvince && this.selectedCountry && this.selectedCountry.id && this.selectedProvince.id) {
       this.apiLookupsService
         .getApiLookupsCountryCountryIdProvinceProvinceIdCities(
-          this.selectedCountry.vsd_countryid,
-          this.selectedProvince.vsd_provinceid,
+          this.selectedCountry.id,
+          this.selectedProvince.id,
           'application/json'
         )
         .subscribe((city_res) => {
           if (city_res.value) {
-            this.cityList = city_res.value as iCity[];
+            this.cityList = city_res.value as CityLookupDto[];
             if (this.cityList) {
-              this.cityList.sort((a, b) => a.vsd_name.localeCompare(b.vsd_name));
+              this.cityList.sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
             }
             let other_city_index = this.getOtherIndex(this.cityList);
             if (other_city_index < 0) {
@@ -332,14 +326,14 @@ export class RestitutionAddressComponent implements OnInit {
           }
           this.setCityValidators();
         });
-    } else if (this.provinceList.length == 1 && this.selectedCountry && this.selectedCountry.vsd_countryid) {
+    } else if (this.provinceList.length == 1 && this.selectedCountry && this.selectedCountry.id) {
       this.apiLookupsService
-        .getApiLookupsCountryCountryCities(this.selectedCountry.vsd_countryid, 'application/json')
+        .getApiLookupsCountryCountryCities(this.selectedCountry.id, 'application/json')
         .subscribe((city_res) => {
           if (city_res.value) {
-            this.cityList = city_res.value as iCity[];
+            this.cityList = city_res.value as CityLookupDto[];
             if (this.cityList) {
-              this.cityList.sort((a, b) => a.vsd_name.localeCompare(b.vsd_name));
+              this.cityList.sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
             }
             let other_city_index = this.getOtherIndex(this.cityList);
             if (other_city_index < 0) {
@@ -413,10 +407,10 @@ export class RestitutionAddressComponent implements OnInit {
   }
 
   alreadyHasOtherOption(list: any) {
-    return list.findIndex((o) => o.vsd_name == 'Other') >= 0;
+    return list.findIndex((o) => o.name == 'Other') >= 0;
   }
 
   getOtherIndex(list: any) {
-    return list.findIndex((o) => o.vsd_name == 'Other');
+    return list.findIndex((o) => o.name == 'Other');
   }
 }

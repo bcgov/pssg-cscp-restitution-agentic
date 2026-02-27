@@ -8,7 +8,7 @@
 
 export interface CountryLookupDto {
   /** @nullable */
-  vsd_name?: string | null;
+  name?: string | null;
   /** @nullable */
-  vsd_countryid?: string | null;
+  id?: string | null;
 }

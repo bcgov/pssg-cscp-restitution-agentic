@@ -8,11 +8,11 @@
 
 export interface CityLookupDto {
   /** @nullable */
-  _vsd_countryid_value?: string | null;
+  countryId?: string | null;
   /** @nullable */
-  vsd_name?: string | null;
+  name?: string | null;
   /** @nullable */
-  _vsd_stateid_value?: string | null;
+  provinceId?: string | null;
   /** @nullable */
-  vsd_cityid?: string | null;
+  id?: string | null;
 }

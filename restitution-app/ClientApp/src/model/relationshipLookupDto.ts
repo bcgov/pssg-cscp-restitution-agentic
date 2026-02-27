@@ -8,7 +8,7 @@
 
 export interface RelationshipLookupDto {
   /** @nullable */
-  vsd_name?: string | null;
+  name?: string | null;
   /** @nullable */
-  vsd_relationshipid?: string | null;
+  id?: string | null;
 }
