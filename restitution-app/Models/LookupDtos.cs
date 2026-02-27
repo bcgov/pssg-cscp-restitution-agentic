@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Gov.Cscp.VictimServices.Public.Models
 {
@@ -15,60 +16,97 @@ namespace Gov.Cscp.VictimServices.Public.Models
 
     public class CountryLookupDto
     {
-        public string vsd_name { get; set; }
-        public string vsd_countryid { get; set; }
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("id")]
+        public string Id { get; set; }
     }
 
     public class ProvinceLookupDto
     {
-        public string vsd_code { get; set; }
-        public string _vsd_countryid_value { get; set; }
-        public string vsd_name { get; set; }
-        public string vsd_provinceid { get; set; }
+        [JsonProperty("code")]
+        public string Code { get; set; }
+
+        [JsonProperty("countryId")]
+        public string CountryId { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("id")]
+        public string Id { get; set; }
     }
 
     public class CityLookupDto
     {
-        public string _vsd_countryid_value { get; set; }
-        public string vsd_name { get; set; }
-        public string _vsd_stateid_value { get; set; }
-        public string vsd_cityid { get; set; }
+        [JsonProperty("countryId")]
+        public string CountryId { get; set; }
+
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("provinceId")]
+        public string ProvinceId { get; set; }
+
+        [JsonProperty("id")]
+        public string Id { get; set; }
     }
 
     public class RelationshipLookupDto
     {
-        public string vsd_name { get; set; }
-        public string vsd_relationshipid { get; set; }
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("id")]
+        public string Id { get; set; }
     }
 
     public class CourtLookupDto
     {
-        public string vsd_name { get; set; }
-        public string vsd_courtid { get; set; }
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("id")]
+        public string Id { get; set; }
     }
 
     public class PoliceDetachmentLookupDto
     {
-        public string vsd_name { get; set; }
-        public string vsd_policedetachmentid { get; set; }
+        [JsonProperty("name")]
+        public string Name { get; set; }
+
+        [JsonProperty("id")]
+        public string Id { get; set; }
     }
 
     public class LookupItemDto
     {
+        [JsonProperty("id")]
         public string Id { get; set; }
+
+        [JsonProperty("name")]
         public string Name { get; set; }
     }
 
     public class LookupResponseDto<T>
     {
+        [JsonProperty("value")]
         public IList<T> Value { get; set; }
     }
 
     public class CitySearchResponseDto
     {
+        [JsonProperty("result")]
         public string Result { get; set; }
+
+        [JsonProperty("cityCollection")]
         public IList<CityLookupDto> CityCollection { get; set; }
+
+        [JsonProperty("countryCollection")]
         public IList<CountryLookupDto> CountryCollection { get; set; }
+
+        [JsonProperty("provinceCollection")]
         public IList<ProvinceLookupDto> ProvinceCollection { get; set; }
     }
 }

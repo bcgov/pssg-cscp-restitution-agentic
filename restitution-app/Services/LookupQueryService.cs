@@ -10,7 +10,31 @@ using Microsoft.Xrm.Sdk.Query;
 
 namespace Gov.Cscp.VictimServices.Public.Services
 {
-    public class LookupQueryService
+    public interface ILookupQueryService
+    {
+        Task<LookupResponseDto<CountryLookupDto>> GetCountriesAsync();
+        Task<LookupResponseDto<ProvinceLookupDto>> GetProvincesAsync();
+        Task<LookupResponseDto<CityLookupDto>> GetCitiesAsync();
+        Task<CitySearchResponseDto> SearchCitiesAsync(
+            string country,
+            string province,
+            string searchVal,
+            int limit
+        );
+        Task<LookupResponseDto<CityLookupDto>> GetCitiesByCountryAsync(Guid countryId);
+        Task<LookupResponseDto<CityLookupDto>> GetCitiesByProvinceAsync(
+            Guid countryId,
+            Guid provinceId
+        );
+        Task<LookupResponseDto<RelationshipLookupDto>> GetRelationshipsAsync();
+        Task<LookupResponseDto<RelationshipLookupDto>> GetOptionalAuthorizationRelationshipsAsync();
+        Task<LookupResponseDto<RelationshipLookupDto>> GetRepresentativeRelationshipsAsync();
+        Task<LookupResponseDto<RelationshipLookupDto>> GetRestitutionRelationshipsAsync();
+        Task<LookupResponseDto<PoliceDetachmentLookupDto>> GetPoliceDetachmentsAsync();
+        Task<LookupResponseDto<LookupItemDto>> GetCourtsAsync();
+    }
+
+    public class LookupQueryService : ILookupQueryService
     {
         private readonly IOrganizationServiceAsync _organizationService;
 
@@ -31,16 +55,9 @@ namespace Gov.Cscp.VictimServices.Public.Services
 
             var result = await _organizationService.RetrieveMultipleAsync(query);
 
-            return new LookupResponseDto<CountryLookupDto>
-            {
-                Value = result
-                    .Entities.Select(entity => new CountryLookupDto
-                    {
-                        vsd_countryid = entity.Id.ToString(),
-                        vsd_name = entity.GetAttributeValue<string>("vsd_name"),
-                    })
-                    .ToList(),
-            };
+            return LookupMapping.ToLookupResponse(
+                result.Entities.Select(LookupMapping.ToCountryLookupDto).AsQueryable()
+            );
         }
 
         public async Task<LookupResponseDto<ProvinceLookupDto>> GetProvincesAsync()
@@ -60,25 +77,9 @@ namespace Gov.Cscp.VictimServices.Public.Services
 
             var result = await _organizationService.RetrieveMultipleAsync(query);
 
-            return new LookupResponseDto<ProvinceLookupDto>
-            {
-                Value = result
-                    .Entities.Select(entity =>
-                    {
-                        var countryReference = entity.GetAttributeValue<EntityReference>(
-                            "vsd_countryid"
-                        );
-
-                        return new ProvinceLookupDto
-                        {
-                            vsd_provinceid = entity.Id.ToString(),
-                            vsd_code = entity.GetAttributeValue<string>("vsd_code"),
-                            _vsd_countryid_value = countryReference?.Id.ToString(),
-                            vsd_name = entity.GetAttributeValue<string>("vsd_name"),
-                        };
-                    })
-                    .ToList(),
-            };
+            return LookupMapping.ToLookupResponse(
+                result.Entities.Select(LookupMapping.ToProvinceLookupDto).AsQueryable()
+            );
         }
 
         public async Task<LookupResponseDto<CityLookupDto>> GetCitiesAsync()
@@ -93,10 +94,9 @@ namespace Gov.Cscp.VictimServices.Public.Services
 
             var result = await _organizationService.RetrieveMultipleAsync(query);
 
-            return new LookupResponseDto<CityLookupDto>
-            {
-                Value = result.Entities.Select(MapCity).ToList(),
-            };
+            return LookupMapping.ToLookupResponse(
+                result.Entities.Select(LookupMapping.ToCityLookupDto).AsQueryable()
+            );
         }
 
         public async Task<CitySearchResponseDto> SearchCitiesAsync(
@@ -203,7 +203,7 @@ namespace Gov.Cscp.VictimServices.Public.Services
             return new CitySearchResponseDto
             {
                 Result = "success",
-                CityCollection = cityEntities.Select(MapCity).ToList(),
+                CityCollection = cityEntities.Select(LookupMapping.ToCityLookupDto).ToList(),
                 CountryCollection = Array.Empty<CountryLookupDto>(),
                 ProvinceCollection = Array.Empty<ProvinceLookupDto>(),
             };
@@ -222,10 +222,9 @@ namespace Gov.Cscp.VictimServices.Public.Services
 
             var result = await _organizationService.RetrieveMultipleAsync(query);
 
-            return new LookupResponseDto<CityLookupDto>
-            {
-                Value = result.Entities.Select(MapCity).ToList(),
-            };
+            return LookupMapping.ToLookupResponse(
+                result.Entities.Select(LookupMapping.ToCityLookupDto).AsQueryable()
+            );
         }
 
         public async Task<LookupResponseDto<CityLookupDto>> GetCitiesByProvinceAsync(
@@ -245,10 +244,9 @@ namespace Gov.Cscp.VictimServices.Public.Services
 
             var result = await _organizationService.RetrieveMultipleAsync(query);
 
-            return new LookupResponseDto<CityLookupDto>
-            {
-                Value = result.Entities.Select(MapCity).ToList(),
-            };
+            return LookupMapping.ToLookupResponse(
+                result.Entities.Select(LookupMapping.ToCityLookupDto).AsQueryable()
+            );
         }
 
         public async Task<LookupResponseDto<RelationshipLookupDto>> GetRelationshipsAsync()
@@ -289,16 +287,9 @@ namespace Gov.Cscp.VictimServices.Public.Services
 
             var result = await _organizationService.RetrieveMultipleAsync(query);
 
-            return new LookupResponseDto<PoliceDetachmentLookupDto>
-            {
-                Value = result
-                    .Entities.Select(entity => new PoliceDetachmentLookupDto
-                    {
-                        vsd_policedetachmentid = entity.Id.ToString(),
-                        vsd_name = entity.GetAttributeValue<string>("vsd_name"),
-                    })
-                    .ToList(),
-            };
+            return LookupMapping.ToLookupResponse(
+                result.Entities.Select(LookupMapping.ToPoliceDetachmentLookupDto).AsQueryable()
+            );
         }
 
         public async Task<LookupResponseDto<LookupItemDto>> GetCourtsAsync()
@@ -317,16 +308,9 @@ namespace Gov.Cscp.VictimServices.Public.Services
 
             var result = await _organizationService.RetrieveMultipleAsync(query);
 
-            return new LookupResponseDto<LookupItemDto>
-            {
-                Value = result
-                    .Entities.Select(entity => new LookupItemDto
-                    {
-                        Id = entity.Id.ToString(),
-                        Name = entity.GetAttributeValue<string>(VSd_Court.Fields.VSd_Name),
-                    })
-                    .ToList(),
-            };
+            return LookupMapping.ToLookupResponse(
+                result.Entities.Select(LookupMapping.ToCourtLookupItemDto).AsQueryable()
+            );
         }
 
         private async Task<LookupResponseDto<RelationshipLookupDto>> GetRelationshipsInternalAsync(
@@ -349,30 +333,9 @@ namespace Gov.Cscp.VictimServices.Public.Services
 
             var result = await _organizationService.RetrieveMultipleAsync(query);
 
-            return new LookupResponseDto<RelationshipLookupDto>
-            {
-                Value = result
-                    .Entities.Select(entity => new RelationshipLookupDto
-                    {
-                        vsd_relationshipid = entity.Id.ToString(),
-                        vsd_name = entity.GetAttributeValue<string>("vsd_name"),
-                    })
-                    .ToList(),
-            };
-        }
-
-        private static CityLookupDto MapCity(Entity entity)
-        {
-            var countryReference = entity.GetAttributeValue<EntityReference>("vsd_countryid");
-            var provinceReference = entity.GetAttributeValue<EntityReference>("vsd_stateid");
-
-            return new CityLookupDto
-            {
-                vsd_cityid = entity.Id.ToString(),
-                _vsd_countryid_value = countryReference?.Id.ToString(),
-                vsd_name = entity.GetAttributeValue<string>("vsd_name"),
-                _vsd_stateid_value = provinceReference?.Id.ToString(),
-            };
+            return LookupMapping.ToLookupResponse(
+                result.Entities.Select(LookupMapping.ToRelationshipLookupDto).AsQueryable()
+            );
         }
     }
 }

@@ -42,7 +42,7 @@ namespace Gov.Cscp.VictimServices.Public
 
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<TokenHandler>();
-            services.AddScoped<LookupQueryService>();
+            services.AddScoped<ILookupQueryService, LookupQueryService>();
 
             services.AddHttpClient<ICOASTAuthService, COASTAuthService>();
 

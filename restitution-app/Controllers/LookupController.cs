@@ -11,10 +11,10 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
     [Route("api/lookups")]
     public class LookupsController : Controller
     {
-        private readonly LookupQueryService _lookupQueryService;
+        private readonly ILookupQueryService _lookupQueryService;
         private readonly ILogger _logger;
 
-        public LookupsController(LookupQueryService lookupQueryService)
+        public LookupsController(ILookupQueryService lookupQueryService)
         {
             _lookupQueryService = lookupQueryService;
             _logger = Log.Logger;
