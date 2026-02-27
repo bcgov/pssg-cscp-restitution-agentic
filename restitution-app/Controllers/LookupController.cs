@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+using System;
 using System.Threading.Tasks;
-using DataverseModel;
 using Gov.Cscp.VictimServices.Public.Models;
+using Gov.Cscp.VictimServices.Public.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.PowerPlatform.Dataverse.Client;
-using Microsoft.Xrm.Sdk.Query;
 using Serilog;
 
 namespace Gov.Cscp.VictimServices.Public.Controllers
@@ -15,12 +11,12 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
     [Route("api/lookups")]
     public class LookupsController : Controller
     {
-        private readonly IOrganizationServiceAsync _organizationService;
+        private readonly LookupQueryService _lookupQueryService;
         private readonly ILogger _logger;
 
-        public LookupsController(IOrganizationServiceAsync organizationService)
+        public LookupsController(LookupQueryService lookupQueryService)
         {
-            _organizationService = organizationService;
+            _lookupQueryService = lookupQueryService;
             _logger = Log.Logger;
         }
 
@@ -30,28 +26,7 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         {
             try
             {
-                var query = new QueryExpression("vsd_country")
-                {
-                    ColumnSet = new ColumnSet("vsd_countryid", "vsd_name"),
-                };
-
-                query.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0);
-                query.Orders.Add(new OrderExpression("vsd_name", OrderType.Ascending));
-
-                var result = await _organizationService.RetrieveMultipleAsync(query);
-
-                var response = new LookupResponseDto<CountryLookupDto>
-                {
-                    Value = result
-                        .Entities.Select(entity => new CountryLookupDto
-                        {
-                            vsd_countryid = entity.Id.ToString(),
-                            vsd_name = entity.GetAttributeValue<string>("vsd_name"),
-                        })
-                        .ToList(),
-                };
-
-                return Ok(response);
+                return Ok(await _lookupQueryService.GetCountriesAsync());
             }
             catch (Exception e)
             {
@@ -61,7 +36,6 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
                 );
                 return BadRequest();
             }
-            finally { }
         }
 
         [HttpGet("provinces")]
@@ -73,43 +47,7 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         {
             try
             {
-                var query = new QueryExpression("vsd_province")
-                {
-                    ColumnSet = new ColumnSet(
-                        "vsd_provinceid",
-                        "vsd_code",
-                        "vsd_countryid",
-                        "vsd_name"
-                    ),
-                };
-
-                query.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0);
-                query.Orders.Add(new OrderExpression("vsd_name", OrderType.Ascending));
-
-                var result = await _organizationService.RetrieveMultipleAsync(query);
-
-                var response = new LookupResponseDto<ProvinceLookupDto>
-                {
-                    Value = result
-                        .Entities.Select(entity =>
-                        {
-                            var countryReference =
-                                entity.GetAttributeValue<Microsoft.Xrm.Sdk.EntityReference>(
-                                    "vsd_countryid"
-                                );
-
-                            return new ProvinceLookupDto
-                            {
-                                vsd_provinceid = entity.Id.ToString(),
-                                vsd_code = entity.GetAttributeValue<string>("vsd_code"),
-                                _vsd_countryid_value = countryReference?.Id.ToString(),
-                                vsd_name = entity.GetAttributeValue<string>("vsd_name"),
-                            };
-                        })
-                        .ToList(),
-                };
-
-                return Ok(response);
+                return Ok(await _lookupQueryService.GetProvincesAsync());
             }
             catch (Exception e)
             {
@@ -119,7 +57,6 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
                 );
                 return BadRequest();
             }
-            finally { }
         }
 
         [HttpGet("cities")]
@@ -128,47 +65,7 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         {
             try
             {
-                var query = new QueryExpression("vsd_city")
-                {
-                    ColumnSet = new ColumnSet(
-                        "vsd_cityid",
-                        "vsd_countryid",
-                        "vsd_stateid",
-                        "vsd_name"
-                    ),
-                };
-
-                query.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0);
-                query.Orders.Add(new OrderExpression("vsd_name", OrderType.Ascending));
-
-                var result = await _organizationService.RetrieveMultipleAsync(query);
-
-                var response = new LookupResponseDto<CityLookupDto>
-                {
-                    Value = result
-                        .Entities.Select(entity =>
-                        {
-                            var countryReference =
-                                entity.GetAttributeValue<Microsoft.Xrm.Sdk.EntityReference>(
-                                    "vsd_countryid"
-                                );
-                            var provinceReference =
-                                entity.GetAttributeValue<Microsoft.Xrm.Sdk.EntityReference>(
-                                    "vsd_stateid"
-                                );
-
-                            return new CityLookupDto
-                            {
-                                vsd_cityid = entity.Id.ToString(),
-                                _vsd_countryid_value = countryReference?.Id.ToString(),
-                                vsd_name = entity.GetAttributeValue<string>("vsd_name"),
-                                _vsd_stateid_value = provinceReference?.Id.ToString(),
-                            };
-                        })
-                        .ToList(),
-                };
-
-                return Ok(response);
+                return Ok(await _lookupQueryService.GetCitiesAsync());
             }
             catch (Exception e)
             {
@@ -178,7 +75,6 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
                 );
                 return BadRequest();
             }
-            finally { }
         }
 
         [HttpGet("cities/search")]
@@ -192,129 +88,9 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         {
             try
             {
-                var maxResults = limit > 0 ? limit : 15;
-                var normalizedSearchVal = searchVal?.Trim();
-                var cityEntities = new List<Microsoft.Xrm.Sdk.Entity>();
-                Guid countryId = Guid.Empty;
-                Guid provinceId = Guid.Empty;
-
-                var hasCountryFilter =
-                    !string.IsNullOrWhiteSpace(country) && Guid.TryParse(country, out countryId);
-                var hasProvinceFilter =
-                    !string.IsNullOrWhiteSpace(province) && Guid.TryParse(province, out provinceId);
-
-                QueryExpression BuildCityQuery(int topCount)
-                {
-                    var cityQuery = new QueryExpression("vsd_city")
-                    {
-                        ColumnSet = new ColumnSet(
-                            "vsd_cityid",
-                            "vsd_countryid",
-                            "vsd_stateid",
-                            "vsd_name"
-                        ),
-                        TopCount = topCount,
-                    };
-
-                    cityQuery.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0);
-
-                    if (hasCountryFilter)
-                    {
-                        cityQuery.Criteria.AddCondition(
-                            "vsd_countryid",
-                            ConditionOperator.Equal,
-                            countryId
-                        );
-                    }
-
-                    if (hasProvinceFilter)
-                    {
-                        cityQuery.Criteria.AddCondition(
-                            "vsd_stateid",
-                            ConditionOperator.Equal,
-                            provinceId
-                        );
-                    }
-
-                    cityQuery.Orders.Add(new OrderExpression("vsd_name", OrderType.Ascending));
-
-                    return cityQuery;
-                }
-
-                if (!string.IsNullOrWhiteSpace(normalizedSearchVal))
-                {
-                    var startsWithQuery = BuildCityQuery(maxResults);
-                    startsWithQuery.Criteria.AddCondition(
-                        "vsd_name",
-                        ConditionOperator.BeginsWith,
-                        normalizedSearchVal
-                    );
-
-                    var startsWithResult = await _organizationService.RetrieveMultipleAsync(
-                        startsWithQuery
-                    );
-                    cityEntities.AddRange(startsWithResult.Entities);
-
-                    if (cityEntities.Count < maxResults)
-                    {
-                        var containsQuery = BuildCityQuery(maxResults - cityEntities.Count);
-                        containsQuery.Criteria.AddCondition(
-                            "vsd_name",
-                            ConditionOperator.Like,
-                            $"%{normalizedSearchVal}%"
-                        );
-                        containsQuery.Criteria.AddCondition(
-                            "vsd_name",
-                            ConditionOperator.NotLike,
-                            $"{normalizedSearchVal}%"
-                        );
-
-                        var containsResult = await _organizationService.RetrieveMultipleAsync(
-                            containsQuery
-                        );
-                        var existingIds = cityEntities.Select(entity => entity.Id).ToHashSet();
-
-                        cityEntities.AddRange(
-                            containsResult.Entities.Where(entity => existingIds.Add(entity.Id))
-                        );
-                    }
-                }
-                else
-                {
-                    var query = BuildCityQuery(maxResults);
-                    var result = await _organizationService.RetrieveMultipleAsync(query);
-                    cityEntities.AddRange(result.Entities);
-                }
-
-                var response = new CitySearchResponseDto
-                {
-                    Result = "success",
-                    CityCollection = cityEntities
-                        .Select(entity =>
-                        {
-                            var countryReference =
-                                entity.GetAttributeValue<Microsoft.Xrm.Sdk.EntityReference>(
-                                    "vsd_countryid"
-                                );
-                            var provinceReference =
-                                entity.GetAttributeValue<Microsoft.Xrm.Sdk.EntityReference>(
-                                    "vsd_stateid"
-                                );
-
-                            return new CityLookupDto
-                            {
-                                vsd_cityid = entity.Id.ToString(),
-                                _vsd_countryid_value = countryReference?.Id.ToString(),
-                                vsd_name = entity.GetAttributeValue<string>("vsd_name"),
-                                _vsd_stateid_value = provinceReference?.Id.ToString(),
-                            };
-                        })
-                        .ToList(),
-                    CountryCollection = Array.Empty<CountryLookupDto>(),
-                    ProvinceCollection = Array.Empty<ProvinceLookupDto>(),
-                };
-
-                return Ok(response);
+                return Ok(
+                    await _lookupQueryService.SearchCitiesAsync(country, province, searchVal, limit)
+                );
             }
             catch (Exception e)
             {
@@ -324,7 +100,6 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
                 );
                 return BadRequest();
             }
-            finally { }
         }
 
         [HttpGet("country/{country}/cities")]
@@ -340,48 +115,7 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
                     return BadRequest();
                 }
 
-                var query = new QueryExpression("vsd_city")
-                {
-                    ColumnSet = new ColumnSet(
-                        "vsd_cityid",
-                        "vsd_countryid",
-                        "vsd_stateid",
-                        "vsd_name"
-                    ),
-                };
-
-                query.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0);
-                query.Criteria.AddCondition("vsd_countryid", ConditionOperator.Equal, countryId);
-                query.Orders.Add(new OrderExpression("vsd_name", OrderType.Ascending));
-
-                var result = await _organizationService.RetrieveMultipleAsync(query);
-
-                var response = new LookupResponseDto<CityLookupDto>
-                {
-                    Value = result
-                        .Entities.Select(entity =>
-                        {
-                            var countryReference =
-                                entity.GetAttributeValue<Microsoft.Xrm.Sdk.EntityReference>(
-                                    "vsd_countryid"
-                                );
-                            var provinceReference =
-                                entity.GetAttributeValue<Microsoft.Xrm.Sdk.EntityReference>(
-                                    "vsd_stateid"
-                                );
-
-                            return new CityLookupDto
-                            {
-                                vsd_cityid = entity.Id.ToString(),
-                                _vsd_countryid_value = countryReference?.Id.ToString(),
-                                vsd_name = entity.GetAttributeValue<string>("vsd_name"),
-                                _vsd_stateid_value = provinceReference?.Id.ToString(),
-                            };
-                        })
-                        .ToList(),
-                };
-
-                return Ok(response);
+                return Ok(await _lookupQueryService.GetCitiesByCountryAsync(countryId));
             }
             catch (Exception e)
             {
@@ -391,7 +125,6 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
                 );
                 return BadRequest();
             }
-            finally { }
         }
 
         [HttpGet("country/{countryId}/province/{provinceId}/cities")]
@@ -413,57 +146,12 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
                     return BadRequest();
                 }
 
-                var query = new QueryExpression("vsd_city")
-                {
-                    ColumnSet = new ColumnSet(
-                        "vsd_cityid",
-                        "vsd_countryid",
-                        "vsd_stateid",
-                        "vsd_name"
-                    ),
-                };
-
-                query.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0);
-                query.Criteria.AddCondition(
-                    "vsd_countryid",
-                    ConditionOperator.Equal,
-                    parsedCountryId
+                return Ok(
+                    await _lookupQueryService.GetCitiesByProvinceAsync(
+                        parsedCountryId,
+                        parsedProvinceId
+                    )
                 );
-                query.Criteria.AddCondition(
-                    "vsd_stateid",
-                    ConditionOperator.Equal,
-                    parsedProvinceId
-                );
-                query.Orders.Add(new OrderExpression("vsd_name", OrderType.Ascending));
-
-                var result = await _organizationService.RetrieveMultipleAsync(query);
-
-                var response = new LookupResponseDto<CityLookupDto>
-                {
-                    Value = result
-                        .Entities.Select(entity =>
-                        {
-                            var countryReference =
-                                entity.GetAttributeValue<Microsoft.Xrm.Sdk.EntityReference>(
-                                    "vsd_countryid"
-                                );
-                            var provinceReference =
-                                entity.GetAttributeValue<Microsoft.Xrm.Sdk.EntityReference>(
-                                    "vsd_stateid"
-                                );
-
-                            return new CityLookupDto
-                            {
-                                vsd_cityid = entity.Id.ToString(),
-                                _vsd_countryid_value = countryReference?.Id.ToString(),
-                                vsd_name = entity.GetAttributeValue<string>("vsd_name"),
-                                _vsd_stateid_value = provinceReference?.Id.ToString(),
-                            };
-                        })
-                        .ToList(),
-                };
-
-                return Ok(response);
             }
             catch (Exception e)
             {
@@ -473,7 +161,6 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
                 );
                 return BadRequest();
             }
-            finally { }
         }
 
         [HttpGet("relationships")]
@@ -485,28 +172,7 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         {
             try
             {
-                var query = new QueryExpression("vsd_relationship")
-                {
-                    ColumnSet = new ColumnSet("vsd_relationshipid", "vsd_name"),
-                };
-
-                query.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0);
-                query.Orders.Add(new OrderExpression("vsd_name", OrderType.Ascending));
-
-                var result = await _organizationService.RetrieveMultipleAsync(query);
-
-                var response = new LookupResponseDto<RelationshipLookupDto>
-                {
-                    Value = result
-                        .Entities.Select(entity => new RelationshipLookupDto
-                        {
-                            vsd_relationshipid = entity.Id.ToString(),
-                            vsd_name = entity.GetAttributeValue<string>("vsd_name"),
-                        })
-                        .ToList(),
-                };
-
-                return Ok(response);
+                return Ok(await _lookupQueryService.GetRelationshipsAsync());
             }
             catch (Exception e)
             {
@@ -516,7 +182,6 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
                 );
                 return BadRequest();
             }
-            finally { }
         }
 
         [HttpGet("auth_relationships")]
@@ -530,33 +195,7 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         {
             try
             {
-                var query = new QueryExpression("vsd_relationship")
-                {
-                    ColumnSet = new ColumnSet("vsd_relationshipid", "vsd_name"),
-                };
-
-                query.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0);
-                query.Criteria.AddCondition(
-                    "vsd_optionalauthorizedrelationship",
-                    ConditionOperator.Equal,
-                    true
-                );
-                query.Orders.Add(new OrderExpression("vsd_name", OrderType.Ascending));
-
-                var result = await _organizationService.RetrieveMultipleAsync(query);
-
-                var response = new LookupResponseDto<RelationshipLookupDto>
-                {
-                    Value = result
-                        .Entities.Select(entity => new RelationshipLookupDto
-                        {
-                            vsd_relationshipid = entity.Id.ToString(),
-                            vsd_name = entity.GetAttributeValue<string>("vsd_name"),
-                        })
-                        .ToList(),
-                };
-
-                return Ok(response);
+                return Ok(await _lookupQueryService.GetOptionalAuthorizationRelationshipsAsync());
             }
             catch (Exception e)
             {
@@ -566,7 +205,6 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
                 );
                 return BadRequest();
             }
-            finally { }
         }
 
         [HttpGet("representative_relationships")]
@@ -580,33 +218,7 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         {
             try
             {
-                var query = new QueryExpression("vsd_relationship")
-                {
-                    ColumnSet = new ColumnSet("vsd_relationshipid", "vsd_name"),
-                };
-
-                query.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0);
-                query.Criteria.AddCondition(
-                    "vsd_cvap_representativerelationship",
-                    ConditionOperator.Equal,
-                    true
-                );
-                query.Orders.Add(new OrderExpression("vsd_name", OrderType.Ascending));
-
-                var result = await _organizationService.RetrieveMultipleAsync(query);
-
-                var response = new LookupResponseDto<RelationshipLookupDto>
-                {
-                    Value = result
-                        .Entities.Select(entity => new RelationshipLookupDto
-                        {
-                            vsd_relationshipid = entity.Id.ToString(),
-                            vsd_name = entity.GetAttributeValue<string>("vsd_name"),
-                        })
-                        .ToList(),
-                };
-
-                return Ok(response);
+                return Ok(await _lookupQueryService.GetRepresentativeRelationshipsAsync());
             }
             catch (Exception e)
             {
@@ -616,7 +228,6 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
                 );
                 return BadRequest();
             }
-            finally { }
         }
 
         [HttpGet("restitution_relationships")]
@@ -630,33 +241,7 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         {
             try
             {
-                var query = new QueryExpression("vsd_relationship")
-                {
-                    ColumnSet = new ColumnSet("vsd_relationshipid", "vsd_name"),
-                };
-
-                query.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0);
-                query.Criteria.AddCondition(
-                    "vsd_rest_offenderrelationship",
-                    ConditionOperator.Equal,
-                    true
-                );
-                query.Orders.Add(new OrderExpression("vsd_name", OrderType.Ascending));
-
-                var result = await _organizationService.RetrieveMultipleAsync(query);
-
-                var response = new LookupResponseDto<RelationshipLookupDto>
-                {
-                    Value = result
-                        .Entities.Select(entity => new RelationshipLookupDto
-                        {
-                            vsd_relationshipid = entity.Id.ToString(),
-                            vsd_name = entity.GetAttributeValue<string>("vsd_name"),
-                        })
-                        .ToList(),
-                };
-
-                return Ok(response);
+                return Ok(await _lookupQueryService.GetRestitutionRelationshipsAsync());
             }
             catch (Exception e)
             {
@@ -666,7 +251,6 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
                 );
                 return BadRequest();
             }
-            finally { }
         }
 
         [HttpGet("police_detachments")]
@@ -680,28 +264,7 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         {
             try
             {
-                var query = new QueryExpression("vsd_policedetachment")
-                {
-                    ColumnSet = new ColumnSet("vsd_policedetachmentid", "vsd_name"),
-                };
-
-                query.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0);
-                query.Orders.Add(new OrderExpression("vsd_name", OrderType.Ascending));
-
-                var result = await _organizationService.RetrieveMultipleAsync(query);
-
-                var response = new LookupResponseDto<PoliceDetachmentLookupDto>
-                {
-                    Value = result
-                        .Entities.Select(entity => new PoliceDetachmentLookupDto
-                        {
-                            vsd_policedetachmentid = entity.Id.ToString(),
-                            vsd_name = entity.GetAttributeValue<string>("vsd_name"),
-                        })
-                        .ToList(),
-                };
-
-                return Ok(response);
+                return Ok(await _lookupQueryService.GetPoliceDetachmentsAsync());
             }
             catch (Exception e)
             {
@@ -711,7 +274,6 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
                 );
                 return BadRequest();
             }
-            finally { }
         }
 
         [HttpGet("courts")]
@@ -720,37 +282,7 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         {
             try
             {
-                var query = new QueryExpression(VSd_Court.EntityLogicalName)
-                {
-                    ColumnSet = new ColumnSet(
-                        VSd_Court.Fields.VSd_CourtId,
-                        VSd_Court.Fields.VSd_Name
-                    ),
-                };
-
-                query.Criteria.AddCondition(
-                    VSd_Court.Fields.StateCode,
-                    ConditionOperator.Equal,
-                    (int)VSd_Court_StateCode.Active
-                );
-                query.Orders.Add(
-                    new OrderExpression(VSd_Court.Fields.VSd_Name, OrderType.Ascending)
-                );
-
-                var result = await _organizationService.RetrieveMultipleAsync(query);
-
-                var response = new LookupResponseDto<LookupItemDto>
-                {
-                    Value = result
-                        .Entities.Select(entity => new LookupItemDto
-                        {
-                            Id = entity.Id.ToString(),
-                            Name = entity.GetAttributeValue<string>(VSd_Court.Fields.VSd_Name),
-                        })
-                        .ToList(),
-                };
-
-                return Ok(response);
+                return Ok(await _lookupQueryService.GetCourtsAsync());
             }
             catch (Exception e)
             {
@@ -760,7 +292,6 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
                 );
                 return BadRequest();
             }
-            finally { }
         }
     }
 }
