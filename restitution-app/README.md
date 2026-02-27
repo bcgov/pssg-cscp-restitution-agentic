@@ -1,51 +1,31 @@
-# restitution-app
+# Restitution API
 
-## Local Development
+ASP.NET Core API for the Restitution application.
 
-### Pre-reqs
+## Requirements
 
-- Node 22.x
-- npm 11.x
+- .NET SDK 10
 
-#### For those using [NVM](https://github.com/nvm-sh/nvm)
+## Local development
 
-```bash
-nvm install 22.18.0
-nvm use 22.18.0
-```
-
-## Running the application locally
-
-### NPM Install
-
-From the `restitution-app/ClientApp` folder
-
-```
-npm install
-```
-
-### DotNet Secrets
-
-[Setup secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-9.0&tabs=windows#secret-manager)
-
-### Start the app
-
-#### Backend
-
-From the `restitution-app` folder.
+From `restitution-app`:
 
 ```bash
+dotnet restore
 dotnet run
 ```
 
-The backend should now be available at `localhost:4200/api`.
+Default local URL (from launch settings): `http://localhost:5000`
 
-#### Frontend
+## User secrets
 
-From the `restitution-app/ClientApp` folder.
+This project uses ASP.NET Core user secrets (`UserSecretsId` is set in `restitution-app.csproj`).
 
-```bash
-npm start
-```
+Use Microsoft docs to configure secrets locally:
 
-The frontend should now be available at `localhost:4200`.
+- https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets
+
+## Swagger
+
+- UI: `http://localhost:5000/swagger`
+- OpenAPI JSON: `http://localhost:5000/swagger/v1/swagger.json`
