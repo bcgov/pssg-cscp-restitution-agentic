@@ -65,18 +65,54 @@ export class RestitutionAddressComponent implements OnInit {
           let countryVal = this.group['controls']['country'].value.toString();
           let provinceVal = this.group['controls']['province'].value.toString();
           let searchVal = this.group['controls']['city'].value.toString();
+
+          const normalizedCountryVal = (countryVal ?? '').trim().toLowerCase();
+          const normalizedProvinceVal = (provinceVal ?? '').trim().toLowerCase();
+
+          const countryFromControl = this.lookupData.countries.find(
+            (country) => (country.vsd_name ?? '').toLowerCase() === normalizedCountryVal
+          );
+          const selectedCountryId = countryFromControl?.vsd_countryid ?? this.selectedCountry?.vsd_countryid;
+
+          const provinceFromControl = this.lookupData.provinces.find((province) => {
+            if ((province.vsd_name ?? '').toLowerCase() !== normalizedProvinceVal) {
+              return false;
+            }
+
+            if (!selectedCountryId) {
+              return true;
+            }
+
+            return province._vsd_countryid_value === selectedCountryId;
+          });
+
+          const selectedProvinceId = provinceFromControl?.vsd_provinceid ?? this.selectedProvince?.vsd_provinceid;
+
           return this.apiLookupsService
             .getApiLookupsCitiesSearch('application/json', {
-              country: countryVal,
-              province: provinceVal,
+              country: selectedCountryId,
+              province: selectedProvinceId,
               searchVal,
               limit: 15
             })
             .pipe(
               map((data: CitySearchResponseDto) => {
                 if (data && data.cityCollection) {
+                  const normalizedSearch = (searchVal ?? '').trim().toLowerCase();
                   const cityCollection = [...data.cityCollection] as iCity[];
-                  cityCollection.sort((a, b) => a.vsd_name.localeCompare(b.vsd_name));
+                  cityCollection.sort((a, b) => {
+                    const cityA = (a.vsd_name ?? '').toLowerCase();
+                    const cityB = (b.vsd_name ?? '').toLowerCase();
+
+                    const aStartsWithSearch = normalizedSearch ? cityA.startsWith(normalizedSearch) : false;
+                    const bStartsWithSearch = normalizedSearch ? cityB.startsWith(normalizedSearch) : false;
+
+                    if (aStartsWithSearch !== bStartsWithSearch) {
+                      return aStartsWithSearch ? -1 : 1;
+                    }
+
+                    return (a.vsd_name ?? '').localeCompare(b.vsd_name ?? '');
+                  });
                   return cityCollection;
                 } else return [];
               }),
@@ -137,26 +173,6 @@ export class RestitutionAddressComponent implements OnInit {
       );
     }
 
-    if (!this.lookupData.cities || this.lookupData.cities.length == 0) {
-      promise_array.push(
-        new Promise<void>(async (resolve) => {
-          if (!this.lookupsStore.isCitiesLoaded()) {
-            await this.lookupsStore.loadCities();
-          }
-
-          this.lookupData.cities = [...this.lookupsStore.cities()];
-
-          if (this.lookupData.cities) {
-            this.lookupData.cities.sort(function (a, b) {
-              return (a.vsd_name ?? '').localeCompare(b.vsd_name ?? '');
-            });
-          }
-
-          resolve();
-        })
-      );
-    }
-
     Promise.all(promise_array).then((res) => {
       this.setupForm();
     });
@@ -186,15 +202,7 @@ export class RestitutionAddressComponent implements OnInit {
     remaining_countries.sort((a, b) => a.vsd_name.localeCompare(b.vsd_name));
 
     this.countryList = pref_countries.concat(remaining_countries);
-    this.cityList = this.lookupData.cities;
-    this.cityList.sort((a, b) => a.vsd_name.localeCompare(b.vsd_name));
-    let other_city_index = this.getOtherIndex(this.cityList);
-    if (other_city_index < 0) {
-      this.cityList.unshift(config.other_city);
-    } else {
-      let other_city = this.cityList.splice(other_city_index, 1)[0];
-      this.cityList.unshift(other_city);
-    }
+    this.cityList = [config.other_city];
 
     let canada = COUNTRIES_ADDRESS.filter((c) => c.name.toLowerCase() == 'canada')[0];
     this.provinceType = canada.areaType;

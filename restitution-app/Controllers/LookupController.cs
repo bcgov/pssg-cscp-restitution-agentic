@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using DataverseModel;
@@ -191,57 +192,105 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         {
             try
             {
-                var query = new QueryExpression("vsd_city")
-                {
-                    ColumnSet = new ColumnSet(
-                        "vsd_cityid",
-                        "vsd_countryid",
-                        "vsd_stateid",
-                        "vsd_name"
-                    ),
-                    TopCount = limit > 0 ? limit : 15,
-                };
+                var maxResults = limit > 0 ? limit : 15;
+                var normalizedSearchVal = searchVal?.Trim();
+                var cityEntities = new List<Microsoft.Xrm.Sdk.Entity>();
+                Guid countryId = Guid.Empty;
+                Guid provinceId = Guid.Empty;
 
-                query.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0);
+                var hasCountryFilter =
+                    !string.IsNullOrWhiteSpace(country) && Guid.TryParse(country, out countryId);
+                var hasProvinceFilter =
+                    !string.IsNullOrWhiteSpace(province) && Guid.TryParse(province, out provinceId);
 
-                if (
-                    !string.IsNullOrWhiteSpace(country)
-                    && Guid.TryParse(country, out Guid countryId)
-                )
+                QueryExpression BuildCityQuery(int topCount)
                 {
-                    query.Criteria.AddCondition(
-                        "vsd_countryid",
-                        ConditionOperator.Equal,
-                        countryId
-                    );
+                    var cityQuery = new QueryExpression("vsd_city")
+                    {
+                        ColumnSet = new ColumnSet(
+                            "vsd_cityid",
+                            "vsd_countryid",
+                            "vsd_stateid",
+                            "vsd_name"
+                        ),
+                        TopCount = topCount,
+                    };
+
+                    cityQuery.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0);
+
+                    if (hasCountryFilter)
+                    {
+                        cityQuery.Criteria.AddCondition(
+                            "vsd_countryid",
+                            ConditionOperator.Equal,
+                            countryId
+                        );
+                    }
+
+                    if (hasProvinceFilter)
+                    {
+                        cityQuery.Criteria.AddCondition(
+                            "vsd_stateid",
+                            ConditionOperator.Equal,
+                            provinceId
+                        );
+                    }
+
+                    cityQuery.Orders.Add(new OrderExpression("vsd_name", OrderType.Ascending));
+
+                    return cityQuery;
                 }
 
-                if (
-                    !string.IsNullOrWhiteSpace(province)
-                    && Guid.TryParse(province, out Guid provinceId)
-                )
+                if (!string.IsNullOrWhiteSpace(normalizedSearchVal))
                 {
-                    query.Criteria.AddCondition("vsd_stateid", ConditionOperator.Equal, provinceId);
-                }
-
-                if (!string.IsNullOrWhiteSpace(searchVal))
-                {
-                    query.Criteria.AddCondition(
+                    var startsWithQuery = BuildCityQuery(maxResults);
+                    startsWithQuery.Criteria.AddCondition(
                         "vsd_name",
-                        ConditionOperator.Like,
-                        $"%{searchVal.Trim()}%"
+                        ConditionOperator.BeginsWith,
+                        normalizedSearchVal
                     );
+
+                    var startsWithResult = await _organizationService.RetrieveMultipleAsync(
+                        startsWithQuery
+                    );
+                    cityEntities.AddRange(startsWithResult.Entities);
+
+                    if (cityEntities.Count < maxResults)
+                    {
+                        var containsQuery = BuildCityQuery(maxResults - cityEntities.Count);
+                        containsQuery.Criteria.AddCondition(
+                            "vsd_name",
+                            ConditionOperator.Like,
+                            $"%{normalizedSearchVal}%"
+                        );
+                        containsQuery.Criteria.AddCondition(
+                            "vsd_name",
+                            ConditionOperator.NotLike,
+                            $"{normalizedSearchVal}%"
+                        );
+
+                        var containsResult = await _organizationService.RetrieveMultipleAsync(
+                            containsQuery
+                        );
+                        var existingIds = cityEntities.Select(entity => entity.Id).ToHashSet();
+
+                        cityEntities.AddRange(
+                            containsResult.Entities.Where(entity => existingIds.Add(entity.Id))
+                        );
+                    }
                 }
-
-                query.Orders.Add(new OrderExpression("vsd_name", OrderType.Ascending));
-
-                var result = await _organizationService.RetrieveMultipleAsync(query);
+                else
+                {
+                    var query = BuildCityQuery(maxResults);
+                    var result = await _organizationService.RetrieveMultipleAsync(query);
+                    cityEntities.AddRange(result.Entities);
+                }
 
                 var response = new CitySearchResponseDto
                 {
                     Result = "success",
-                    CityCollection = result
-                        .Entities.Select(entity =>
+                    CityCollection = cityEntities
+                        .Select(entity =>
                         {
                             var countryReference =
                                 entity.GetAttributeValue<Microsoft.Xrm.Sdk.EntityReference>(

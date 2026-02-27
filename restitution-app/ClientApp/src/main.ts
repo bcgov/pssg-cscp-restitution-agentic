@@ -20,7 +20,6 @@ platformBrowserDynamic().bootstrapModule(AppModule, {
         inject(ConfigurationLoaderService).loadConfiguration(),
         inject(LookupsStore).loadCountries(),
         inject(LookupsStore).loadProvinces(),
-        inject(LookupsStore).loadCities(),
         inject(LookupsStore).loadCourts()
       ]);
     })

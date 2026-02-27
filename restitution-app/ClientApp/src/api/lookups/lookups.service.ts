@@ -217,6 +217,8 @@ export class LookupsService {
     params?: GetApiLookupsCitiesSearchParams,
     options?: HttpClientOptions
   ): Observable<CitySearchResponseDto | string | Blob> {
+    const queryParams = params != null ? filterParams(params as Record<string, unknown>) : options?.params;
+
     const headers =
       options?.headers instanceof HttpHeaders
         ? options.headers.set('Accept', accept)
@@ -225,18 +227,21 @@ export class LookupsService {
     if (accept.includes('json') || accept.includes('+json')) {
       return this.http.get<CitySearchResponseDto>(`/api/lookups/cities/search`, {
         ...options,
+        params: queryParams,
         responseType: 'json',
         headers
       });
     } else if (accept.startsWith('text/') || accept.includes('xml')) {
       return this.http.get(`/api/lookups/cities/search`, {
         ...options,
+        params: queryParams,
         responseType: 'text',
         headers
       }) as Observable<string>;
     } else {
       return this.http.get(`/api/lookups/cities/search`, {
         ...options,
+        params: queryParams,
         responseType: 'blob',
         headers
       }) as Observable<Blob>;
