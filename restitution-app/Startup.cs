@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Net.Http;
 using System.Reflection;
+using Database.Extensions;
 using Gov.Cscp.VictimServices.Public.Services;
 using Gov.Cscp.VictimServices.Public.Utilities.Converters;
 using Microsoft.AspNetCore.Authorization;
@@ -37,13 +38,13 @@ namespace Gov.Cscp.VictimServices.Public
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddDatabase(Configuration);
+
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
             services.AddTransient<TokenHandler>();
+            services.AddScoped<ILookupQueryService, LookupQueryService>();
 
             services.AddHttpClient<ICOASTAuthService, COASTAuthService>();
-            services
-                .AddHttpClient<IDynamicsResultService, DynamicsResultService>()
-                .AddHttpMessageHandler<TokenHandler>();
 
             services.AddMemoryCache();
 
@@ -64,7 +65,6 @@ namespace Gov.Cscp.VictimServices.Public
                     opts.Filters.Add(typeof(XDownloadOptionsAttribute));
                     opts.Filters.Add(typeof(XFrameOptionsAttribute));
                     opts.Filters.Add(typeof(XXssProtectionAttribute));
-                    //CSPReportOnly
                     opts.Filters.Add(typeof(CspReportOnlyAttribute));
                     opts.Filters.Add(new CspScriptSrcReportOnlyAttribute { None = true });
 
@@ -87,13 +87,7 @@ namespace Gov.Cscp.VictimServices.Public
                         .Json
                         .ReferenceLoopHandling
                         .Ignore;
-
-                    // avoid converting whole incoming model, it may lead to NullValueHandling.Ignore removing expected properties
-                    // use coverter on individual properties instead, for example int? type + optionset combo
-                    opts.SerializerSettings.Converters.Add(new EmptyStringToNullConverter());
                 });
-
-            // services.RegisterPermissionHandler();
 
             // setup key ring to persist in storage.
             if (!string.IsNullOrEmpty(Configuration["KEY_RING_DIRECTORY"]))

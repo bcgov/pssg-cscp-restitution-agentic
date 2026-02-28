@@ -1,30 +1,31 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, inject, Input, OnInit } from '@angular/core';
 import { ControlContainer, UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
-import { iLookupData } from '../../../interfaces/lookup-data.interface';
-import { LookupService } from '../../../services/lookup.service';
+import { LookupsService as ApiLookupsService } from '../../../../api/lookups/lookups.service';
 import { SignPadDialog } from '../../../sign-dialog/sign-dialog.component';
+import { LookupsStore } from '../../../store/lookups/lookups.store';
 import { AddressHelper } from '../../address/address.helper';
 import { CRMMultiBoolean, IOptionSetVal, MY_FORMATS, ResitutionForm } from '../../enums-list';
 import { FormBase } from '../../form-base';
 import { POSTAL_CODE } from '../../regex.constants';
 import { RestitutionInfoHelper } from './restitution-information.helper';
 
+export const RESTITUTION_INFORMATION_PROVIDERS = [
+  { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+  { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS }
+];
+
 @Component({
   selector: 'app-restitution-information',
   templateUrl: './restitution-information.component.html',
   styleUrls: ['./restitution-information.component.scss'],
-  providers: [
-    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
-    { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS }
-  ],
+  providers: RESTITUTION_INFORMATION_PROVIDERS,
   standalone: false
 })
 export class RestitutionInformationComponent extends FormBase implements OnInit {
   @Input() formType: IOptionSetVal;
-  @Input() lookupData: iLookupData;
   @Input() isDisabled: boolean;
   public form: UntypedFormGroup;
   ResitutionForm = ResitutionForm;
@@ -42,12 +43,13 @@ export class RestitutionInformationComponent extends FormBase implements OnInit 
   courtList: any = [];
 
   restitutionInfoHelper = new RestitutionInfoHelper();
+  private readonly lookupsStore = inject(LookupsStore);
 
   constructor(
     private controlContainer: ControlContainer,
     private fb: UntypedFormBuilder,
     private matDialog: MatDialog,
-    public lookupService: LookupService
+    private readonly apiLookupsService: ApiLookupsService
   ) {
     super();
   }
@@ -73,33 +75,19 @@ export class RestitutionInformationComponent extends FormBase implements OnInit 
       this.clearControlValidators(this.form.get('authorizeDesignate'));
     }
 
-    if (this.lookupData.courts && this.lookupData.courts.length > 0) {
-      this.courtList = this.lookupData.courts.map((c) => c.vsd_name);
-    } else {
-      this.lookupService.getCourts().subscribe((res) => {
-        this.lookupData.courts = res.value;
-        if (this.lookupData.courts) {
-          this.lookupData.courts.sort(function (a, b) {
-            return a.vsd_name.localeCompare(b.vsd_name);
-          });
-        }
-        this.courtList = this.lookupData.courts.map((c) => c.vsd_name);
-      });
-    }
+    this.initializeCourts();
 
-    if (this.lookupData.relationships && this.lookupData.relationships.length > 0) {
-      this.relationshipList = this.lookupData.relationships.map((r) => r.vsd_name);
-    } else {
-      this.lookupService.getRestitutionRelationships().subscribe((res) => {
-        this.lookupData.relationships = res.value;
-        if (this.lookupData.relationships) {
-          this.lookupData.relationships.sort(function (a, b) {
-            return a.vsd_name.localeCompare(b.vsd_name);
-          });
-        }
-        this.relationshipList = this.lookupData.relationships.map((r) => r.vsd_name);
-      });
-    }
+    this.apiLookupsService.getApiLookupsRestitutionRelationships('application/json').subscribe((res) => {
+      const relationships = [...(res.value ?? [])].sort((a, b) => (a.name ?? '').localeCompare(b.name ?? ''));
+      this.relationshipList = relationships.map((r) => r.name);
+    });
+  }
+
+  private initializeCourts() {
+    this.courtList = this.lookupsStore
+      .courts()
+      .map((court) => court.name)
+      .filter((courtName): courtName is string => !!courtName);
   }
 
   iHaveOtherNamesChange(val: boolean) {

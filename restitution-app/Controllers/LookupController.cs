@@ -1,101 +1,85 @@
-﻿using System;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using System;
 using System.Threading.Tasks;
 using Gov.Cscp.VictimServices.Public.Models;
 using Gov.Cscp.VictimServices.Public.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Serilog;
 
 namespace Gov.Cscp.VictimServices.Public.Controllers
 {
-    [Route("api/[controller]")]
-    public class LookupController : Controller
+    [Route("api/lookups")]
+    public class LookupsController : Controller
     {
-        private readonly IDynamicsResultService _dynamicsResultService;
+        private readonly ILookupQueryService _lookupQueryService;
         private readonly ILogger _logger;
 
-        public LookupController(IDynamicsResultService dynamicsResultService)
+        public LookupsController(ILookupQueryService lookupQueryService)
         {
-            this._dynamicsResultService = dynamicsResultService;
+            _lookupQueryService = lookupQueryService;
             _logger = Log.Logger;
         }
 
         [HttpGet("countries")]
-        public async Task<IActionResult> GetCountries()
+        [ProducesResponseType(typeof(LookupResponseDto<CountryLookupDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<LookupResponseDto<CountryLookupDto>>> GetCountries()
         {
             try
             {
-                // set the endpoint action
-                string endpointUrl = "vsd_countries?$select=vsd_name&$filter=statecode eq 0";
-
-                // get the response
-                DynamicsResult result = await _dynamicsResultService.Get(endpointUrl);
-
-                return StatusCode((int)result.statusCode, result.result.ToString());
+                return Ok(await _lookupQueryService.GetCountriesAsync());
             }
             catch (Exception e)
             {
                 _logger.Error(
                     e,
-                    "Unexpected error while looking up countries in COAST. Source = Restitution"
+                    "Unexpected error while looking up countries in Dataverse. Source = Restitution"
                 );
                 return BadRequest();
             }
-            finally { }
         }
 
         [HttpGet("provinces")]
-        public async Task<IActionResult> GetProvinces()
+        [ProducesResponseType(
+            typeof(LookupResponseDto<ProvinceLookupDto>),
+            StatusCodes.Status200OK
+        )]
+        public async Task<ActionResult<LookupResponseDto<ProvinceLookupDto>>> GetProvinces()
         {
             try
             {
-                // set the endpoint action
-                string endpointUrl =
-                    "vsd_provinces?$select=vsd_code,_vsd_countryid_value,vsd_name&$filter=statecode eq 0";
-
-                // get the response
-                DynamicsResult result = await _dynamicsResultService.Get(endpointUrl);
-
-                return StatusCode((int)result.statusCode, result.result.ToString());
+                return Ok(await _lookupQueryService.GetProvincesAsync());
             }
             catch (Exception e)
             {
                 _logger.Error(
                     e,
-                    "Unexpected error while looking up provinces in COAST. Source = Restitution"
+                    "Unexpected error while looking up provinces in Dataverse. Source = Restitution"
                 );
                 return BadRequest();
             }
-            finally { }
         }
 
         [HttpGet("cities")]
-        public async Task<IActionResult> GetCities()
+        [ProducesResponseType(typeof(LookupResponseDto<CityLookupDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<LookupResponseDto<CityLookupDto>>> GetCities()
         {
             try
             {
-                // set the endpoint action
-                string endpointUrl =
-                    "vsd_cities?$select=_vsd_countryid_value,vsd_name,_vsd_stateid_value&$filter=statecode eq 0";
-
-                // get the response
-                DynamicsResult result = await _dynamicsResultService.Get(endpointUrl);
-                return StatusCode((int)result.statusCode, result.result.ToString());
+                return Ok(await _lookupQueryService.GetCitiesAsync());
             }
             catch (Exception e)
             {
                 _logger.Error(
                     e,
-                    "Unexpected error while looking up cities in COAST. Source = Restitution"
+                    "Unexpected error while looking up cities in Dataverse. Source = Restitution"
                 );
                 return BadRequest();
             }
-            finally { }
         }
 
         [HttpGet("cities/search")]
-        public async Task<IActionResult> SearchCities(
+        [ProducesResponseType(typeof(CitySearchResponseDto), StatusCodes.Status200OK)]
+        public async Task<ActionResult<CitySearchResponseDto>> SearchCities(
             string country,
             string province,
             string searchVal,
@@ -104,233 +88,210 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         {
             try
             {
-                var searchParameters = new CitySearchParameters()
-                {
-                    Country = country,
-                    Province = province,
-                    City = searchVal,
-                    TopCount = limit,
-                };
-
-                string endpointUrl = "vsd_GetCities";
-
-                JsonSerializerOptions options = new JsonSerializerOptions
-                {
-                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                };
-                string requestJson = JsonSerializer.Serialize(searchParameters, options);
-
-                DynamicsResult result = await _dynamicsResultService.Post(endpointUrl, requestJson);
-                return StatusCode((int)result.statusCode, result.result.ToString());
+                return Ok(
+                    await _lookupQueryService.SearchCitiesAsync(country, province, searchVal, limit)
+                );
             }
             catch (Exception e)
             {
                 _logger.Error(
                     e,
-                    "Unexpected error while searching cities in COAST. Source = Restitution"
+                    "Unexpected error while searching cities in Dataverse. Source = Restitution"
                 );
                 return BadRequest();
             }
-            finally { }
         }
 
         [HttpGet("country/{country}/cities")]
-        public async Task<IActionResult> GetCitiesByCountry(string country)
+        [ProducesResponseType(typeof(LookupResponseDto<CityLookupDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<LookupResponseDto<CityLookupDto>>> GetCitiesByCountry(
+            string country
+        )
         {
             try
             {
-                string requestJson = "{\"Country\":\"" + country + "\"}";
-                // set the endpoint action
-                string endpointUrl =
-                    $"vsd_cities?$select=_vsd_countryid_value,vsd_name,_vsd_stateid_value&$filter=statecode eq 0 and _vsd_countryid_value eq {country}";
+                if (!Guid.TryParse(country, out Guid countryId))
+                {
+                    return BadRequest();
+                }
 
-                // get the response
-                DynamicsResult result = await _dynamicsResultService.Get(endpointUrl);
-                return StatusCode((int)result.statusCode, result.result.ToString());
+                return Ok(await _lookupQueryService.GetCitiesByCountryAsync(countryId));
             }
             catch (Exception e)
             {
                 _logger.Error(
                     e,
-                    "Unexpected error while looking up citites by country in COAST. Source = Restitution"
+                    "Unexpected error while looking up cities by country in Dataverse. Source = Restitution"
                 );
                 return BadRequest();
             }
-            finally { }
         }
 
         [HttpGet("country/{countryId}/province/{provinceId}/cities")]
-        public async Task<IActionResult> GetCitiesByProvince(string countryId, string provinceId)
+        [ProducesResponseType(typeof(LookupResponseDto<CityLookupDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<LookupResponseDto<CityLookupDto>>> GetCitiesByProvince(
+            string countryId,
+            string provinceId
+        )
         {
             try
             {
-                // set the endpoint action
-                string endpointUrl =
-                    $"vsd_cities?$select=_vsd_countryid_value,vsd_name,_vsd_stateid_value&$filter=statecode eq 0 and _vsd_countryid_value eq {countryId} and _vsd_stateid_value eq {provinceId}";
+                if (!Guid.TryParse(countryId, out Guid parsedCountryId))
+                {
+                    return BadRequest();
+                }
 
-                // get the response
-                DynamicsResult result = await _dynamicsResultService.Get(endpointUrl);
-                return StatusCode((int)result.statusCode, result.result.ToString());
+                if (!Guid.TryParse(provinceId, out Guid parsedProvinceId))
+                {
+                    return BadRequest();
+                }
+
+                return Ok(
+                    await _lookupQueryService.GetCitiesByProvinceAsync(
+                        parsedCountryId,
+                        parsedProvinceId
+                    )
+                );
             }
             catch (Exception e)
             {
                 _logger.Error(
                     e,
-                    "Unexpected error while looking up cities by province in COAST. Source = Restitution"
+                    "Unexpected error while looking up cities by province in Dataverse. Source = Restitution"
                 );
                 return BadRequest();
             }
-            finally { }
         }
 
         [HttpGet("relationships")]
-        public async Task<IActionResult> GetRelationships()
+        [ProducesResponseType(
+            typeof(LookupResponseDto<RelationshipLookupDto>),
+            StatusCodes.Status200OK
+        )]
+        public async Task<ActionResult<LookupResponseDto<RelationshipLookupDto>>> GetRelationships()
         {
             try
             {
-                // set the endpoint action
-                string endpointUrl = "vsd_relationships?$select=vsd_name&$filter=statecode eq 0";
-
-                // get the response
-                DynamicsResult result = await _dynamicsResultService.Get(endpointUrl);
-                return StatusCode((int)result.statusCode, result.result.ToString());
+                return Ok(await _lookupQueryService.GetRelationshipsAsync());
             }
             catch (Exception e)
             {
                 _logger.Error(
                     e,
-                    "Unexpected error while looking up relationships in COAST. Source = Restitution"
+                    "Unexpected error while looking up relationships in Dataverse. Source = Restitution"
                 );
                 return BadRequest();
             }
-            finally { }
         }
 
         [HttpGet("auth_relationships")]
-        public async Task<IActionResult> GetOptionalAuthorizationRelationships()
+        [ProducesResponseType(
+            typeof(LookupResponseDto<RelationshipLookupDto>),
+            StatusCodes.Status200OK
+        )]
+        public async Task<
+            ActionResult<LookupResponseDto<RelationshipLookupDto>>
+        > GetOptionalAuthorizationRelationships()
         {
             try
             {
-                // set the endpoint action
-                string endpointUrl =
-                    "vsd_relationships?$select=vsd_name&$filter=statecode eq 0 and vsd_optionalauthorizedrelationship eq true";
-
-                // get the response
-                DynamicsResult result = await _dynamicsResultService.Get(endpointUrl);
-                return StatusCode((int)result.statusCode, result.result.ToString());
+                return Ok(await _lookupQueryService.GetOptionalAuthorizationRelationshipsAsync());
             }
             catch (Exception e)
             {
                 _logger.Error(
                     e,
-                    "Unexpected error while looking up optional auth relationships in COAST. Source = Restitution"
+                    "Unexpected error while looking up optional auth relationships in Dataverse. Source = Restitution"
                 );
                 return BadRequest();
             }
-            finally { }
         }
 
         [HttpGet("representative_relationships")]
-        public async Task<IActionResult> GetRepresentativeRelationships()
+        [ProducesResponseType(
+            typeof(LookupResponseDto<RelationshipLookupDto>),
+            StatusCodes.Status200OK
+        )]
+        public async Task<
+            ActionResult<LookupResponseDto<RelationshipLookupDto>>
+        > GetRepresentativeRelationships()
         {
             try
             {
-                // set the endpoint action
-                string endpointUrl =
-                    "vsd_relationships?$select=vsd_name&$filter=statecode eq 0 and vsd_cvap_representativerelationship eq true";
-
-                // get the response
-                DynamicsResult result = await _dynamicsResultService.Get(endpointUrl);
-                return StatusCode((int)result.statusCode, result.result.ToString());
+                return Ok(await _lookupQueryService.GetRepresentativeRelationshipsAsync());
             }
             catch (Exception e)
             {
                 _logger.Error(
                     e,
-                    "Unexpected error while looking up representative relationships in COAST. Source = Restitution"
+                    "Unexpected error while looking up representative relationships in Dataverse. Source = Restitution"
                 );
                 return BadRequest();
             }
-            finally { }
         }
 
         [HttpGet("restitution_relationships")]
-        public async Task<IActionResult> GetRestitutionRelationships()
+        [ProducesResponseType(
+            typeof(LookupResponseDto<RelationshipLookupDto>),
+            StatusCodes.Status200OK
+        )]
+        public async Task<
+            ActionResult<LookupResponseDto<RelationshipLookupDto>>
+        > GetRestitutionRelationships()
         {
             try
             {
-                // set the endpoint action
-                string endpointUrl =
-                    "vsd_relationships?$select=vsd_name&$filter=statecode eq 0 and vsd_rest_offenderrelationship eq true";
-
-                // get the response
-                DynamicsResult result = await _dynamicsResultService.Get(endpointUrl);
-                return StatusCode((int)result.statusCode, result.result.ToString());
+                return Ok(await _lookupQueryService.GetRestitutionRelationshipsAsync());
             }
             catch (Exception e)
             {
                 _logger.Error(
                     e,
-                    "Unexpected error while looking up representative relationships in COAST. Source = Restitution"
+                    "Unexpected error while looking up restitution relationships in Dataverse. Source = Restitution"
                 );
                 return BadRequest();
             }
-            finally { }
         }
 
         [HttpGet("police_detachments")]
-        public async Task<IActionResult> GetPoliceDetachments()
+        [ProducesResponseType(
+            typeof(LookupResponseDto<PoliceDetachmentLookupDto>),
+            StatusCodes.Status200OK
+        )]
+        public async Task<
+            ActionResult<LookupResponseDto<PoliceDetachmentLookupDto>>
+        > GetPoliceDetachments()
         {
             try
             {
-                // set the endpoint action
-                string endpointUrl =
-                    "vsd_policedetachments?$select=vsd_name&$filter=statecode eq 0";
-
-                // get the response
-                DynamicsResult result = await _dynamicsResultService.Get(endpointUrl);
-                return StatusCode((int)result.statusCode, result.result.ToString());
+                return Ok(await _lookupQueryService.GetPoliceDetachmentsAsync());
             }
             catch (Exception e)
             {
                 _logger.Error(
                     e,
-                    "Unexpected error while looking up police detachments in COAST. Source = Restitution"
+                    "Unexpected error while looking up police detachments in Dataverse. Source = Restitution"
                 );
                 return BadRequest();
             }
-            finally { }
         }
 
         [HttpGet("courts")]
-        public async Task<IActionResult> GetCourts()
+        [ProducesResponseType(typeof(LookupResponseDto<LookupItemDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<LookupResponseDto<LookupItemDto>>> GetCourts()
         {
             try
             {
-                // set the endpoint action
-                string endpointUrl = "vsd_courts?$select=vsd_name&$filter=statecode eq 0";
-
-                // get the response
-                DynamicsResult result = await _dynamicsResultService.Get(endpointUrl);
-                return StatusCode((int)result.statusCode, result.result.ToString());
+                return Ok(await _lookupQueryService.GetCourtsAsync());
             }
             catch (Exception e)
             {
                 _logger.Error(
                     e,
-                    "Unexpected error while looking up courts in COAST. Source = Restitution"
+                    "Unexpected error while looking up courts in Dataverse. Source = Restitution"
                 );
                 return BadRequest();
             }
-            finally { }
         }
-    }
-
-    public class CitySearchParameters
-    {
-        public string Country { get; set; }
-        public string Province { get; set; }
-        public string City { get; set; }
-        public int TopCount { get; set; }
     }
 }

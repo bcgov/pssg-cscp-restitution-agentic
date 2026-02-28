@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Gov.Cscp.VictimServices.Public.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("api/configuration")]
     [ApiController]
     public class ConfigurationController : ControllerBase
     {

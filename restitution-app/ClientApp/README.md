@@ -1,27 +1,45 @@
-# AngularSpa
+# ClientApp
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 1.7.0.
+Angular frontend for Restitution web forms.
 
-## Development server
+## Requirements
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The app will automatically reload if you change any of the source files.
+- Node.js (LTS, 20+ recommended)
+- npm
+- .NET API running locally on `http://localhost:5000`
 
-## Code scaffolding
+## Run locally
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+From `restitution-app/ClientApp`:
 
-## Build
+```bash
+npm install
+npm start
+```
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory. Use the `-prod` flag for a production build.
+App runs on `http://localhost:4200`.
 
-## Running unit tests
+Proxy config forwards `/api` and `/restwebforms/api` to `http://localhost:5000`.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## API client generation (Orval)
 
-## Running end-to-end tests
+This project uses Orval to generate typed Angular API clients from Swagger.
 
-Run `ng e2e` to execute the end-to-end tests via [Protractor](http://www.protractortest.org/).
+```bash
+npm run generate:api
+```
 
-## Further help
+Current config:
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI README](https://github.com/angular/angular-cli/blob/master/README.md).
+- Config file: `orval.config.ts`
+- Swagger source: `http://localhost:5000/swagger/v1/swagger.json`
+- Generated output under `src/api` and `src/model`
+
+## Useful scripts
+
+- `npm start` - run dev server with proxy
+- `npm run build` - build app
+- `npm run buildprod` - production build
+- `npm test` - run tests
+- `npm run lint` - lint
+- `npm run format` - check formatting

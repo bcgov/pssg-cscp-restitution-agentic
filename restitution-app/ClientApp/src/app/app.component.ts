@@ -1,9 +1,9 @@
-import { Component, isDevMode, OnInit, Renderer2 } from '@angular/core';
+import { Component, inject, isDevMode, OnInit, Renderer2 } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
 import moment from 'moment-timezone';
 import { environment } from '../environments/environment';
 import { Configuration } from './interfaces/configuration.interface';
-import { ConfigService } from './services/config.service';
+import { ConfigurationStore } from './store/configuration/configuration.store';
 
 @Component({
   selector: 'app-root',
@@ -14,13 +14,15 @@ import { ConfigService } from './services/config.service';
 export class AppComponent implements OnInit {
   title = '';
   previousUrl: string;
-  configuration: Configuration;
-  error = false;
   apiPath = environment.apiRootUrl;
   public isNewUser: boolean;
   public isDevMode: boolean;
+  private readonly configurationStore = inject(ConfigurationStore);
 
-  constructor(private renderer: Renderer2, private router: Router, private configService: ConfigService) {
+  constructor(
+    private renderer: Renderer2,
+    private router: Router
+  ) {
     this.isDevMode = isDevMode();
     this.router.events.subscribe((event) => {
       if (event instanceof NavigationEnd) {
@@ -38,16 +40,18 @@ export class AppComponent implements OnInit {
     });
   }
 
+  get configuration(): Configuration {
+    return this.configurationStore.configuration();
+  }
+
+  get error(): boolean {
+    return !!this.configurationStore.error();
+  }
+
   ngOnInit(): void {
-    this.configService
-      .load()
-      .then((configuration) => {
-        this.configuration = configuration;
-      })
-      .catch((error) => {
-        console.error('Failed to fetch configuration:', error);
-        this.error = error;
-      });
+    if (this.configurationStore.error()) {
+      console.error('Failed to fetch configuration:', this.configurationStore.error());
+    }
   }
 
   isOutage() {

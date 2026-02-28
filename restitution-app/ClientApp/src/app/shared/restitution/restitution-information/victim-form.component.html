@@ -1,0 +1,354 @@
+<div [formGroup]="form">
+  <div class="page-header">
+    <h1>{{page_header}}</h1>
+  </div>
+
+  <h2 class="blue-header" id="ApplicantInformation" [class.mt-0]="ResitutionForm.Victim.val">{{applicant_type}} Information</h2>
+  <h3>{{applicant_type}} Information</h3>
+
+  <div class="row">
+    <div class="col-md-4">
+      <app-field [label]="applicant_type + ' First Name'" [required]="true" [valid]="isFieldValid('firstName')" errorMessage="Please enter your first name" [disabled]="isDisabled">
+        <input class="form-control" type="text" formControlName="firstName" maxlength="100">
+      </app-field>
+    </div>
+    <div class="col-md-4">
+      <app-field [label]="applicant_type + ' Middle Name'" [required]="false" [valid]="isFieldValid('middleName')" errorMessage="Please enter your middle name" [disabled]="isDisabled">
+        <input class="form-control" type="text" formControlName="middleName" maxlength="100">
+      </app-field>
+    </div>
+    <div class="col-md-4">
+      <app-field [label]="applicant_type + ' Last Name'" [required]="true" [valid]="isFieldValid('lastName')" errorMessage="Please enter your last name" [disabled]="isDisabled">
+        <input class="form-control" type="text" formControlName="lastName" maxlength="100">
+      </app-field>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12">
+      <label class="inline-label">
+        <input type="checkbox" style="margin-right: 10px;" formControlName="iHaveOtherNames" [value]="true" (change)="iHaveOtherNamesChange($event.target.checked)">
+        <span>I also go by other names (e.g. nickname, maiden name, alias)</span>
+      </label>
+    </div>
+  </div>
+  @if (form.get('iHaveOtherNames').value === true) {
+    <div>
+      <div class="row">
+        <div class="col-md-4">
+          <app-field label="Other First Name" [required]="false" [valid]="isMyControlValid(form.get('otherFirstName'))" errorMessage="Please enter your other first name">
+            <input class="form-control" type="text" formControlName="otherFirstName" maxlength="100">
+          </app-field>
+        </div>
+        <div class="col-md-4">
+          <app-field label="Other Last Name" [required]="false" [valid]="isMyControlValid(form.get('otherLastName'))" errorMessage="Please enter your other last name">
+            <input class="form-control" type="text" formControlName="otherLastName" maxlength="100">
+          </app-field>
+        </div>
+      </div>
+    </div>
+  }
+  <div class="row" [class.mt-3]="form.get('iHaveOtherNames').value !== true">
+    <div class="col-md-6 date-col">
+      <app-field label="Birth Date" [required]="true" [valid]="isMyControlValid(form.get('birthDate'))" errorMessage="Please enter your birth date" [disabled]="isDisabled">
+        <app-date-field [control]="form.get('birthDate')" [max]="today" [disabled]="isDisabled"></app-date-field>
+      </app-field>
+    </div>
+  </div>
+  <div class="attention">
+    <p>Please note that your answers to questions about demographic information (e.g. gender, Indigenous identity) allow the Community Safety and Crime Prevention branch to better understand who accesses our programs so we may continue to improve our service delivery. Your response is voluntary and the information you provide does not impact your ability to access these services.</p>
+  </div>
+  <div featureEnabled="useUpdatedComplianceFields" [featureEnabledIf]="false" class="row">
+    <div class="col-md-6">
+      <app-field label="Gender" [required]="false" [valid]="isMyControlValid(form.get('gender'))" errorMessage="Please select your gender" [disabled]="isDisabled">
+        <label class="inline-label">
+          <input type="radio" [value]="enum.CRMGender.Male.val" name="gender" formControlName="gender">
+          <span>M <app-tool-tip [trigger]="genderMToolTip"></app-tool-tip></span>
+        </label>
+        <label class="inline-label">
+          <input type="radio" [value]="enum.CRMGender.Female.val" name="gender" formControlName="gender">
+          <span>F <app-tool-tip [trigger]="genderFToolTip"></app-tool-tip></span>
+        </label>
+        <label class="inline-label">
+          <input type="radio" [value]="enum.CRMGender.NonBinary.val" name="gender" formControlName="gender">
+          <span>X <app-tool-tip [trigger]="genderXToolTip"></app-tool-tip></span>
+        </label>
+      </app-field>
+    </div>
+  </div>
+  <app-gender-selector [isDisabled]="isDisabled" featureEnabled="useUpdatedComplianceFields" [form]="form" ></app-gender-selector>
+  <ng-template #genderMToolTip>Persons whose current gender is male. This includes cisgender and transgender persons who are male.</ng-template>
+  <ng-template #genderFToolTip>Persons whose current gender is female. This includes cisgender and transgender persons who are female.</ng-template>
+  <ng-template #genderXToolTip>Persons whose current gender is not exclusively male or female. It includes people who are unsure of their gender, do not have one gender, have no gender, are gender fluid, or are Two-Spirit.</ng-template>
+  <div featureEnabled="useUpdatedComplianceFields" [featureEnabledIf]="false" class="row">
+    <div class="col-md-6">
+      <app-field label="Do you identify as an Indigenous person?" [required]="true" [valid]="isMyControlValid(form.get('indigenousStatus'))" errorMessage="Please select an option">
+        <select class="form-control" formControlName="indigenousStatus">
+          <option [value]="enum.IndigenousStatus.BLANK.val">Select...</option>
+          <option [value]="enum.IndigenousStatus.First_Nations.val">First Nations</option>
+          <option [value]="enum.IndigenousStatus.Metis.val">Métis</option>
+          <option [value]="enum.IndigenousStatus.Inuit.val">Inuit</option>
+          <option [value]="enum.IndigenousStatus.Prefere_Not_To_Answer.val">Prefer Not to Answer</option>
+          <option [value]="enum.IndigenousStatus.Not_Applicable.val">Not Applicable</option>
+        </select>
+      </app-field>
+    </div>
+  </div>
+  <app-race-selector [isDisabled]="isDisabled" featureEnabled="useUpdatedComplianceFields" [form]="form"></app-race-selector>
+
+  <ng-container>
+    <div class="row">
+      <div class="col-6">
+        <h3>Authorized Victim Designate</h3>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-12">
+        <app-field label="Do you want to authorize someone to be a Victim Designate?" [required]="true" [valid]="isMyControlValid(form.get('authorizeDesignate'))" errorMessage="Please make a selection" [disabled]="isDisabled">
+          <label class="inline-label">
+            <input type="radio" [value]="CRMMultiBoolean.True" name="authorizeDesignate" formControlName="authorizeDesignate" (change)="authorizeDesignateChange()">
+            <span>Yes</span>
+          </label>
+          <label class="inline-label">
+            <input type="radio" [value]="CRMMultiBoolean.False" name="authorizeDesignate" formControlName="authorizeDesignate" (change)="authorizeDesignateChange()">
+            <span>No</span>
+          </label>
+        </app-field>
+      </div>
+    </div>
+    @for (item of form.get('designate')['controls']; track item; let i = $index) {
+      <div formArrayName="designate">
+        <div [formGroupName]="i" class="designate-info">
+          <div class="row">
+            <div class="col-md-4">
+              <app-field label="Authorized Designate First Name" [required]="true" [valid]="isMyControlValid(item.get('firstName'))" errorMessage="Please enter your designate's first name" [disabled]="isDisabled">
+                <input class="form-control" type="text" formControlName="firstName" maxlength="100">
+              </app-field>
+            </div>
+            <div class="col-md-4">
+              <app-field label="Authorized Designate Last Name" [required]="true" [valid]="isMyControlValid(item.get('lastName'))" errorMessage="Please enter your designate's last name" [disabled]="isDisabled">
+                <input class="form-control" type="text" formControlName="lastName" maxlength="100">
+              </app-field>
+            </div>
+            <div class="col-md-4">
+              <app-field label="Authorized Designate Preferred Name" [required]="false" [valid]="isMyControlValid(item.get('preferredName'))" errorMessage="Please enter your designate's preferred name" [disabled]="isDisabled">
+                <input class="form-control" type="text" formControlName="preferredName" maxlength="100">
+              </app-field>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <label class="inline-label inline-checkbox-label">
+                <input type="checkbox" [value]="true" name="actOnBehalf" formControlName="actOnBehalf">
+                <span>I hereby authorize to act on my behalf for the purposes of involvement with the Restitution Program which includes personal information pertaining to me.</span>
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </ng-container>
+
+  <app-restitution-contact-information [formGroup]="form.get('contactInformation')" [formType]="formType" formGroupName="contactInformation" [isDisabled]="isDisabled"></app-restitution-contact-information>
+
+  <h2 class="blue-header" id="CourtFileInformation">Restitution Order Information</h2>
+
+  @for (item of form.get('courtFiles')['controls']; track item; let i = $index) {
+    <div formArrayName="courtFiles">
+      <div [formGroupName]="i" class="court-file-info">
+        <div class="row remove-row">
+          <div class="col">
+            <app-field label="Offender First Name" [valid]="isMyControlValid(item.get('firstName'))" errorMessage="Please enter first name" [disabled]="isDisabled">
+              <input class="form-control" type="text" formControlName="firstName" maxlength="100">
+            </app-field>
+          </div>
+          <div class="col">
+            <app-field label="Offender Middle Name" [valid]="isMyControlValid(item.get('middleName'))" errorMessage="Please enter middle name" [disabled]="isDisabled">
+              <input class="form-control" type="text" formControlName="middleName" maxlength="100">
+            </app-field>
+          </div>
+          <div class="col">
+            <app-field label="Offender Last Name" [valid]="isMyControlValid(item.get('lastName'))" errorMessage="Please enter last name" [disabled]="isDisabled">
+              <input class="form-control" type="text" formControlName="lastName" maxlength="100">
+            </app-field>
+          </div>
+          @if (form.get('courtFiles')['controls'].length > 1) {
+            <div class="col-1">
+              <div class="remove-button">
+                <br>
+                  <i class="fas fa-times-circle text-danger center-clear-btn" (click)="removeCourtFile(i)"></i>
+                </div>
+              </div>
+            }
+          </div>
+          <div class="row">
+            <div class="col-md-4">
+              <app-field label="Relationship to the Offender" [valid]="isMyControlValid(item.get('relationship'))" errorMessage="Please enter relationship" [disabled]="isDisabled" [tooltipReference]="relationshipToAccusedToolTip">
+                <select class="form-control" formControlName="relationship">
+                  <option value="">Select...</option>
+                  @for (rel of relationshipList; track rel) {
+                    <option [value]="rel">{{ rel }} </option>
+                  }
+                </select>
+                @if (item.get('relationship').value === 'Acquaintance') {
+                  <app-tool-tip [trigger]="relationshipToolTip" class="relationshipToolTip"></app-tool-tip>
+                }
+              </app-field>
+            </div>
+          </div>
+          <ng-template #relationshipToolTip>Use this category for close friends, neighbours, authority figures, reverse authority figures, business relationships and casual acquaintances.</ng-template>
+
+          <div class="row">
+            <div class="col-md-4">
+              <app-field label="Court File Number" [valid]="isMyControlValid(item.get('fileNumber'))" errorMessage="Please enter file number" [disabled]="isDisabled">
+                <input class="form-control" type="text" formControlName="fileNumber" maxlength="100">
+              </app-field>
+            </div>
+            <div class="col-md-8">
+              <app-field label="Court Location" [valid]="isMyControlValid(item.get('location'))" errorMessage="Please enter location" [disabled]="isDisabled">
+                <select class="form-control" formControlName="location">
+                  <option value="">Choose a court</option>
+                  @for (item of courtList; track $index) {
+                    <option [value]="item">
+                      {{ item }}
+                    </option>
+                  }
+                </select>
+              </app-field>
+            </div>
+          </div>
+      </div>
+    </div>
+  }
+
+  <h2 class="blue-header" id="VSWInformation">Victim Service Worker</h2>
+  @for (item of form.get('vsw')['controls']; track item; let i = $index) {
+    <div formArrayName="vsw">
+      <div [formGroupName]="i" class="vsw-info">
+        <div class="row">
+          <div class="col-md-6">
+            <app-field label="Victim Service Worker First Name" [valid]="isMyControlValid(item.get('firstName'))" [disabled]="isDisabled">
+              <input class="form-control" type="text" formControlName="firstName" maxlength="100">
+            </app-field>
+          </div>
+          <div class="col-md-6">
+            <app-field label="Victim Service Worker Last Name" [valid]="isMyControlValid(item.get('lastName'))" [disabled]="isDisabled">
+              <input class="form-control" type="text" formControlName="lastName" maxlength="100">
+            </app-field>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <app-field label="Program Name" [valid]="isMyControlValid(item.get('program'))" [disabled]="isDisabled">
+              <input class="form-control" type="text" formControlName="program" maxlength="100">
+            </app-field>
+          </div>
+          <div class="col-md-6">
+            <app-field label="Phone Number" [valid]="isMyControlValid(item.get('phoneNumber'))" errorMessage="Please enter your vsw's phone number" [disabled]="isDisabled">
+              <input class="form-control" mask='(000) 000 0000' type="text" formControlName="phoneNumber">
+            </app-field>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6">
+            <app-field label="Email Address" [valid]="isMyControlValid(item.get('email'))" errorMessage="Please enter your email address" [disabled]="isDisabled">
+              <input class="form-control" type="text" formControlName="email" maxlength="100">
+            </app-field>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+
+  <h2 class="blue-header" id="DocumentInformation">Copy of Restitution Order</h2>
+  <p>Where possible, please include a copy of the Restitution Order when submitting this application. <strong>File size limit:</strong> one file cannot exceed 2MB and all files uploaded to application cannot exceed 3.5MB</p>
+  <app-file-uploader [formGroup]="form" [formType]="formType" [documents]="form.get('documents')"></app-file-uploader>
+
+  <h2 class="blue-header" id="CollectionNotice">Collection Notice</h2>
+  <p>
+    The collection of your personal information as part of the Restitution Program is authorized under section 26(c) of the Freedom of Information and Protection of Privacy Act for the purpose of facilitating restitution payments. The Restitution Program may also collect personal information under section 26(e) of FoIPPA for the purpose of evaluating the program and activities to better serve you. If you have any questions about the collection of your personal information, please contact:
+    <br />
+    <br />
+    Restitution Program Manager <br />
+    PH: (604) 660-4898, Toll Free: 1-844-660-4898 <br />
+    PO Box 5550 Station Terminal, Vancouver, BC V6B 1H1
+  </p>
+
+  <h2 class="blue-header" id="SignatureInformation">Declaration & Signature</h2>
+  <app-field [required]="true" [valid]="isFieldValid('declaredAndSigned')" errorMessage="Please check this box to indicate that you accept Declaration">
+    <label class="inline-label inline-checkbox-label">
+      <input type="checkbox" [value]="true" name="declaredAndSigned" formControlName="declaredAndSigned">
+      <span>By signing this form, I am applying to the Restitution Program for assistance in the facilitation of my restitution order and I confirm that I am the individual named on this form (or the parent/guardian/legal representative of the victim named on this form). Where applicable, I give permission to the Restitution Program to release information to the Victim Designate I have named above.<span class="error-states">*</span></span>
+    </label>
+  </app-field>
+
+  <app-field label="Signature" [required]="true" [valid]="isFieldValid('signature')" errorMessage="Please provide your digital signature">
+    @if (!hasSignature('signature')) {
+      <div class="signature-trigger" (click)="showSignPad('signature')">
+        <p>Click this box to sign</p>
+      </div>
+    }
+    @if (hasSignature('signature')) {
+      <div class="signature-preview">
+        <img src="{{ valueOrEmpty('signature') }}" />
+        <a class="redo" (click)="showSignPad('signature')">Redo Signature</a>
+      </div>
+    }
+  </app-field>
+
+  <ng-template #relationshipToAccusedToolTip>
+    <table class="table relationship-table">
+      <thead>
+        <tr>
+          <th>Classification</th>
+          <th class="description-column">Description</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>
+            Intimate Partner Relationship
+          </td>
+          <td>
+            Refers to current and former spouses (legally married, separated, divorced and common-law), and dating partners.
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            Other Family Relationship
+          </td>
+          <td>
+            Refers to parents (biological, step, adoptive and foster), children (biological, step, adopted and foster), siblings (biological, step, half, adopted and foster) and extended family members (e.g., grandparents, uncles, aunts, cousins and in-laws).
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            Acquaintance
+          </td>
+          <td>
+            Refers to friends, neighbours, authority figures, business relationships, casual acquaintances.
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            Stranger
+          </td>
+          <td>
+            Refers to individuals who do not know one another.
+          </td>
+        </tr>
+
+        <tr>
+          <td>
+            Other Victim-Accused Relationship
+          </td>
+          <td>
+            Refers to relationships that are other than the above categories, or is unknown.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </ng-template>
+</div>

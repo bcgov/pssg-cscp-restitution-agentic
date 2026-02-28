@@ -1,4 +1,4 @@
-import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
+import { ComponentFixture, TestBed } from '@angular/core/testing';
 
 import { RaceSelectorComponent } from './race-selector.component';
 
@@ -6,12 +6,11 @@ describe('RaceSelectorComponent', () => {
   let component: RaceSelectorComponent;
   let fixture: ComponentFixture<RaceSelectorComponent>;
 
-  beforeEach(waitForAsync(() => {
+  beforeEach(async () => {
     TestBed.configureTestingModule({
-      declarations: [ RaceSelectorComponent ]
-    })
-    .compileComponents();
-  }));
+      declarations: [RaceSelectorComponent]
+    }).compileComponents();
+  });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(RaceSelectorComponent);

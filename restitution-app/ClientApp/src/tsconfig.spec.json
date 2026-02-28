@@ -2,10 +2,9 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "outDir": "../out-tsc/spec",
-    "module": "commonjs",
-    "baseUrl": "",
-    "types": ["jasmine", "node"]
+    "types": ["vitest/globals", "node"],
+    "typeRoots": ["../node_modules/@types", "../node_modules"]
   },
-  "files": ["test.ts", "polyfills.ts"],
+  "files": ["polyfills.ts"],
   "include": ["**/*.spec.ts", "**/*.d.ts"]
 }

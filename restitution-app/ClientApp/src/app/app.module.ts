@@ -1,6 +1,6 @@
 import { AngularSignaturePadModule } from '@almothafar/angular-signature-pad';
 import { CdkTableModule } from '@angular/cdk/table';
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http';
+import { provideHttpClient, withInterceptors, withInterceptorsFromDi } from '@angular/common/http';
 import { NgModule } from '@angular/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MatAutocompleteModule } from '@angular/material/autocomplete';
@@ -42,16 +42,16 @@ import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
 import { NgxFileDropModule } from 'ngx-file-drop';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
+import { NgxSpinnerModule } from 'ngx-spinner';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { FeatureEnabledDirective } from './directives/feature-enabled.directive';
+import { LoadingInterceptor } from './interceptors/loading.interceptor';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { PhonePipe } from './pipes/phone.pipe';
 import { QuickExitComponent } from './quick-exit/quick-exit.component';
 import { RestitutionApplicationComponent } from './restitution-application/restitution-application.component';
-import { JusticeApplicationDataService } from './services/justice-application-data.service';
-import { LookupService } from './services/lookup.service';
 import { StateService } from './services/state.service';
 import { CancelApplicationDialog } from './shared/cancel-dialog/cancel-dialog.component';
 import { DateFieldComponent } from './shared/date-field/date-field.component';
@@ -63,7 +63,10 @@ import { GenderSelectorComponent } from './shared/gender-selector/gender-selecto
 import { RaceSelectorComponent } from './shared/race-selector/race-selector.component';
 import { RestitutionAddressComponent } from './shared/restitution-address/address.component';
 import { RestitutionContactInformationComponent } from './shared/restitution/contact-information/contact-information.component';
+import { OffenderFormComponent } from './shared/restitution/restitution-information/offender-form.component';
 import { RestitutionInformationComponent } from './shared/restitution/restitution-information/restitution-information.component';
+import { VictimEntityFormComponent } from './shared/restitution/restitution-information/victim-entity-form.component';
+import { VictimFormComponent } from './shared/restitution/restitution-information/victim-form.component';
 import { RestitutionOverviewComponent } from './shared/restitution/restitution-overview/restitution-overview.component';
 import { RestitutionReviewComponent } from './shared/restitution/review/restitution-review.component';
 import { RestitutionSuccessComponent } from './shared/restitution/success/restitution-success.component';
@@ -88,6 +91,9 @@ import { SignPadDialog } from './sign-dialog/sign-dialog.component';
     RestitutionApplicationComponent,
     RestitutionContactInformationComponent,
     RestitutionInformationComponent,
+    VictimFormComponent,
+    OffenderFormComponent,
+    VictimEntityFormComponent,
     RestitutionOverviewComponent,
     RestitutionReviewComponent,
     RestitutionSuccessComponent,
@@ -104,8 +110,8 @@ import { SignPadDialog } from './sign-dialog/sign-dialog.component';
     BrowserModule,
     CdkTableModule,
     NgxFileDropModule,
+    NgxSpinnerModule,
     FormsModule,
-    // HttpModule,
     MatAutocompleteModule,
     MatButtonModule,
     MatButtonToggleModule,
@@ -144,12 +150,12 @@ import { SignPadDialog } from './sign-dialog/sign-dialog.component';
   bootstrap: [AppComponent],
   imports: [
     AppRoutingModule,
-    BrowserAnimationsModule,
     BrowserModule,
     CdkTableModule,
     NgxFileDropModule,
     NgxMaskDirective,
     NgxMaskPipe,
+    NgxSpinnerModule,
     FormsModule,
     MatAutocompleteModule,
     MatButtonModule,
@@ -192,11 +198,9 @@ import { SignPadDialog } from './sign-dialog/sign-dialog.component';
   ],
   providers: [
     provideNgxMask(),
-    JusticeApplicationDataService,
-    LookupService,
     StateService,
     Title,
-    provideHttpClient(withInterceptorsFromDi())
+    provideHttpClient(withInterceptors([LoadingInterceptor]), withInterceptorsFromDi())
   ]
 })
 export class AppModule {}

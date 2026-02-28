@@ -1,25 +1,30 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ControlContainer, UntypedFormArray, UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
+import {
+  ControlContainer,
+  UntypedFormArray,
+  UntypedFormBuilder,
+  UntypedFormControl,
+  UntypedFormGroup,
+  Validators
+} from '@angular/forms';
 import { MomentDateAdapter } from '@angular/material-moment-adapter';
 import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
-import { iLookupData } from '../../../interfaces/lookup-data.interface';
 import { CRMBoolean, CRMMultiBoolean, IOptionSetVal, MY_FORMATS, ResitutionForm } from '../../enums-list';
 import { FormBase } from '../../form-base';
 import { RestitutionInfoHelper } from '../restitution-information/restitution-information.helper';
 
 @Component({
-    selector: 'app-restitution-contact-information',
-    templateUrl: './contact-information.component.html',
-    styleUrls: ['./contact-information.component.scss'],
-    providers: [
-        { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
-        { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS }
-    ],
-    standalone: false
+  selector: 'app-restitution-contact-information',
+  templateUrl: './contact-information.component.html',
+  styleUrls: ['./contact-information.component.scss'],
+  providers: [
+    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+    { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS }
+  ],
+  standalone: false
 })
 export class RestitutionContactInformationComponent extends FormBase implements OnInit {
   @Input() formType: IOptionSetVal;
-  @Input() lookupData: iLookupData;
   @Input() isDisabled: boolean;
   public form: UntypedFormGroup;
   ResitutionForm = ResitutionForm;
@@ -28,7 +33,10 @@ export class RestitutionContactInformationComponent extends FormBase implements 
 
   restitutionInfoHelper = new RestitutionInfoHelper();
 
-  constructor(private controlContainer: ControlContainer, private fb: UntypedFormBuilder) {
+  constructor(
+    private controlContainer: ControlContainer,
+    private fb: UntypedFormBuilder
+  ) {
     super();
   }
 
@@ -36,7 +44,7 @@ export class RestitutionContactInformationComponent extends FormBase implements 
     this.form = <UntypedFormGroup>this.controlContainer.control;
     setTimeout(() => {
       this.form.markAsTouched();
-    }, 0);    
+    }, 0);
   }
   primaryContactChange(index) {
     let entityContacts = this.form.get('entityContacts') as UntypedFormArray;

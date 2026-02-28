@@ -1,5 +1,5 @@
 import { STEPPER_GLOBAL_OPTIONS } from '@angular/cdk/stepper';
-import { Component, HostListener, OnInit, ViewChild } from '@angular/core';
+import { Component, HostListener, inject, OnInit, ViewChild } from '@angular/core';
 import {
   AbstractControl,
   FormArray,
@@ -14,18 +14,21 @@ import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatStepper } from '@angular/material/stepper';
 import { ActivatedRoute, Router } from '@angular/router';
-import { config } from '../../config';
-import { iLookupData } from '../interfaces/lookup-data.interface';
+import { RestitutionsService } from '../../api/restitutions/restitutions.service';
+import {
+  CreateOffenderRestitutionCaseRequestDto,
+  CreateVictimEntityRestitutionCaseRequestDto,
+  CreateVictimRestitutionCaseRequestDto
+} from '../../model';
 import { iRestitutionApplication } from '../interfaces/restitution.interface';
-import { JusticeApplicationDataService } from '../services/justice-application-data.service';
-import { LookupService } from '../services/lookup.service';
 import { StateService } from '../services/state.service';
 import { CancelDialog } from '../shared/dialogs/cancel/cancel.dialog';
-import { ApplicationType, IOptionSetVal, MY_FORMATS } from '../shared/enums-list';
+import { ApplicationType, IOptionSetVal, MY_FORMATS, ResitutionForm } from '../shared/enums-list';
 import { FormBase } from '../shared/form-base';
+import { OffenderRestitutionForm } from '../shared/restitution/restitution-information/offender-form.component';
 import { RestitutionInfoHelper } from '../shared/restitution/restitution-information/restitution-information.helper';
-import { ServiceNotAvailableComponent } from '../shared/service-not-available.component';
-import { convertRestitutionToCRM } from './restitution.to.crm';
+import { VictimEntityRestitutionForm } from '../shared/restitution/restitution-information/victim-entity-form.component';
+import { VictimRestitutionForm } from '../shared/restitution/restitution-information/victim-form.component';
 
 export enum RESTITUTION_PAGES {
   OVERVIEW,
@@ -34,47 +37,42 @@ export enum RESTITUTION_PAGES {
   CONFIRMATION
 }
 
+export const RESTITUTION_APPLICATION_PROVIDERS = [
+  { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
+  { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS },
+  { provide: STEPPER_GLOBAL_OPTIONS, useValue: { showError: true } }
+];
+
 @Component({
   selector: 'app-restitution-application',
   templateUrl: './restitution-application.component.html',
   styleUrls: ['./restitution-application.component.scss'],
-  providers: [
-    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
-    { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS },
-    { provide: STEPPER_GLOBAL_OPTIONS, useValue: { showError: true } }
-  ],
+  providers: RESTITUTION_APPLICATION_PROVIDERS,
   standalone: false
 })
 export class RestitutionApplicationComponent extends FormBase implements OnInit {
+  restitutionsService = inject(RestitutionsService);
+
   @ViewChild('stepper', { static: false }) restitutionStepper: MatStepper;
   FORM_TYPE: IOptionSetVal = { val: -1, name: '' };
   ApplicationType = ApplicationType;
+  ResitutionForm = ResitutionForm;
   isIE: boolean = false;
-  didLoad: boolean = false;
-  submitting: boolean = false;
   public showPrintView: boolean = false;
 
   PAGES = RESTITUTION_PAGES;
-
-  lookupData: iLookupData = {
-    countries: [],
-    provinces: [],
-    cities: []
-  };
 
   courtList: string[] = [];
 
   restitutionInfoHelper = new RestitutionInfoHelper();
 
   constructor(
-    private justiceDataService: JusticeApplicationDataService,
     public fb: UntypedFormBuilder,
     private router: Router,
     private route: ActivatedRoute,
     public snackBar: MatSnackBar,
     private matDialog: MatDialog,
-    public state: StateService,
-    public lookupService: LookupService
+    public state: StateService
   ) {
     super();
   }
@@ -93,71 +91,6 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
     } else {
       this.form = this.buildApplicationForm();
     }
-
-    let promise_array = [];
-
-    promise_array.push(
-      new Promise<void>((resolve, reject) => {
-        this.lookupService.getCountries().subscribe(
-          (res) => {
-            this.lookupData.countries = res.value;
-            if (this.lookupData.countries) {
-              this.lookupData.countries.sort((a, b) => a.vsd_name.localeCompare(b.vsd_name));
-            }
-            resolve();
-          },
-          (error) => {
-            reject(error);
-          }
-        );
-      })
-    );
-
-    promise_array.push(
-      new Promise<void>((resolve, reject) => {
-        this.lookupService.getProvinces().subscribe(
-          (res) => {
-            this.lookupData.provinces = res.value;
-            if (this.lookupData.provinces) {
-              this.lookupData.provinces.sort((a, b) => a.vsd_name.localeCompare(b.vsd_name));
-            }
-            resolve();
-          },
-          (error) => {
-            reject(error);
-          }
-        );
-      })
-    );
-
-    promise_array.push(
-      new Promise<void>((resolve, reject) => {
-        this.lookupService.getCitiesByProvince(config.canada_crm_id, config.bc_crm_id).subscribe(
-          (res) => {
-            this.lookupData.cities = res.value;
-            if (this.lookupData.cities) {
-              this.lookupData.cities.sort((a, b) => a.vsd_name.localeCompare(b.vsd_name));
-            }
-            resolve();
-          },
-          (error) => {
-            reject(error);
-          }
-        );
-      })
-    );
-
-    Promise.all(promise_array)
-      .then((res) => {
-        this.didLoad = true;
-      })
-      .catch((err) => {
-        this.snackBar.openFromComponent(ServiceNotAvailableComponent, {
-          panelClass: ['red-snackbar'],
-          horizontalPosition: 'center',
-          verticalPosition: 'top'
-        });
-      });
 
     this.form.valueChanges.subscribe((val) => {
       this.showValidationMessage = this.hasInvalidTouchedControls(this.form);
@@ -222,41 +155,64 @@ export class RestitutionApplicationComponent extends FormBase implements OnInit 
     return data;
   }
 
-  submitApplication() {
-    this.markAsTouched();
+  submit() {
+    this.form.markAllAsTouched();
 
-    this.submitting = true;
-    if (this.form.valid) {
-      let formValue = this.harvestForm();
-      let data = convertRestitutionToCRM(formValue);
-      this.justiceDataService.submitRestitutionApplication(data).subscribe(
-        (data) => {
-          if (data['IsSuccess'] == true) {
-            this.submitting = false;
-            this.state.data = { type: this.FORM_TYPE, form: this.form };
-            this.router.navigate(['/restitution-success']);
-          } else {
-            this.submitting = false;
-            this.snackBar.open('Error submitting application. ' + data['message'], 'Close', {
-              duration: 3500,
-              panelClass: ['red-snackbar']
-            });
-            if (this.isIE) {
-              alert('Encountered an error. Please use another browser as this may resolve the problem.');
-            }
-          }
-        },
-        (error) => {
-          this.submitting = false;
-          this.snackBar.open('Error submitting application', 'Close', { duration: 3500, panelClass: ['red-snackbar'] });
-          if (this.isIE) {
-            alert('Encountered an error. Please use another browser as this may resolve the problem.');
-          }
+    if (this.form.invalid) {
+      return;
+    }
+
+    const restitutionData = this.getRestitutionCreateRequest();
+    this.submitRestitutionByType(restitutionData).subscribe({
+      next: (res) => {
+        this.state.data = { type: this.FORM_TYPE, form: this.form };
+        this.router.navigate(['/restitution-success']);
+      },
+      error: (err) => {
+        this.snackBar.open('Error submitting application', 'Close', { duration: 3500, panelClass: ['red-snackbar'] });
+        if (this.isIE) {
+          alert('Encountered an error. Please use another browser as this may resolve the problem.');
         }
-      );
-    } else {
-      this.submitting = false;
-      this.markAsTouched();
+      }
+    });
+  }
+
+  private submitRestitutionByType(
+    createRequest:
+      | CreateVictimRestitutionCaseRequestDto
+      | CreateVictimEntityRestitutionCaseRequestDto
+      | CreateOffenderRestitutionCaseRequestDto
+  ) {
+    switch (this.FORM_TYPE.val) {
+      case ResitutionForm.VictimEntity.val:
+        return this.restitutionsService.postApiRestitutionsVictimEntity(
+          createRequest as CreateVictimEntityRestitutionCaseRequestDto
+        );
+      case ResitutionForm.Offender.val:
+        return this.restitutionsService.postApiRestitutionsOffender(
+          createRequest as CreateOffenderRestitutionCaseRequestDto
+        );
+      case ResitutionForm.Victim.val:
+      default:
+        return this.restitutionsService.postApiRestitutionsVictim(
+          createRequest as CreateVictimRestitutionCaseRequestDto
+        );
+    }
+  }
+
+  private getRestitutionCreateRequest():
+    | CreateVictimRestitutionCaseRequestDto
+    | CreateVictimEntityRestitutionCaseRequestDto
+    | CreateOffenderRestitutionCaseRequestDto {
+    const formData = this.harvestForm();
+    switch (formData.ApplicationType.val) {
+      case ResitutionForm.VictimEntity.val:
+        return VictimEntityRestitutionForm.toCreateRequest(formData);
+      case ResitutionForm.Offender.val:
+        return OffenderRestitutionForm.toCreateRequest(formData);
+      case ResitutionForm.Victim.val:
+      default:
+        return VictimRestitutionForm.toCreateRequest(formData);
     }
   }
 
