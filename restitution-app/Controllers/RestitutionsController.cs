@@ -8,7 +8,7 @@ using Serilog;
 
 namespace Gov.Cscp.VictimServices.Public.Controllers
 {
-    [Route("api/restitutions")]
+    [Route("api/[controller]")]
     public class RestitutionsController : Controller
     {
         private readonly IOrganizationServiceAsync _organizationService;
