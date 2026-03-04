@@ -8,7 +8,7 @@ using Serilog;
 
 namespace Gov.Cscp.VictimServices.Public.Controllers
 {
-    [Route("api/lookups")]
+    [Route("api/[controller]")]
     public class LookupsController : Controller
     {
         private readonly ILookupQueryService _lookupQueryService;

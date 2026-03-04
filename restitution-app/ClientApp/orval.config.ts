@@ -9,7 +9,8 @@ const commonOutputConfig: Options['output'] = {
   clean: true,
   workspace: 'src',
   schemas: 'model',
-  target: 'api'
+  target: 'api',
+  baseUrl: '/restwebforms'
 };
 
 const applicationApi: Options = {
