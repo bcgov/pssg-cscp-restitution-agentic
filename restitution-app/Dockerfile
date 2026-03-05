@@ -43,13 +43,13 @@ ARG BUILD_IMAGE_NAME
 ARG BUILD_VERSION
 
 # --- Runtime Base Image ---
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 ARG BUILD_IMAGE_NAME
 ARG BUILD_VERSION
 WORKDIR /app
 
 # --- Build Stage (SDK) & Publish Stage ---
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_IMAGE_NAME
 ARG BUILD_VERSION
 
@@ -78,7 +78,7 @@ RUN echo "BUILD_IMAGE_NAME='$BUILD_IMAGE_NAME'" && if [ -z "$BUILD_IMAGE_NAME" ]
 RUN echo "BUILD_VERSION='$BUILD_VERSION'" && if [ -z "$BUILD_VERSION" ]; then echo "BUILD_VERSION is empty!"; exit 1; fi
 
 # 1. Create non-root user and group for security
-RUN addgroup --system appgroup && adduser --system --ingroup appgroup appuser
+RUN groupadd --system appgroup && useradd --system --gid appgroup --no-create-home appuser
 
 # 2. Copy published app from build stage as root
 COPY --from=build /app/publish ./
