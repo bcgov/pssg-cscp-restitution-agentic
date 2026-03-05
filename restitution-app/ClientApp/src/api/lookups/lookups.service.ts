@@ -5,8 +5,8 @@
  * API for the Restitution Application
  * OpenAPI spec version: v1
  */
-import { HttpClient, HttpHeaders } from '@angular/common/http';
 import type { HttpContext, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 
 import { Injectable, inject } from '@angular/core';
 
@@ -55,7 +55,7 @@ function filterParams(
         filteredParams[key] = filtered;
       }
     } else if (value === null && requiredNullableKeys.has(key)) {
-      filteredParams[key] = value;
+      filteredParams[key] = null;
     } else if (
       value != null &&
       (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean')
