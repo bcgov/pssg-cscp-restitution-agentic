@@ -80,10 +80,10 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         [HttpGet("cities/search")]
         [ProducesResponseType(typeof(CitySearchResponseDto), StatusCodes.Status200OK)]
         public async Task<ActionResult<CitySearchResponseDto>> SearchCities(
-            string country,
-            string province,
-            string searchVal,
-            int limit
+            [FromQuery] string country,
+            [FromQuery] string province,
+            [FromQuery] string searchVal,
+            [FromQuery] int limit
         )
         {
             try

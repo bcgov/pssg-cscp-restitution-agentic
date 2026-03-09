@@ -23,6 +23,8 @@ Proxy config forwards `/api` and `/restwebforms/api` to `http://localhost:5000`.
 
 ## API client generation (Orval)
 
+NOTE: there's a bug in orval where generated service doesn't include FromQuery parameters
+
 This project uses Orval to generate typed Angular API clients from Swagger.
 
 ```bash
