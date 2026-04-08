@@ -1,12 +1,16 @@
 using System;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Reflection;
+using System.Text.Json;
 using Database.Extensions;
+using Gov.Cscp.VictimServices.Public.HealthChecks;
 using Gov.Cscp.VictimServices.Public.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.CookiePolicy;
 using Microsoft.AspNetCore.DataProtection;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.Extensions.Configuration;
@@ -97,7 +101,13 @@ services.Configure<FormOptions>(options =>
 });
 
 // Health checks
-services.AddHealthChecks().AddCheck("HTTP Endpoint", () => HealthCheckResult.Healthy("Ok"));
+services
+    .AddHealthChecks()
+    .AddCheck<DataverseHealthCheck>(
+        "Dataverse",
+        failureStatus: HealthStatus.Unhealthy,
+        tags: new[] { "dataverse", "dynamics", "ready" }
+    );
 
 // Swagger / OpenAPI
 services.AddSwaggerGen(c =>
@@ -170,8 +180,38 @@ app.UseSerilogRequestLogging(options =>
     };
 });
 
-// Health checks
-app.UseHealthChecks("/hc");
+// Health checks – includes Dataverse connectivity check with detailed JSON output
+app.MapHealthChecks(
+    "/hc",
+    new HealthCheckOptions
+    {
+        ResponseWriter = async (context, report) =>
+        {
+            context.Response.ContentType = "application/json";
+
+            var result = JsonSerializer.Serialize(
+                new
+                {
+                    status = report.Status.ToString(),
+                    totalDuration = $"{report.TotalDuration.TotalMilliseconds:F0} ms",
+                    checks = report.Entries.Select(e => new
+                    {
+                        name = e.Key,
+                        status = e.Value.Status.ToString(),
+                        description = e.Value.Description,
+                        duration = $"{e.Value.Duration.TotalMilliseconds:F0} ms",
+                        data = e.Value.Data,
+                        exception = e.Value.Exception?.Message,
+                        tags = e.Value.Tags,
+                    }),
+                },
+                new JsonSerializerOptions { WriteIndented = true }
+            );
+
+            await context.Response.WriteAsync(result);
+        },
+    }
+);
 
 // Swagger (development only)
 if (app.Environment.IsDevelopment())
