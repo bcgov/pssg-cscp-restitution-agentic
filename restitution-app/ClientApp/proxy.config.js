@@ -1,6 +1,6 @@
 const PROXY_CONFIG = [
   {
-    context: ['/api', '/restwebforms/api'],
+    context: ['/api', '/restwebforms/api', '/restwebforms/hc'],
     target: 'http://localhost:5000',
     secure: false,
     logLevel: 'error',

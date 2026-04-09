@@ -10,10 +10,10 @@ namespace Gov.Cscp.VictimServices.Public.Utilities.Converters
             return objectType == typeof(string);
         }
 
-        public override object? ReadJson(
+        public override object ReadJson(
             JsonReader reader,
             Type objectType,
-            object? existingValue,
+            object existingValue,
             JsonSerializer serializer
         )
         {
@@ -21,7 +21,7 @@ namespace Gov.Cscp.VictimServices.Public.Utilities.Converters
             return string.IsNullOrWhiteSpace(value) ? null : value;
         }
 
-        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             var stringValue = value as string;
             if (string.IsNullOrWhiteSpace(stringValue))

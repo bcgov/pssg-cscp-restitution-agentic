@@ -13,7 +13,7 @@ namespace Database.Extensions
 {
     public static class ServiceCollectionExtensions
     {
-        private static IConfiguration _configuration;
+        private static IConfiguration _configuration = null!;
 
         public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
         {
@@ -29,13 +29,16 @@ namespace Database.Extensions
         }
 
         public static IServiceCollection AddDatabaseService(this IServiceCollection services, IConfiguration configuration)
-        {            
+        {
             services.AddSingleton<IOrganizationServiceAsync>(sp =>
             {
                 var logger = sp.GetRequiredService<ILogger<ServiceClient>>();
                 var uri = new Uri(configuration["DYNAMICS_ODATA_URI"]);
                 var client = new ServiceClient(uri, TokenProviderAdfs, false, logger);
-                if (!client.IsReady) throw new InvalidOperationException($"Failed to connect to Dataverse: {client.LastError}", client.LastException);
+                if (!client.IsReady)
+                {
+                    logger.LogError("Failed to connect to Dataverse: {Error}", client.LastError);
+                }
                 return client;
             });
 
@@ -70,7 +73,12 @@ namespace Database.Extensions
                 var result = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(responseContent);
                 if (result?.ContainsKey("access_token") ?? false)
                 {
-                    return result["access_token"].GetString();
+                    var token = result["access_token"].GetString();
+                    if (token != null)
+                    {
+                        return token;
+                    }
+                    throw new Exception("Access token is null or empty");
                 }
                 else if (result?.ContainsKey("error") ?? false)
                 {
