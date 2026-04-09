@@ -26,14 +26,9 @@ namespace Gov.Cscp.VictimServices.Public.HealthChecks
         {
             try
             {
-                if (
-                    _organizationService is ServiceClient serviceClient
-                    && !serviceClient.IsReady
-                )
+                if (_organizationService is ServiceClient serviceClient && !serviceClient.IsReady)
                 {
-                    return HealthCheckResult.Unhealthy(
-                        "Dataverse ServiceClient is not ready."
-                    );
+                    return HealthCheckResult.Unhealthy("Dataverse ServiceClient is not ready.");
                 }
 
                 await _organizationService.ExecuteAsync(new WhoAmIRequest());
@@ -42,10 +37,7 @@ namespace Gov.Cscp.VictimServices.Public.HealthChecks
             }
             catch (Exception ex)
             {
-                return HealthCheckResult.Unhealthy(
-                    "Dataverse health check failed.",
-                    exception: ex
-                );
+                return HealthCheckResult.Unhealthy("Dataverse health check failed.", exception: ex);
             }
         }
     }

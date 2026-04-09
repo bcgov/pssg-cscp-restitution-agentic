@@ -14,9 +14,7 @@ namespace Gov.Cscp.VictimServices.Public.HealthChecks
             CancellationToken cancellationToken = default
         )
         {
-            return Task.FromResult(
-                HealthCheckResult.Healthy("API process is healthy.")
-            );
+            return Task.FromResult(HealthCheckResult.Healthy("API process is healthy."));
         }
     }
 }

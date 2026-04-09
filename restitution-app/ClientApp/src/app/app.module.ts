@@ -49,6 +49,7 @@ import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { FeatureEnabledDirective } from './directives/feature-enabled.directive';
 import { LoadingInterceptor } from './interceptors/loading.interceptor';
 import { NotFoundComponent } from './not-found/not-found.component';
+import { OutageComponent } from './outage/outage.component';
 import { PhonePipe } from './pipes/phone.pipe';
 import { QuickExitComponent } from './quick-exit/quick-exit.component';
 import { RestitutionApplicationComponent } from './restitution-application/restitution-application.component';
@@ -70,7 +71,6 @@ import { VictimFormComponent } from './shared/restitution/restitution-informatio
 import { RestitutionOverviewComponent } from './shared/restitution/restitution-overview/restitution-overview.component';
 import { RestitutionReviewComponent } from './shared/restitution/review/restitution-review.component';
 import { RestitutionSuccessComponent } from './shared/restitution/success/restitution-success.component';
-import { ServiceNotAvailableComponent } from './shared/service-not-available.component';
 import { ToolTipTriggerComponent } from './shared/tool-tip/tool-tip.component';
 import { SignPadDialog } from './sign-dialog/sign-dialog.component';
 
@@ -86,6 +86,7 @@ import { SignPadDialog } from './sign-dialog/sign-dialog.component';
     FileUploaderComponent,
     MessageDialog,
     NotFoundComponent,
+    OutageComponent,
     PhonePipe,
     QuickExitComponent,
     RestitutionApplicationComponent,
@@ -101,8 +102,7 @@ import { SignPadDialog } from './sign-dialog/sign-dialog.component';
     ToolTipTriggerComponent,
     GenderSelectorComponent,
     RaceSelectorComponent,
-    FeatureEnabledDirective,
-    ServiceNotAvailableComponent
+    FeatureEnabledDirective
   ],
   exports: [
     AppRoutingModule,

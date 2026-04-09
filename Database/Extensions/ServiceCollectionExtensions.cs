@@ -35,7 +35,10 @@ namespace Database.Extensions
                 var logger = sp.GetRequiredService<ILogger<ServiceClient>>();
                 var uri = new Uri(configuration["DYNAMICS_ODATA_URI"]);
                 var client = new ServiceClient(uri, TokenProviderAdfs, false, logger);
-                if (!client.IsReady) throw new InvalidOperationException($"Failed to connect to Dataverse: {client.LastError}", client.LastException);
+                if (!client.IsReady)
+                {
+                    logger.LogError("Failed to connect to Dataverse: {Error}", client.LastError);
+                }
                 return client;
             });
 
