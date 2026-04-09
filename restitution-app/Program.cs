@@ -103,6 +103,11 @@ services.Configure<FormOptions>(options =>
 // Health checks
 services
     .AddHealthChecks()
+    .AddCheck<ApiSelfHealthCheck>(
+        "API",
+        failureStatus: HealthStatus.Degraded,
+        tags: new[] { "self", "process" }
+    )
     .AddCheck<DataverseHealthCheck>(
         "Dataverse",
         failureStatus: HealthStatus.Unhealthy,
@@ -180,7 +185,7 @@ app.UseSerilogRequestLogging(options =>
     };
 });
 
-// Health checks – includes Dataverse connectivity check with detailed JSON output
+// Health check – returns JSON with API + Dataverse status
 app.MapHealthChecks(
     "/hc",
     new HealthCheckOptions
@@ -193,16 +198,11 @@ app.MapHealthChecks(
                 new
                 {
                     status = report.Status.ToString(),
-                    totalDuration = $"{report.TotalDuration.TotalMilliseconds:F0} ms",
                     checks = report.Entries.Select(e => new
                     {
                         name = e.Key,
                         status = e.Value.Status.ToString(),
                         description = e.Value.Description,
-                        duration = $"{e.Value.Duration.TotalMilliseconds:F0} ms",
-                        data = e.Value.Data,
-                        exception = e.Value.Exception?.Message,
-                        tags = e.Value.Tags,
                     }),
                 },
                 new JsonSerializerOptions { WriteIndented = true }
@@ -339,7 +339,7 @@ static void ConfigureLogging(IHostEnvironment env, IConfiguration configuration)
 
     if (!string.IsNullOrEmpty(splunkCollectorUrl) && !string.IsNullOrEmpty(splunkToken))
     {
-        HttpClientHandler? handler = null;
+        HttpClientHandler handler = null;
 
         if (env.IsDevelopment())
         {
