@@ -36,6 +36,14 @@ platformBrowserDynamic().bootstrapModule(AppModule, {
         lookupsStore.loadProvinces(),
         lookupsStore.loadCourts()
       ]);
+
+      const lookupsUnavailable =
+        lookupsStore.countriesError() || lookupsStore.provincesError() || lookupsStore.courtsError();
+
+      if (lookupsUnavailable) {
+        router.navigateByUrl('/outage');
+        return;
+      }
     })
   ]
 });
