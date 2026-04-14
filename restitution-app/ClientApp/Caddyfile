@@ -29,7 +29,7 @@
     	header @jstype Content-Type text/javascript
 
 		uri strip_prefix {$BASE_URL}
-		reverse_proxy /api* {$API_URL}
+		reverse_proxy /api* /hc {$API_URL}
 		try_files {path} {path}/ /index.html?{query}
 	}
 
