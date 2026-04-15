@@ -17,7 +17,7 @@ export class HealthCheckService {
   async checkHealth(): Promise<boolean> {
     try {
       const response = await firstValueFrom(this.http.get<HealthCheckResponse>('/restwebforms/hc'));
-      const healthy = response.status === 'Healthy';
+      const healthy = response.checks.every((c) => c.status === 'Healthy');
       this._isHealthy.set(healthy);
       return healthy;
     } catch {
