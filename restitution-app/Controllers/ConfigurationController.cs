@@ -14,10 +14,7 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         private readonly ILogger<ConfigurationController> logger;
         private readonly IConfiguration configuration;
 
-        public ConfigurationController(
-            ILogger<ConfigurationController> logger,
-            IConfiguration configuration
-        )
+        public ConfigurationController(ILogger<ConfigurationController> logger, IConfiguration configuration)
         {
             this.logger = logger;
             this.configuration = configuration;
@@ -31,15 +28,9 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
             {
                 var config = new Configuration
                 {
-                    OutageMessage = configuration.GetValue<string>(
-                        "CONFIGURATION_OUTAGEINFORMATION_MESSAGE"
-                    ),
-                    OutageStartDate = configuration.GetValue<string>(
-                        "CONFIGURATION_OUTAGEINFORMATION_STARTDATE"
-                    ),
-                    OutageEndDate = configuration.GetValue<string>(
-                        "CONFIGURATION_OUTAGEINFORMATION_ENDDATE"
-                    ),
+                    OutageMessage = configuration.GetValue<string>("CONFIGURATION_OUTAGEINFORMATION_MESSAGE"),
+                    OutageStartDate = configuration.GetValue<string>("CONFIGURATION_OUTAGEINFORMATION_STARTDATE"),
+                    OutageEndDate = configuration.GetValue<string>("CONFIGURATION_OUTAGEINFORMATION_ENDDATE"),
                     FeatureFlags = new FeatureFlagConfiguration
                     {
                         UseUpdatedComplianceFields = !string.IsNullOrEmpty(

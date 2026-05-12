@@ -30,19 +30,13 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
             }
             catch (Exception e)
             {
-                _logger.Error(
-                    e,
-                    "Unexpected error while looking up countries in Dataverse. Source = Restitution"
-                );
+                _logger.Error(e, "Unexpected error while looking up countries in Dataverse. Source = Restitution");
                 return BadRequest();
             }
         }
 
         [HttpGet("provinces")]
-        [ProducesResponseType(
-            typeof(LookupResponseDto<ProvinceLookupDto>),
-            StatusCodes.Status200OK
-        )]
+        [ProducesResponseType(typeof(LookupResponseDto<ProvinceLookupDto>), StatusCodes.Status200OK)]
         public async Task<ActionResult<LookupResponseDto<ProvinceLookupDto>>> GetProvinces()
         {
             try
@@ -51,10 +45,7 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
             }
             catch (Exception e)
             {
-                _logger.Error(
-                    e,
-                    "Unexpected error while looking up provinces in Dataverse. Source = Restitution"
-                );
+                _logger.Error(e, "Unexpected error while looking up provinces in Dataverse. Source = Restitution");
                 return BadRequest();
             }
         }
@@ -69,10 +60,7 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
             }
             catch (Exception e)
             {
-                _logger.Error(
-                    e,
-                    "Unexpected error while looking up cities in Dataverse. Source = Restitution"
-                );
+                _logger.Error(e, "Unexpected error while looking up cities in Dataverse. Source = Restitution");
                 return BadRequest();
             }
         }
@@ -88,25 +76,18 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         {
             try
             {
-                return Ok(
-                    await _lookupQueryService.SearchCitiesAsync(country, province, searchVal, limit)
-                );
+                return Ok(await _lookupQueryService.SearchCitiesAsync(country, province, searchVal, limit));
             }
             catch (Exception e)
             {
-                _logger.Error(
-                    e,
-                    "Unexpected error while searching cities in Dataverse. Source = Restitution"
-                );
+                _logger.Error(e, "Unexpected error while searching cities in Dataverse. Source = Restitution");
                 return BadRequest();
             }
         }
 
         [HttpGet("country/{country}/cities")]
         [ProducesResponseType(typeof(LookupResponseDto<CityLookupDto>), StatusCodes.Status200OK)]
-        public async Task<ActionResult<LookupResponseDto<CityLookupDto>>> GetCitiesByCountry(
-            string country
-        )
+        public async Task<ActionResult<LookupResponseDto<CityLookupDto>>> GetCitiesByCountry(string country)
         {
             try
             {
@@ -146,12 +127,7 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
                     return BadRequest();
                 }
 
-                return Ok(
-                    await _lookupQueryService.GetCitiesByProvinceAsync(
-                        parsedCountryId,
-                        parsedProvinceId
-                    )
-                );
+                return Ok(await _lookupQueryService.GetCitiesByProvinceAsync(parsedCountryId, parsedProvinceId));
             }
             catch (Exception e)
             {
@@ -164,10 +140,7 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         }
 
         [HttpGet("relationships")]
-        [ProducesResponseType(
-            typeof(LookupResponseDto<RelationshipLookupDto>),
-            StatusCodes.Status200OK
-        )]
+        [ProducesResponseType(typeof(LookupResponseDto<RelationshipLookupDto>), StatusCodes.Status200OK)]
         public async Task<ActionResult<LookupResponseDto<RelationshipLookupDto>>> GetRelationships()
         {
             try
@@ -176,19 +149,13 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
             }
             catch (Exception e)
             {
-                _logger.Error(
-                    e,
-                    "Unexpected error while looking up relationships in Dataverse. Source = Restitution"
-                );
+                _logger.Error(e, "Unexpected error while looking up relationships in Dataverse. Source = Restitution");
                 return BadRequest();
             }
         }
 
         [HttpGet("auth_relationships")]
-        [ProducesResponseType(
-            typeof(LookupResponseDto<RelationshipLookupDto>),
-            StatusCodes.Status200OK
-        )]
+        [ProducesResponseType(typeof(LookupResponseDto<RelationshipLookupDto>), StatusCodes.Status200OK)]
         public async Task<
             ActionResult<LookupResponseDto<RelationshipLookupDto>>
         > GetOptionalAuthorizationRelationships()
@@ -208,13 +175,8 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         }
 
         [HttpGet("representative_relationships")]
-        [ProducesResponseType(
-            typeof(LookupResponseDto<RelationshipLookupDto>),
-            StatusCodes.Status200OK
-        )]
-        public async Task<
-            ActionResult<LookupResponseDto<RelationshipLookupDto>>
-        > GetRepresentativeRelationships()
+        [ProducesResponseType(typeof(LookupResponseDto<RelationshipLookupDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<LookupResponseDto<RelationshipLookupDto>>> GetRepresentativeRelationships()
         {
             try
             {
@@ -231,13 +193,8 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         }
 
         [HttpGet("restitution_relationships")]
-        [ProducesResponseType(
-            typeof(LookupResponseDto<RelationshipLookupDto>),
-            StatusCodes.Status200OK
-        )]
-        public async Task<
-            ActionResult<LookupResponseDto<RelationshipLookupDto>>
-        > GetRestitutionRelationships()
+        [ProducesResponseType(typeof(LookupResponseDto<RelationshipLookupDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<LookupResponseDto<RelationshipLookupDto>>> GetRestitutionRelationships()
         {
             try
             {
@@ -254,13 +211,8 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         }
 
         [HttpGet("police_detachments")]
-        [ProducesResponseType(
-            typeof(LookupResponseDto<PoliceDetachmentLookupDto>),
-            StatusCodes.Status200OK
-        )]
-        public async Task<
-            ActionResult<LookupResponseDto<PoliceDetachmentLookupDto>>
-        > GetPoliceDetachments()
+        [ProducesResponseType(typeof(LookupResponseDto<PoliceDetachmentLookupDto>), StatusCodes.Status200OK)]
+        public async Task<ActionResult<LookupResponseDto<PoliceDetachmentLookupDto>>> GetPoliceDetachments()
         {
             try
             {
@@ -286,10 +238,7 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
             }
             catch (Exception e)
             {
-                _logger.Error(
-                    e,
-                    "Unexpected error while looking up courts in Dataverse. Source = Restitution"
-                );
+                _logger.Error(e, "Unexpected error while looking up courts in Dataverse. Source = Restitution");
                 return BadRequest();
             }
         }

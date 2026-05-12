@@ -21,9 +21,7 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
         }
 
         [HttpPost("victim")]
-        public async Task<IActionResult> SubmitVictimRestitution(
-            [FromBody] CreateVictimRestitutionCaseRequestDto model
-        )
+        public async Task<IActionResult> SubmitVictimRestitution([FromBody] CreateVictimRestitutionCaseRequestDto model)
         {
             return await SubmitRestitutionInternal(model, x => x.ConvertToDynamicsRequest());
         }

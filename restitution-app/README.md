@@ -25,6 +25,34 @@ Use Microsoft docs to configure secrets locally:
 
 - https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets
 
+### Secrets Template
+
+```JSON
+{
+  "BASE_PATH": "/restwebforms",
+  "FEATURE_UPDATED_COMPLIANCE_FIELDS": "true",
+  "Dynamics": {
+    "AuthenticationType": "OnPremise",
+    "DynamicsApiEndpointUrl": "http://dev-coast-dataverse-proxy.silver.devops.bcgov/api/data/v9.0/",
+    "ADFS": {
+      "OAuth2TokenEndpoint": "https://ststest.gov.bc.ca/adfs/oauth2/token",
+      "ClientId": "<onpremise_client_id>",
+      "ClientSecret": "<onpremise_client_secret>",
+      "ServiceAccountDomain": "IDIR",
+      "ServiceAccountName": "<onpremise_service_account_username>",
+      "ServiceAccountPassword": "<onpremise_service_account_password>",
+      "ResourceName": "https://cscp-vs.dev.jag.gov.bc.ca/api/data/v9.0/"
+    },
+    "EntraId": {
+      "TenantId": "<cloud_tenant_id>",
+      "ClientId": "<cloud_client_id>",
+      "ClientSecret": "<cloud_client_secret>",
+      "ResourceName": "https://cscp-dev.api.crm3.dynamics.com"
+    }
+  }
+}
+```
+
 ## Swagger
 
 - UI: `http://localhost:5000/swagger`
