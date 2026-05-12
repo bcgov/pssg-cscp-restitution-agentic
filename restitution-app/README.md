@@ -38,7 +38,6 @@ Use Microsoft docs to configure secrets locally:
       "OAuth2TokenEndpoint": "https://ststest.gov.bc.ca/adfs/oauth2/token",
       "ClientId": "<onpremise_client_id>",
       "ClientSecret": "<onpremise_client_secret>",
-      "ServiceAccountDomain": "IDIR",
       "ServiceAccountName": "<onpremise_service_account_username>",
       "ServiceAccountPassword": "<onpremise_service_account_password>",
       "ResourceName": "https://cscp-vs.dev.jag.gov.bc.ca/api/data/v9.0/"

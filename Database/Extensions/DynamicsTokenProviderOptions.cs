@@ -19,7 +19,6 @@ namespace Database.Extensions
         public string OAuth2TokenEndpoint { get; set; } = string.Empty;
         public string ClientId { get; set; } = string.Empty;
         public string ClientSecret { get; set; } = string.Empty;
-        public string ServiceAccountDomain { get; set; } = string.Empty;
         public string ServiceAccountName { get; set; } = string.Empty;
         public string ServiceAccountPassword { get; set; } = string.Empty;
         public string ResourceName { get; set; } = string.Empty;

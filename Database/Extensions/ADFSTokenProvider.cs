@@ -44,7 +44,7 @@ namespace Database.Extensions
                     ClientId = options.ClientId,
                     ClientSecret = options.ClientSecret,
                     Resource = { options.ResourceName },
-                    UserName = $"{options.ServiceAccountDomain}\\{options.ServiceAccountName}",
+                    UserName = options.ServiceAccountName,
                     Password = options.ServiceAccountPassword,
                     Scope = "openid",
                 }
