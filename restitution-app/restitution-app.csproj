@@ -7,7 +7,7 @@
         <!-- Set this to true if you enable server-side prerendering -->
         <BuildServerSideRenderer>false</BuildServerSideRenderer>
         <RootNamespace>Gov.Cscp.VictimServices.Public</RootNamespace>
-        <UserSecretsId>ea444fef-9537-4671-aafd-138a4dc8d981</UserSecretsId>
+        <UserSecretsId>76d21faa-788c-4a11-806e-5926d3169453</UserSecretsId>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Azure.Core" Version="1.52.0" />
