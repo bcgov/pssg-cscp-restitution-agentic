@@ -6,87 +6,83 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using Microsoft.PowerPlatform.Dataverse.Client;
 
-namespace Database.Extensions
+namespace Database.Extensions;
+
+public static class ServiceCollectionExtensions
 {
-    public static class ServiceCollectionExtensions
+    public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
-        public static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
-        {
-            // Configure Dynamics token provider options
-            services.Configure<DynamicsTokenProviderOptions>(configuration.GetSection("Dynamics"));
+        // Configure Dynamics token provider options
+        services.Configure<DynamicsTokenProviderOptions>(configuration.GetSection("Dynamics"));
 
-            // Add memory cache for token caching
-            services.AddMemoryCache();
-            services.AddTransient<ICache, MemoryCache>();
+        // Add memory cache for token caching
+        services.AddMemoryCache();
+        services.AddTransient<ICache, MemoryCache>();
 
-            // Add HTTP client factory for token providers
-            services.AddHttpClient(
-                "oauth_token",
-                (sp, c) =>
+        // Add HTTP client factory for token providers
+        services.AddHttpClient(
+            "oauth_token",
+            (sp, c) =>
+            {
+                var options = sp.GetRequiredService<IOptions<DynamicsTokenProviderOptions>>().Value;
+                if (!string.IsNullOrWhiteSpace(options.ADFS.OAuth2TokenEndpoint))
                 {
-                    var options = sp.GetRequiredService<IOptions<DynamicsTokenProviderOptions>>().Value;
-                    if (!string.IsNullOrWhiteSpace(options.ADFS.OAuth2TokenEndpoint))
-                    {
-                        c.BaseAddress = new Uri(options.ADFS.OAuth2TokenEndpoint);
-                    }
+                    c.BaseAddress = new Uri(options.ADFS.OAuth2TokenEndpoint);
                 }
+            }
+        );
+        services.AddHttpClient("entraid_token");
+
+        // Register both token providers
+        services.AddTransient<ADFSTokenProvider>();
+        services.AddTransient<EntraIdTokenProvider>();
+
+        // Register the appropriate token provider based on configuration
+        services.AddTransient<ITokenProvider>(sp =>
+        {
+            var options = sp.GetRequiredService<IOptions<DynamicsTokenProviderOptions>>().Value;
+            return options.AuthenticationType == DynamicsAuthenticationType.OnPremise
+                ? sp.GetRequiredService<ADFSTokenProvider>()
+                : sp.GetRequiredService<EntraIdTokenProvider>();
+        });
+
+        // Register Dataverse service
+        services.AddDatabaseService(configuration);
+
+        // Register DataverseContext
+        services.AddScoped(sp =>
+        {
+            var client = sp.GetRequiredService<IOrganizationServiceAsync>();
+            return new DataverseContext(client);
+        });
+
+        return services;
+    }
+
+    private static IServiceCollection AddDatabaseService(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddSingleton<IOrganizationServiceAsync>(sp =>
+        {
+            var logger = sp.GetRequiredService<ILogger<ServiceClient>>();
+            var options = sp.GetRequiredService<IOptions<DynamicsTokenProviderOptions>>().Value;
+            var tokenProvider = sp.GetRequiredService<ITokenProvider>();
+
+            var uri = new Uri(options.DynamicsApiEndpointUrl);
+            var client = new ServiceClient(
+                uri,
+                async (instanceUri) => await tokenProvider.AcquireToken(),
+                false,
+                logger
             );
-            services.AddHttpClient("entraid_token");
 
-            // Register both token providers
-            services.AddTransient<ADFSTokenProvider>();
-            services.AddTransient<EntraIdTokenProvider>();
-
-            // Register the appropriate token provider based on configuration
-            services.AddTransient<ITokenProvider>(sp =>
+            if (!client.IsReady)
             {
-                var options = sp.GetRequiredService<IOptions<DynamicsTokenProviderOptions>>().Value;
-                return options.AuthenticationType == DynamicsAuthenticationType.OnPremise
-                    ? sp.GetRequiredService<ADFSTokenProvider>()
-                    : sp.GetRequiredService<EntraIdTokenProvider>();
-            });
+                logger.LogError("Failed to connect to Dataverse: {Error}", client.LastError);
+            }
 
-            // Register Dataverse service
-            services.AddDatabaseService(configuration);
+            return client;
+        });
 
-            // Register DataverseContext
-            services.AddScoped(sp =>
-            {
-                var client = sp.GetRequiredService<IOrganizationServiceAsync>();
-                return new DataverseContext(client);
-            });
-
-            return services;
-        }
-
-        private static IServiceCollection AddDatabaseService(
-            this IServiceCollection services,
-            IConfiguration configuration
-        )
-        {
-            services.AddSingleton<IOrganizationServiceAsync>(sp =>
-            {
-                var logger = sp.GetRequiredService<ILogger<ServiceClient>>();
-                var options = sp.GetRequiredService<IOptions<DynamicsTokenProviderOptions>>().Value;
-                var tokenProvider = sp.GetRequiredService<ITokenProvider>();
-
-                var uri = new Uri(options.DynamicsApiEndpointUrl);
-                var client = new ServiceClient(
-                    uri,
-                    async (instanceUri) => await tokenProvider.AcquireToken(),
-                    false,
-                    logger
-                );
-
-                if (!client.IsReady)
-                {
-                    logger.LogError("Failed to connect to Dataverse: {Error}", client.LastError);
-                }
-
-                return client;
-            });
-
-            return services;
-        }
+        return services;
     }
 }

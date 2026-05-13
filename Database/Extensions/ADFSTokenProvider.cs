@@ -5,60 +5,59 @@ using IdentityModel.Client;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace Database.Extensions
+namespace Database.Extensions;
+
+public class ADFSTokenProvider : ITokenProvider
 {
-    public class ADFSTokenProvider : ITokenProvider
+    private const string cacheKey = "adfs_token";
+
+    private readonly ADFSTokenProviderOptions options;
+    private readonly IHttpClientFactory httpClientFactory;
+    private readonly ICache cache;
+    private readonly ILogger<ADFSTokenProvider> logger;
+
+    public ADFSTokenProvider(
+        IHttpClientFactory httpClientFactory,
+        IOptions<DynamicsTokenProviderOptions> options,
+        ICache cache,
+        ILogger<ADFSTokenProvider> logger
+    )
     {
-        private const string cacheKey = "adfs_token";
+        this.options = options.Value.ADFS;
+        this.httpClientFactory = httpClientFactory;
+        this.cache = cache;
+        this.logger = logger;
+    }
 
-        private readonly ADFSTokenProviderOptions options;
-        private readonly IHttpClientFactory httpClientFactory;
-        private readonly ICache cache;
-        private readonly ILogger<ADFSTokenProvider> logger;
+    public async Task<string> AcquireToken() =>
+        await cache.GetOrSet(cacheKey, AcquireTokenInternal, TimeSpan.FromMinutes(5)) ?? null!;
 
-        public ADFSTokenProvider(
-            IHttpClientFactory httpClientFactory,
-            IOptions<DynamicsTokenProviderOptions> options,
-            ICache cache,
-            ILogger<ADFSTokenProvider> logger
-        )
-        {
-            this.options = options.Value.ADFS;
-            this.httpClientFactory = httpClientFactory;
-            this.cache = cache;
-            this.logger = logger;
-        }
+    private async Task<string> AcquireTokenInternal()
+    {
+        logger.LogDebug("Acquiring ADFS token from {0}", options.OAuth2TokenEndpoint);
+        using var httpClient = httpClientFactory.CreateClient("oauth_token");
 
-        public async Task<string> AcquireToken() =>
-            await cache.GetOrSet(cacheKey, AcquireTokenInternal, TimeSpan.FromMinutes(5)) ?? null!;
-
-        private async Task<string> AcquireTokenInternal()
-        {
-            logger.LogDebug("Acquiring ADFS token from {0}", options.OAuth2TokenEndpoint);
-            using var httpClient = httpClientFactory.CreateClient("oauth_token");
-
-            var response = await httpClient.RequestPasswordTokenAsync(
-                new PasswordTokenRequest
-                {
-                    Address = options.OAuth2TokenEndpoint,
-                    ClientId = options.ClientId,
-                    ClientSecret = options.ClientSecret,
-                    Resource = { options.ResourceName },
-                    UserName = options.ServiceAccountName,
-                    Password = options.ServiceAccountPassword,
-                    Scope = "openid",
-                }
-            );
-
-            if (response.IsError)
+        var response = await httpClient.RequestPasswordTokenAsync(
+            new PasswordTokenRequest
             {
-                throw new InvalidOperationException(
-                    $"ADFS token request failed: {response.Error} - {response.ErrorDescription}"
-                );
+                Address = options.OAuth2TokenEndpoint,
+                ClientId = options.ClientId,
+                ClientSecret = options.ClientSecret,
+                Resource = { options.ResourceName },
+                UserName = options.ServiceAccountName,
+                Password = options.ServiceAccountPassword,
+                Scope = "openid",
             }
+        );
 
-            logger.LogInformation("ADFS token acquired");
-            return response.AccessToken!;
+        if (response.IsError)
+        {
+            throw new InvalidOperationException(
+                $"ADFS token request failed: {response.Error} - {response.ErrorDescription}"
+            );
         }
+
+        logger.LogInformation("ADFS token acquired");
+        return response.AccessToken!;
     }
 }

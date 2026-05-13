@@ -1,9 +1,8 @@
 using System.Threading.Tasks;
 
-namespace Database.Extensions
+namespace Database.Extensions;
+
+public interface ITokenProvider
 {
-    public interface ITokenProvider
-    {
-        Task<string> AcquireToken();
-    }
+    Task<string> AcquireToken();
 }
