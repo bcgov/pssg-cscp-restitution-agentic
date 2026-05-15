@@ -19,22 +19,20 @@ Default local URL (from launch settings): `http://localhost:5000`
 
 ## User secrets
 
-This project uses ASP.NET Core user secrets (`UserSecretsId` is set in `restitution-app.csproj`).
-
-Use Microsoft docs to configure secrets locally:
-
-- https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets
+[Setup secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-9.0&tabs=windows#secret-manager)
 
 ### Secrets Template
 
 ```JSON
 {
   "BASE_PATH": "/restwebforms",
+
   "FEATURE_UPDATED_COMPLIANCE_FIELDS": "true",
+
   "Dynamics": {
     "AuthenticationType": "OnPremise",
-    "DynamicsApiEndpointUrl": "http://dev-coast-dataverse-proxy.silver.devops.bcgov/api/data/v9.0/",
     "ADFS": {
+      "DynamicsApiEndpointUrl": "http://dev-coast-dataverse-proxy.silver.devops.bcgov/api/data/v9.0/",
       "OAuth2TokenEndpoint": "https://ststest.gov.bc.ca/adfs/oauth2/token",
       "ClientId": "<onpremise_client_id>",
       "ClientSecret": "<onpremise_client_secret>",
@@ -43,6 +41,7 @@ Use Microsoft docs to configure secrets locally:
       "ResourceName": "https://cscp-vs.dev.jag.gov.bc.ca/api/data/v9.0/"
     },
     "EntraId": {
+      "DynamicsApiEndpointUrl": "https://cscp-dev.api.crm3.dynamics.com/api/data/v9.2/",
       "TenantId": "<cloud_tenant_id>",
       "ClientId": "<cloud_client_id>",
       "ClientSecret": "<cloud_client_secret>",
