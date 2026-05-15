@@ -2,9 +2,7 @@
   <app-field label="Primary Race/Ethnicity" [required]="false" [disabled]="isDisabled" [valid]="isMyControlValid(form.get('primaryRaceEthnicity'))" errorMessage="Please select an option">
     <select class="form-control" formControlName="primaryRaceEthnicity">
       @for (enum of raceEthnicityList; track enum) {
-        <span>
-          <option [value]="enum.val">{{enum.name}}</option>
-        </span>
+        <option [value]="enum.val">{{enum.name}}</option>
       }
     </select>
   </app-field>
@@ -12,9 +10,7 @@
     <app-field label="Indigenous" [required]="false"  [disabled]="isDisabled" errorMessage="Please select an option">
       <select class="form-control" formControlName="indigenousStatus">
         @for (enum of indigenousStatusList; track enum) {
-          <span>
-            <option [value]="enum.val">{{enum.name}}</option>
-          </span>
+          <option [value]="enum.val">{{enum.name}}</option>
         }
       </select>
     </app-field>

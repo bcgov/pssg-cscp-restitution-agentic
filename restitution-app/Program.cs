@@ -30,11 +30,7 @@ var builder = WebApplication.CreateBuilder(args);
 // ---------------------------------------------------------------------------
 builder
     .Configuration.AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
-    .AddJsonFile(
-        $"appsettings.{builder.Environment.EnvironmentName}.json",
-        optional: true,
-        reloadOnChange: true
-    )
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true, reloadOnChange: true)
     .AddEnvironmentVariables();
 
 // ---------------------------------------------------------------------------
@@ -73,17 +69,11 @@ services
     .AddNewtonsoftJson(opts =>
     {
         opts.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
-        opts.SerializerSettings.DateFormatHandling = Newtonsoft
-            .Json
-            .DateFormatHandling
-            .IsoDateFormat;
+        opts.SerializerSettings.DateFormatHandling = Newtonsoft.Json.DateFormatHandling.IsoDateFormat;
         opts.SerializerSettings.DateTimeZoneHandling = Newtonsoft.Json.DateTimeZoneHandling.Utc;
 
         // Prevent JSON parser issues with circular references in user / roles model.
-        opts.SerializerSettings.ReferenceLoopHandling = Newtonsoft
-            .Json
-            .ReferenceLoopHandling
-            .Ignore;
+        opts.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
     });
 
 // Data Protection key ring persistence (for container deployments)
@@ -103,11 +93,7 @@ services.Configure<FormOptions>(options =>
 // Health checks
 services
     .AddHealthChecks()
-    .AddCheck<ApiSelfHealthCheck>(
-        "API",
-        failureStatus: HealthStatus.Degraded,
-        tags: new[] { "self", "process" }
-    )
+    .AddCheck<ApiSelfHealthCheck>("API", failureStatus: HealthStatus.Degraded, tags: new[] { "self", "process" })
     .AddCheck<DataverseHealthCheck>(
         "Dataverse",
         failureStatus: HealthStatus.Unhealthy,
@@ -168,9 +154,7 @@ app.UseSerilogRequestLogging(options =>
         if (path.StartsWith("/api/lookup", StringComparison.OrdinalIgnoreCase))
             return Serilog.Events.LogEventLevel.Verbose;
 
-        return elapsed > 1000
-            ? Serilog.Events.LogEventLevel.Warning
-            : Serilog.Events.LogEventLevel.Information;
+        return elapsed > 1000 ? Serilog.Events.LogEventLevel.Warning : Serilog.Events.LogEventLevel.Information;
     };
 
     options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
@@ -200,9 +184,7 @@ app.MapHealthChecks(
             // Determine overall status from the API self-check only.
             // Dataverse failures are surfaced in the per-check details but do not
             // flip the overall status to Unhealthy (which would restart the pod).
-            var overallStatus = report.Entries.TryGetValue("API", out var apiEntry)
-                ? apiEntry.Status
-                : report.Status;
+            var overallStatus = report.Entries.TryGetValue("API", out var apiEntry) ? apiEntry.Status : report.Status;
 
             context.Response.StatusCode = overallStatus == HealthStatus.Unhealthy ? 503 : 200;
             context.Response.ContentType = "application/json";
@@ -245,10 +227,7 @@ app.Use(
             "Content-Security-Policy",
             "script-src 'self' 'unsafe-eval' 'unsafe-inline' https://apis.google.com https://maxcdn.bootstrapcdn.com https://cdnjs.cloudflare.com https://code.jquery.com https://stackpath.bootstrapcdn.com https://fonts.googleapis.com"
         );
-        ctx.Response.Headers.Append(
-            "Strict-Transport-Security",
-            "max-age=31536000; includeSubDomains; preload"
-        );
+        ctx.Response.Headers.Append("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
         await next();
     }
 );
@@ -271,9 +250,7 @@ if (!app.Environment.IsDevelopment())
                         "https://fonts.googleapis.com"
                     )
             )
-            .FontSources(s =>
-                s.Self().CustomSources("https://use.fontawesome.com", "https://fonts.gstatic.com")
-            )
+            .FontSources(s => s.Self().CustomSources("https://use.fontawesome.com", "https://fonts.gstatic.com"))
             .FormActions(s => s.Self())
             .FrameAncestors(s => s.Self())
             .ImageSources(s => s.Self().CustomSources("data:"))
@@ -326,10 +303,7 @@ static void ConfigureLogging(IHostEnvironment env, IConfiguration configuration)
         .Enrich.WithEnvironmentUserName()
         .Enrich.WithCorrelationId()
         .Enrich.WithSpan()
-        .Enrich.WithProperty(
-            "version",
-            Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "Unknown"
-        )
+        .Enrich.WithProperty("version", Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "Unknown")
         .Enrich.WithProperty("UTC_Timestamp", DateTime.UtcNow.ToString("o"));
 
     if (env.IsDevelopment())

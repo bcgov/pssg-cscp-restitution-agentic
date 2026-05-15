@@ -38,10 +38,7 @@ namespace Gov.Cscp.VictimServices.Public.Models.Extensions
                 throw new ArgumentNullException(nameof(model.Application));
             }
 
-            return ConvertToDynamicsRequestInternal(
-                model.Application.ToDynamicsEntityForVictimEntity(),
-                model
-            );
+            return ConvertToDynamicsRequestInternal(model.Application.ToDynamicsEntityForVictimEntity(), model);
         }
 
         public static VSd_CreateRestitutionCaseRequest ConvertToDynamicsRequest(
@@ -72,10 +69,7 @@ namespace Gov.Cscp.VictimServices.Public.Models.Extensions
                 CourtInfoCollection =
                     model.CourtInfoCollection != null
                         ? CreateEntityCollection(
-                            model
-                                .CourtInfoCollection.Select(c => c.ToDynamicsEntity())
-                                .Cast<Entity>()
-                                .ToList(),
+                            model.CourtInfoCollection.Select(c => c.ToDynamicsEntity()).Cast<Entity>().ToList(),
                             VSd_ApplicationCourtInformation.EntityLogicalName
                         )
                         : CreateEntityCollection(
@@ -85,10 +79,7 @@ namespace Gov.Cscp.VictimServices.Public.Models.Extensions
                 ProviderCollection =
                     model.ProviderCollection != null
                         ? CreateEntityCollection(
-                            model
-                                .ProviderCollection.Select(p => p.ToDynamicsEntity())
-                                .Cast<Entity>()
-                                .ToList(),
+                            model.ProviderCollection.Select(p => p.ToDynamicsEntity()).Cast<Entity>().ToList(),
                             VSd_Participant.EntityLogicalName
                         )
                         : CreateEntityCollection(
@@ -98,10 +89,7 @@ namespace Gov.Cscp.VictimServices.Public.Models.Extensions
                 DocumentCollection =
                     model.DocumentCollection != null
                         ? CreateEntityCollection(
-                            model
-                                .DocumentCollection.Select(d => d.ToDynamicsEntity())
-                                .Cast<Entity>()
-                                .ToList(),
+                            model.DocumentCollection.Select(d => d.ToDynamicsEntity()).Cast<Entity>().ToList(),
                             ActivityMimeAttachment.EntityLogicalName
                         )
                         : CreateEntityCollection(
@@ -213,9 +201,7 @@ namespace Gov.Cscp.VictimServices.Public.Models.Extensions
             return normalized.ToDynamicsEntity();
         }
 
-        private static VSd_Application ToDynamicsEntityForVictimEntity(
-            this VictimEntityApplicationDto application
-        )
+        private static VSd_Application ToDynamicsEntityForVictimEntity(this VictimEntityApplicationDto application)
         {
             if (application == null)
             {
@@ -278,13 +264,9 @@ namespace Gov.Cscp.VictimServices.Public.Models.Extensions
                 VSd_ApplicantsLastName = application.ApplicantsLastName,
                 VSd_OtherFirstName = application.OtherFirstName,
                 VSd_OtherLastName = application.OtherLastName,
-                VSd_ApplicantsGenderCode = ConvertToEnum<VSd_Gender>(
-                    application.ApplicantsGenderCode
-                ),
+                VSd_ApplicantsGenderCode = ConvertToEnum<VSd_Gender>(application.ApplicantsGenderCode),
                 VSd_ApplicantsBirthdate = application.ApplicantsBirthDate,
-                VSd_Indigenous = ConvertToEnum<VSd_Application_VSd_Indigenous>(
-                    application.Indigenous
-                ),
+                VSd_Indigenous = ConvertToEnum<VSd_Application_VSd_Indigenous>(application.Indigenous),
                 VSd_ApplicantsPreferredMethodOfContact =
                     ConvertToEnum<VSd_Application_VSd_ApplicantsPreferredMethodOfContact>(
                         application.ApplicantsPreferredMethodOfContact
@@ -303,9 +285,7 @@ namespace Gov.Cscp.VictimServices.Public.Models.Extensions
                 VSd_CVAp_OffenderFirstName = application.OffenderFirstName,
                 VSd_CVAp_OffenderMiddleName = application.OffenderMiddleName,
                 VSd_CVAp_OffenderLastName = application.OffenderLastName,
-                VSd_VoiceMailOption = ConvertToEnum<VSd_VoiceMailOption>(
-                    application.VoicemailOption
-                ),
+                VSd_VoiceMailOption = ConvertToEnum<VSd_VoiceMailOption>(application.VoicemailOption),
                 VSd_ApplicantsSignature = application.ApplicantsSignature,
                 VSd_DeclarationFullName = application.DeclarationFullName,
                 VSd_SigningOfficerTitle = application.SigningOfficerTitle,
@@ -313,9 +293,7 @@ namespace Gov.Cscp.VictimServices.Public.Models.Extensions
                 VSd_ContactTitle = application.ContactTitle,
                 VSd_OffenderCustodyLocation = application.OffenderCustodyLocation,
                 VSd_GenderIdentityText = application.GenderIdentityText,
-                VSd_PrimaryRaceEthnicity = ConvertToEnum<VSd_RaceEthnicity>(
-                    application.PrimaryRaceEthnicity
-                ),
+                VSd_PrimaryRaceEthnicity = ConvertToEnum<VSd_RaceEthnicity>(application.PrimaryRaceEthnicity),
                 VSd_PrimaryRaceEthnicityText = application.PrimaryRaceEthnicityText,
                 VSd_Pronouns = ConvertToEnum<VSd_Pronouns>(application.Pronouns),
                 VSd_PronounText = application.PronounsText,
@@ -362,10 +340,9 @@ namespace Gov.Cscp.VictimServices.Public.Models.Extensions
                 VSd_Province = participant.Province,
                 VSd_Country = participant.Country,
                 VSd_PostalCode = participant.PostalCode,
-                VSd_PreferredMethodOfContact =
-                    ConvertToEnum<VSd_Participant_VSd_PreferredMethodOfContact>(
-                        participant.PreferredMethodOfContact
-                    ),
+                VSd_PreferredMethodOfContact = ConvertToEnum<VSd_Participant_VSd_PreferredMethodOfContact>(
+                    participant.PreferredMethodOfContact
+                ),
                 VSd_RestContactPreferenceForUpdates = ConvertToEnum<VSd_Rest_RestContactMethod>(
                     participant.RestContactPreferenceForUpdates
                 ),
@@ -383,9 +360,7 @@ namespace Gov.Cscp.VictimServices.Public.Models.Extensions
                 VSd_Title = participant.Title,
                 VSd_ContactTitle = participant.ContactTitle,
                 VSd_SmsPreferred = ConvertToEnum<VSd_YesNo>(participant.SmsPreferred),
-                VSd_IsPrimaryEntityContact = ConvertToEnum<VSd_YesNoUnknown>(
-                    participant.IsPrimaryEntityContact
-                ),
+                VSd_IsPrimaryEntityContact = ConvertToEnum<VSd_YesNoUnknown>(participant.IsPrimaryEntityContact),
             };
 
             return entity;

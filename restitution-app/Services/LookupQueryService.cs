@@ -15,17 +15,9 @@ namespace Gov.Cscp.VictimServices.Public.Services
         Task<LookupResponseDto<CountryLookupDto>> GetCountriesAsync();
         Task<LookupResponseDto<ProvinceLookupDto>> GetProvincesAsync();
         Task<LookupResponseDto<CityLookupDto>> GetCitiesAsync();
-        Task<CitySearchResponseDto> SearchCitiesAsync(
-            string country,
-            string province,
-            string searchVal,
-            int limit
-        );
+        Task<CitySearchResponseDto> SearchCitiesAsync(string country, string province, string searchVal, int limit);
         Task<LookupResponseDto<CityLookupDto>> GetCitiesByCountryAsync(Guid countryId);
-        Task<LookupResponseDto<CityLookupDto>> GetCitiesByProvinceAsync(
-            Guid countryId,
-            Guid provinceId
-        );
+        Task<LookupResponseDto<CityLookupDto>> GetCitiesByProvinceAsync(Guid countryId, Guid provinceId);
         Task<LookupResponseDto<RelationshipLookupDto>> GetRelationshipsAsync();
         Task<LookupResponseDto<RelationshipLookupDto>> GetOptionalAuthorizationRelationshipsAsync();
         Task<LookupResponseDto<RelationshipLookupDto>> GetRepresentativeRelationshipsAsync();
@@ -45,10 +37,7 @@ namespace Gov.Cscp.VictimServices.Public.Services
 
         public async Task<LookupResponseDto<CountryLookupDto>> GetCountriesAsync()
         {
-            var query = new QueryExpression("vsd_country")
-            {
-                ColumnSet = new ColumnSet("vsd_countryid", "vsd_name"),
-            };
+            var query = new QueryExpression("vsd_country") { ColumnSet = new ColumnSet("vsd_countryid", "vsd_name") };
 
             query.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0);
             query.Orders.Add(new OrderExpression("vsd_name", OrderType.Ascending));
@@ -64,12 +53,7 @@ namespace Gov.Cscp.VictimServices.Public.Services
         {
             var query = new QueryExpression("vsd_province")
             {
-                ColumnSet = new ColumnSet(
-                    "vsd_provinceid",
-                    "vsd_code",
-                    "vsd_countryid",
-                    "vsd_name"
-                ),
+                ColumnSet = new ColumnSet("vsd_provinceid", "vsd_code", "vsd_countryid", "vsd_name"),
             };
 
             query.Criteria.AddCondition("statecode", ConditionOperator.Equal, 0);
@@ -94,9 +78,7 @@ namespace Gov.Cscp.VictimServices.Public.Services
 
             var result = await _organizationService.RetrieveMultipleAsync(query);
 
-            return LookupMapping.ToLookupResponse(
-                result.Entities.Select(LookupMapping.ToCityLookupDto).AsQueryable()
-            );
+            return LookupMapping.ToLookupResponse(result.Entities.Select(LookupMapping.ToCityLookupDto).AsQueryable());
         }
 
         public async Task<CitySearchResponseDto> SearchCitiesAsync(
@@ -112,21 +94,14 @@ namespace Gov.Cscp.VictimServices.Public.Services
             Guid countryId = Guid.Empty;
             Guid provinceId = Guid.Empty;
 
-            var hasCountryFilter =
-                !string.IsNullOrWhiteSpace(country) && Guid.TryParse(country, out countryId);
-            var hasProvinceFilter =
-                !string.IsNullOrWhiteSpace(province) && Guid.TryParse(province, out provinceId);
+            var hasCountryFilter = !string.IsNullOrWhiteSpace(country) && Guid.TryParse(country, out countryId);
+            var hasProvinceFilter = !string.IsNullOrWhiteSpace(province) && Guid.TryParse(province, out provinceId);
 
             QueryExpression BuildCityQuery(int topCount)
             {
                 var cityQuery = new QueryExpression("vsd_city")
                 {
-                    ColumnSet = new ColumnSet(
-                        "vsd_cityid",
-                        "vsd_countryid",
-                        "vsd_stateid",
-                        "vsd_name"
-                    ),
+                    ColumnSet = new ColumnSet("vsd_cityid", "vsd_countryid", "vsd_stateid", "vsd_name"),
                     TopCount = topCount,
                 };
 
@@ -134,20 +109,12 @@ namespace Gov.Cscp.VictimServices.Public.Services
 
                 if (hasCountryFilter)
                 {
-                    cityQuery.Criteria.AddCondition(
-                        "vsd_countryid",
-                        ConditionOperator.Equal,
-                        countryId
-                    );
+                    cityQuery.Criteria.AddCondition("vsd_countryid", ConditionOperator.Equal, countryId);
                 }
 
                 if (hasProvinceFilter)
                 {
-                    cityQuery.Criteria.AddCondition(
-                        "vsd_stateid",
-                        ConditionOperator.Equal,
-                        provinceId
-                    );
+                    cityQuery.Criteria.AddCondition("vsd_stateid", ConditionOperator.Equal, provinceId);
                 }
 
                 cityQuery.Orders.Add(new OrderExpression("vsd_name", OrderType.Ascending));
@@ -158,39 +125,25 @@ namespace Gov.Cscp.VictimServices.Public.Services
             if (!string.IsNullOrWhiteSpace(normalizedSearchVal))
             {
                 var startsWithQuery = BuildCityQuery(maxResults);
-                startsWithQuery.Criteria.AddCondition(
-                    "vsd_name",
-                    ConditionOperator.BeginsWith,
-                    normalizedSearchVal
-                );
+                startsWithQuery.Criteria.AddCondition("vsd_name", ConditionOperator.BeginsWith, normalizedSearchVal);
 
-                var startsWithResult = await _organizationService.RetrieveMultipleAsync(
-                    startsWithQuery
-                );
+                var startsWithResult = await _organizationService.RetrieveMultipleAsync(startsWithQuery);
                 cityEntities.AddRange(startsWithResult.Entities);
 
                 if (cityEntities.Count < maxResults)
                 {
                     var containsQuery = BuildCityQuery(maxResults - cityEntities.Count);
-                    containsQuery.Criteria.AddCondition(
-                        "vsd_name",
-                        ConditionOperator.Like,
-                        $"%{normalizedSearchVal}%"
-                    );
+                    containsQuery.Criteria.AddCondition("vsd_name", ConditionOperator.Like, $"%{normalizedSearchVal}%");
                     containsQuery.Criteria.AddCondition(
                         "vsd_name",
                         ConditionOperator.NotLike,
                         $"{normalizedSearchVal}%"
                     );
 
-                    var containsResult = await _organizationService.RetrieveMultipleAsync(
-                        containsQuery
-                    );
+                    var containsResult = await _organizationService.RetrieveMultipleAsync(containsQuery);
                     var existingIds = cityEntities.Select(entity => entity.Id).ToHashSet();
 
-                    cityEntities.AddRange(
-                        containsResult.Entities.Where(entity => existingIds.Add(entity.Id))
-                    );
+                    cityEntities.AddRange(containsResult.Entities.Where(entity => existingIds.Add(entity.Id)));
                 }
             }
             else
@@ -222,15 +175,10 @@ namespace Gov.Cscp.VictimServices.Public.Services
 
             var result = await _organizationService.RetrieveMultipleAsync(query);
 
-            return LookupMapping.ToLookupResponse(
-                result.Entities.Select(LookupMapping.ToCityLookupDto).AsQueryable()
-            );
+            return LookupMapping.ToLookupResponse(result.Entities.Select(LookupMapping.ToCityLookupDto).AsQueryable());
         }
 
-        public async Task<LookupResponseDto<CityLookupDto>> GetCitiesByProvinceAsync(
-            Guid countryId,
-            Guid provinceId
-        )
+        public async Task<LookupResponseDto<CityLookupDto>> GetCitiesByProvinceAsync(Guid countryId, Guid provinceId)
         {
             var query = new QueryExpression("vsd_city")
             {
@@ -244,9 +192,7 @@ namespace Gov.Cscp.VictimServices.Public.Services
 
             var result = await _organizationService.RetrieveMultipleAsync(query);
 
-            return LookupMapping.ToLookupResponse(
-                result.Entities.Select(LookupMapping.ToCityLookupDto).AsQueryable()
-            );
+            return LookupMapping.ToLookupResponse(result.Entities.Select(LookupMapping.ToCityLookupDto).AsQueryable());
         }
 
         public async Task<LookupResponseDto<RelationshipLookupDto>> GetRelationshipsAsync()
@@ -254,23 +200,17 @@ namespace Gov.Cscp.VictimServices.Public.Services
             return await GetRelationshipsInternalAsync();
         }
 
-        public async Task<
-            LookupResponseDto<RelationshipLookupDto>
-        > GetOptionalAuthorizationRelationshipsAsync()
+        public async Task<LookupResponseDto<RelationshipLookupDto>> GetOptionalAuthorizationRelationshipsAsync()
         {
             return await GetRelationshipsInternalAsync("vsd_optionalauthorizedrelationship");
         }
 
-        public async Task<
-            LookupResponseDto<RelationshipLookupDto>
-        > GetRepresentativeRelationshipsAsync()
+        public async Task<LookupResponseDto<RelationshipLookupDto>> GetRepresentativeRelationshipsAsync()
         {
             return await GetRelationshipsInternalAsync("vsd_cvap_representativerelationship");
         }
 
-        public async Task<
-            LookupResponseDto<RelationshipLookupDto>
-        > GetRestitutionRelationshipsAsync()
+        public async Task<LookupResponseDto<RelationshipLookupDto>> GetRestitutionRelationshipsAsync()
         {
             return await GetRelationshipsInternalAsync("vsd_rest_offenderrelationship");
         }
