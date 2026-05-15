@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Crm.Sdk.Messages;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
+using Microsoft.Extensions.Logging;
 using Microsoft.PowerPlatform.Dataverse.Client;
 
 namespace Gov.Cscp.VictimServices.Public.HealthChecks
@@ -13,10 +14,15 @@ namespace Gov.Cscp.VictimServices.Public.HealthChecks
     public class DataverseHealthCheck : IHealthCheck
     {
         private readonly IOrganizationServiceAsync _organizationService;
+        private readonly ILogger<DataverseHealthCheck> _logger;
 
-        public DataverseHealthCheck(IOrganizationServiceAsync organizationService)
+        public DataverseHealthCheck(
+            IOrganizationServiceAsync organizationService,
+            ILogger<DataverseHealthCheck> logger
+        )
         {
             _organizationService = organizationService;
+            _logger = logger;
         }
 
         public async Task<HealthCheckResult> CheckHealthAsync(
@@ -28,6 +34,11 @@ namespace Gov.Cscp.VictimServices.Public.HealthChecks
             {
                 if (_organizationService is ServiceClient serviceClient && !serviceClient.IsReady)
                 {
+                    _logger.LogError(
+                        "DataverseHealthCheck status={CheckStatus} description={CheckDescription}",
+                        HealthStatus.Unhealthy,
+                        "Dataverse ServiceClient is not ready."
+                    );
                     return HealthCheckResult.Unhealthy("Dataverse ServiceClient is not ready.");
                 }
 
@@ -37,6 +48,12 @@ namespace Gov.Cscp.VictimServices.Public.HealthChecks
             }
             catch (Exception ex)
             {
+                _logger.LogError(
+                    ex,
+                    "DataverseHealthCheck status={CheckStatus} description={CheckDescription}",
+                    HealthStatus.Unhealthy,
+                    "Dataverse health check failed."
+                );
                 return HealthCheckResult.Unhealthy("Dataverse health check failed.", exception: ex);
             }
         }

@@ -146,14 +146,17 @@ app.UseSerilogRequestLogging(options =>
 
         var path = httpContext.Request.Path.ToString();
 
-        var logIgnoreEndpoints = new[] { "/hc", "/api/lookup" };
+        if (path.StartsWith("/hc", StringComparison.OrdinalIgnoreCase))
+            return httpContext.Response.StatusCode >= 500
+                ? Serilog.Events.LogEventLevel.Error
+                : Serilog.Events.LogEventLevel.Verbose;
 
-        if (Array.Exists(logIgnoreEndpoints, e => path.StartsWith(e, StringComparison.OrdinalIgnoreCase)))
-        {
+        if (path.StartsWith("/api/lookup", StringComparison.OrdinalIgnoreCase))
             return Serilog.Events.LogEventLevel.Verbose;
-        }
 
-        return elapsed > 1000 ? Serilog.Events.LogEventLevel.Warning : Serilog.Events.LogEventLevel.Information;
+        return elapsed > 1000
+            ? Serilog.Events.LogEventLevel.Warning
+            : Serilog.Events.LogEventLevel.Information;
     };
 
     options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
