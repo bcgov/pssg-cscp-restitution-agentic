@@ -16,10 +16,7 @@ namespace Gov.Cscp.VictimServices.Public.HealthChecks
         private readonly IOrganizationServiceAsync _organizationService;
         private readonly ILogger<DataverseHealthCheck> _logger;
 
-        public DataverseHealthCheck(
-            IOrganizationServiceAsync organizationService,
-            ILogger<DataverseHealthCheck> logger
-        )
+        public DataverseHealthCheck(IOrganizationServiceAsync organizationService, ILogger<DataverseHealthCheck> logger)
         {
             _organizationService = organizationService;
             _logger = logger;

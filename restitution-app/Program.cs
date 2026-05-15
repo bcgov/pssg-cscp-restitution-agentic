@@ -154,9 +154,7 @@ app.UseSerilogRequestLogging(options =>
         if (path.StartsWith("/api/lookup", StringComparison.OrdinalIgnoreCase))
             return Serilog.Events.LogEventLevel.Verbose;
 
-        return elapsed > 1000
-            ? Serilog.Events.LogEventLevel.Warning
-            : Serilog.Events.LogEventLevel.Information;
+        return elapsed > 1000 ? Serilog.Events.LogEventLevel.Warning : Serilog.Events.LogEventLevel.Information;
     };
 
     options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
