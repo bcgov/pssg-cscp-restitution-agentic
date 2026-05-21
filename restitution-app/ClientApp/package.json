@@ -13,7 +13,12 @@
     "lint": "ng lint",
     "format": "prettier --loglevel=warn --check \"./src/**/*.{js,jsx,ts,tsx,css,scss}\"",
     "format-fix": "prettier --loglevel=warn --write \"./src/**/*.{js,jsx,ts,tsx,json,css,scss}\"",
-    "generate:api": "orval --config orval.config.ts"
+    "generate:api": "orval --config orval.config.ts",
+    "e2e": "playwright test --project=localhost",
+    "e2e:dev": "playwright test --project=dev",
+    "e2e:test": "playwright test --project=test",
+    "e2e:test:headed": "playwright test --project=test --headed",
+    "e2e:report": "playwright show-report"
   },
   "private": true,
   "dependencies": {
@@ -48,6 +53,7 @@
     "@angular/cli": "^21.2.0",
     "@angular/compiler-cli": "^21.2.0",
     "@angular/language-service": "^21.2.0",
+    "@playwright/test": "^1.60.0",
     "@types/node": "^22.19.11",
     "jsdom": "^28.1.0",
     "orval": "^8.5.2",
