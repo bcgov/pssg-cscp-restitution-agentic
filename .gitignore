@@ -231,3 +231,5 @@ _Pvt_Extensions
 
 # FAKE - F# Make
 .fake/
+restitution-app/ClientApp/playwright-report
+restitution-app/ClientApp/test-results
