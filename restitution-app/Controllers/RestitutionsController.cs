@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using DataverseModel;
 using Gov.Cscp.VictimServices.Public.Models;
 using Gov.Cscp.VictimServices.Public.Models.Extensions;
@@ -51,8 +52,14 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
             {
                 if (!ModelState.IsValid)
                 {
+                    var errors = ModelState
+                        .Where(entry => entry.Value?.Errors.Count > 0)
+                        .Select(entry =>
+                            $"{entry.Key}: {string.Join(", ", entry.Value.Errors.Select(err => err.ErrorMessage))}"
+                        );
                     _logger.Error(
-                        $"API call to 'SubmitRestitution' made with invalid model state. Error is:\n{ModelState}."
+                        "API call to 'SubmitRestitution' made with invalid model state. Errors are:\n{Errors}",
+                        string.Join("\n", errors)
                     );
                     return BadRequest(ModelState);
                 }
