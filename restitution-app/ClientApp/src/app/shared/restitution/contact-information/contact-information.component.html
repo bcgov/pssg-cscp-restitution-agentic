@@ -94,11 +94,11 @@
           <div class="col-6">
             <app-field label="I authorize the Restitution Program to leave a voicemail on this phone #" [valid]="isMyControlValid(item.get('leaveVoicemail'))" errorMessage="Please select an option">
               <select class="form-control" formControlName="leaveVoicemail">
-                <option [value]="enum.LeaveVoicemail.BLANK.val">Select...</option>
-                <option [value]="enum.LeaveVoicemail.Primary_And_Alternate.val">Primary and Alternate</option>
-                <option [value]="enum.LeaveVoicemail.Primary_Only.val">Primary only</option>
-                <option [value]="enum.LeaveVoicemail.Altrernate_Only.val">Alternate only</option>
-                <option [value]="enum.LeaveVoicemail.No_Voicemail.val">No Voicemail</option>
+                <option [ngValue]="enum.LeaveVoicemail.BLANK.val">Select...</option>
+                <option [ngValue]="enum.LeaveVoicemail.Primary_And_Alternate.val">Primary and Alternate</option>
+                <option [ngValue]="enum.LeaveVoicemail.Primary_Only.val">Primary only</option>
+                <option [ngValue]="enum.LeaveVoicemail.Altrernate_Only.val">Alternate only</option>
+                <option [ngValue]="enum.LeaveVoicemail.No_Voicemail.val">No Voicemail</option>
               </select>
             </app-field>
           </div>
@@ -195,11 +195,11 @@
       <div class="col-6">
         <app-field label="I authorize the Restitution Program to leave a voicemail on this phone #" [valid]="isMyControlValid(form.get('leaveVoicemail'))" errorMessage="Please select an option">
           <select class="form-control" formControlName="leaveVoicemail">
-            <option [value]="enum.LeaveVoicemail.BLANK.val">Select...</option>
-            <option [value]="enum.LeaveVoicemail.Primary_And_Alternate.val">Primary and Alternate</option>
-            <option [value]="enum.LeaveVoicemail.Primary_Only.val">Primary only</option>
-            <option [value]="enum.LeaveVoicemail.Altrernate_Only.val">Alternate only</option>
-            <option [value]="enum.LeaveVoicemail.No_Voicemail.val">No Voicemail</option>
+            <option [ngValue]="enum.LeaveVoicemail.BLANK.val">Select...</option>
+            <option [ngValue]="enum.LeaveVoicemail.Primary_And_Alternate.val">Primary and Alternate</option>
+            <option [ngValue]="enum.LeaveVoicemail.Primary_Only.val">Primary only</option>
+            <option [ngValue]="enum.LeaveVoicemail.Altrernate_Only.val">Alternate only</option>
+            <option [ngValue]="enum.LeaveVoicemail.No_Voicemail.val">No Voicemail</option>
           </select>
         </app-field>
       </div>
