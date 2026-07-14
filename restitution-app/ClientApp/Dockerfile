@@ -66,6 +66,10 @@ RUN npm run buildprod
 FROM caddy:2.10.0-alpine AS final
 RUN apk update && apk upgrade --no-cache
 
+# Strip the file capability the base Caddy image ships on the binary. Caddy binds 2015 (non-privileged),
+# so cap_net_bind_service is unneeded, and its presence blocks exec under allowPrivilegeEscalation:false (no_new_privs).
+RUN apk add --no-cache libcap && setcap -r /usr/bin/caddy && getcap /usr/bin/caddy || true
+
 # Build args for traceability
 ARG BUILD_IMAGE_NAME
 ARG BUILD_VERSION
