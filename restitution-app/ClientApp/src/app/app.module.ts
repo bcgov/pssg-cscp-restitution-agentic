@@ -54,6 +54,7 @@ import { PhonePipe } from './pipes/phone.pipe';
 import { QuickExitComponent } from './quick-exit/quick-exit.component';
 import { RestitutionApplicationComponent } from './restitution-application/restitution-application.component';
 import { StateService } from './services/state.service';
+import { AlertComponent } from './shared/alert/alert.component';
 import { CancelApplicationDialog } from './shared/cancel-dialog/cancel-dialog.component';
 import { DateFieldComponent } from './shared/date-field/date-field.component';
 import { CancelDialog } from './shared/dialogs/cancel/cancel.dialog';
@@ -76,6 +77,7 @@ import { SignPadDialog } from './sign-dialog/sign-dialog.component';
 
 @NgModule({
   declarations: [
+    AlertComponent,
     RestitutionAddressComponent,
     AppComponent,
     BreadcrumbComponent,

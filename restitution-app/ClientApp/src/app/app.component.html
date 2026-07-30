@@ -20,15 +20,9 @@
     </header>
     <div>
       <main class="app-content">
-        <div class="app-main">
-          @if (!error && isOutage()) {
-            <div
-              class="text-center warning"
-              >
-              <h1 class="warning">Site Outage</h1>
-              <h2 class="warning"><b>{{ configuration.outageMessage }}</b></h2>
-              <h2 class="warning"><b>{{ generateOutageDateMessage() }}</b></h2>
-            </div>
+        <div class="app-main">          
+          @if (showAnnouncementBanner) {
+            <app-alert [message]="announcementMessage"></app-alert>
           }
           <breadcrumb></breadcrumb>
           <router-outlet></router-outlet>

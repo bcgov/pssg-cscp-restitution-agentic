@@ -1,6 +1,5 @@
 import { Component, inject, isDevMode, OnInit, Renderer2 } from '@angular/core';
 import { NavigationEnd, Router } from '@angular/router';
-import moment from 'moment-timezone';
 import { environment } from '../environments/environment';
 import { Configuration } from './interfaces/configuration.interface';
 import { ConfigurationStore } from './store/configuration/configuration.store';
@@ -48,31 +47,18 @@ export class AppComponent implements OnInit {
     return !!this.configurationStore.error();
   }
 
+  get showAnnouncementBanner(): boolean {
+    return this.configurationStore.showAnnouncementBanner();
+  }
+
+  get announcementMessage(): string {
+    return this.configurationStore.configuration().outageMessage ?? '';
+  }
+
   ngOnInit(): void {
     if (this.configurationStore.error()) {
       console.error('Failed to fetch configuration:', this.configurationStore.error());
     }
-  }
-
-  isOutage() {
-    if (
-      !this.configuration ||
-      !this.configuration.outageEndDate ||
-      !this.configuration.outageStartDate ||
-      !this.configuration.outageMessage
-    ) {
-      return false;
-    }
-    const currentDate = moment().tz('America/Vancouver');
-    const outageStartDate = moment(this.configuration.outageStartDate).tz('America/Vancouver');
-    const outageEndDate = moment(this.configuration.outageEndDate).tz('America/Vancouver');
-    return currentDate.isBetween(outageStartDate, outageEndDate, null, '[]');
-  }
-
-  generateOutageDateMessage(): string {
-    const startDate = moment(this.configuration.outageStartDate).tz('America/Vancouver').format('MMMM Do YYYY, h:mm a');
-    const endDate = moment(this.configuration.outageEndDate).tz('America/Vancouver').format('MMMM Do YYYY, h:mm a');
-    return 'The system will be down for maintenance from ' + startDate + ' to ' + endDate;
   }
 
   isIE10orLower() {
