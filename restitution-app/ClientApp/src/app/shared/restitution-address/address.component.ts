@@ -99,34 +99,34 @@ export class RestitutionAddressComponent implements OnInit {
             searchVal,
             limit: 15
           })
-            .pipe(
-              map((data: CitySearchResponseDto) => {
-                if (data && data.cityCollection) {
-                  const normalizedSearch = (searchVal ?? '').trim().toLowerCase();
-                  const cityCollection = [...data.cityCollection] as CityLookupDto[];
-                  cityCollection.sort((a, b) => {
-                    const cityA = (a.name ?? '').toLowerCase();
-                    const cityB = (b.name ?? '').toLowerCase();
+          .pipe(
+            map((data: CitySearchResponseDto) => {
+              if (data && data.cityCollection) {
+                const normalizedSearch = (searchVal ?? '').trim().toLowerCase();
+                const cityCollection = [...data.cityCollection] as CityLookupDto[];
+                cityCollection.sort((a, b) => {
+                  const cityA = (a.name ?? '').toLowerCase();
+                  const cityB = (b.name ?? '').toLowerCase();
 
-                    const aStartsWithSearch = normalizedSearch ? cityA.startsWith(normalizedSearch) : false;
-                    const bStartsWithSearch = normalizedSearch ? cityB.startsWith(normalizedSearch) : false;
+                  const aStartsWithSearch = normalizedSearch ? cityA.startsWith(normalizedSearch) : false;
+                  const bStartsWithSearch = normalizedSearch ? cityB.startsWith(normalizedSearch) : false;
 
-                    if (aStartsWithSearch !== bStartsWithSearch) {
-                      return aStartsWithSearch ? -1 : 1;
-                    }
+                  if (aStartsWithSearch !== bStartsWithSearch) {
+                    return aStartsWithSearch ? -1 : 1;
+                  }
 
-                    return (a.name ?? '').localeCompare(b.name ?? '');
-                  });
-                  return cityCollection;
-                } else return [];
-              }),
-              tap(
-                () => noop,
-                (err) => {
-                  this.errorMessage = (err && err.message) || 'Something goes wrong';
-                }
-              )
-            );
+                  return (a.name ?? '').localeCompare(b.name ?? '');
+                });
+                return cityCollection;
+              } else return [];
+            }),
+            tap(
+              () => noop,
+              (err) => {
+                this.errorMessage = (err && err.message) || 'Something goes wrong';
+              }
+            )
+          );
         return of([]);
       })
     );
