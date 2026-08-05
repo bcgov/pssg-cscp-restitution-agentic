@@ -42,6 +42,15 @@ export class RestitutionInformationComponent extends FormBase implements OnInit 
   relationshipList: any = [];
   courtList: any = [];
 
+  genderMToolTip =
+    'Persons whose current gender is male. This includes cisgender and transgender persons who are male.';
+  genderFToolTip =
+    'Persons whose current gender is female. This includes cisgender and transgender persons who are female.';
+  genderXToolTip =
+    'Persons whose current gender is not exclusively male or female. It includes people who are unsure of their gender, do not have one gender, have no gender, are gender fluid, or are Two-Spirit.';
+  relationshipToolTip =
+    'Use this category for close friends, neighbours, authority figures, reverse authority figures, business relationships and casual acquaintances.';
+
   restitutionInfoHelper = new RestitutionInfoHelper();
   private readonly lookupsStore = inject(LookupsStore);
 

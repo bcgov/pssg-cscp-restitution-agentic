@@ -348,3 +348,20 @@ input.form-control {
   left: 0;
   width: 100%;
 }
+
+.field-tooltip.mat-mdc-tooltip-panel-above,
+.field-tooltip.mat-mdc-tooltip-panel-below,
+.field-tooltip.mat-mdc-tooltip-panel-right,
+.field-tooltip.mat-mdc-tooltip-panel-left {
+  .mdc-tooltip__surface {
+    background-color: #21527e;
+    font-size: 14px;
+    padding: 12px 20px;
+    border-bottom: 3px solid #fcba19;
+    min-width: 300px;
+    max-width: 500px;
+    text-align: left;
+    border-radius: 0;
+    white-space: pre-wrap;
+  }
+}

@@ -36,9 +36,6 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { AlertModule } from 'ngx-bootstrap/alert';
-import { BsDatepickerModule } from 'ngx-bootstrap/datepicker';
-import { TooltipModule } from 'ngx-bootstrap/tooltip';
 import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
 import { NgxFileDropModule } from 'ngx-file-drop';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
@@ -146,8 +143,7 @@ import { SignPadDialog } from './sign-dialog/sign-dialog.component';
     MatTabsModule,
     MatToolbarModule,
     MatTooltipModule,
-    ReactiveFormsModule,
-    TooltipModule
+    ReactiveFormsModule
   ],
   bootstrap: [AppComponent],
   imports: [
@@ -193,10 +189,7 @@ import { SignPadDialog } from './sign-dialog/sign-dialog.component';
     MatTooltipModule,
     ReactiveFormsModule,
     AngularSignaturePadModule,
-    AlertModule.forRoot(),
-    BsDatepickerModule.forRoot(),
-    TooltipModule.forRoot(),
-    TypeaheadModule.forRoot()
+    TypeaheadModule
   ],
   providers: [
     provideNgxMask(),
