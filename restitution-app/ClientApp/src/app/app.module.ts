@@ -36,7 +36,6 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { BrowserModule, Title } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { TypeaheadModule } from 'ngx-bootstrap/typeahead';
 import { NgxFileDropModule } from 'ngx-file-drop';
 import { NgxMaskDirective, NgxMaskPipe, provideNgxMask } from 'ngx-mask';
 import { NgxSpinnerModule } from 'ngx-spinner';
@@ -188,8 +187,7 @@ import { SignPadDialog } from './sign-dialog/sign-dialog.component';
     MatToolbarModule,
     MatTooltipModule,
     ReactiveFormsModule,
-    AngularSignaturePadModule,
-    TypeaheadModule
+    AngularSignaturePadModule
   ],
   providers: [
     provideNgxMask(),
