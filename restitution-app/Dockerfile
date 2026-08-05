@@ -43,13 +43,13 @@ ARG BUILD_IMAGE_NAME
 ARG BUILD_VERSION
 
 # --- Runtime Base Image ---
-FROM mcr.microsoft.com/dotnet/aspnet:10.0@sha256:1fa23fc4872d95fd71c2833ebe65d7e84a43b2d51a31d119516852f13d9505a7 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:10.0-alpine AS base
 ARG BUILD_IMAGE_NAME
 ARG BUILD_VERSION
 WORKDIR /app
 
 # --- Build Stage (SDK) & Publish Stage ---
-FROM mcr.microsoft.com/dotnet/sdk:10.0@sha256:ed034a8bf0b24ded0cbbac07e17825d8e9ebfe21e308191d0f7421eaf5ad4664 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0-alpine AS build
 ARG BUILD_IMAGE_NAME
 ARG BUILD_VERSION
 
@@ -66,10 +66,9 @@ ARG BUILD_VERSION
 
 # Update all system packages for latest security patches FIRST.
 # This ensures OS-level vulnerabilities are fixed.
-RUN apt-get update && \
-    apt-get upgrade -y && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+RUN apk update && \
+    apk upgrade && \
+    rm -rf /var/cache/apk/*
 
 WORKDIR /app
 
@@ -78,7 +77,7 @@ RUN echo "BUILD_IMAGE_NAME='$BUILD_IMAGE_NAME'" && if [ -z "$BUILD_IMAGE_NAME" ]
 RUN echo "BUILD_VERSION='$BUILD_VERSION'" && if [ -z "$BUILD_VERSION" ]; then echo "BUILD_VERSION is empty!"; exit 1; fi
 
 # 1. Create non-root user and group for security
-RUN groupadd --system appgroup && useradd --system --gid appgroup --no-create-home appuser
+RUN addgroup -S appgroup && adduser -S -G appgroup appuser
 
 # 2. Copy published app from build stage as root
 COPY --from=build /app/publish ./
