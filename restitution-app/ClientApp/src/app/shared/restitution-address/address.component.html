@@ -14,7 +14,12 @@
     </div>
     <div class="col-md-6">
       <app-field label="{{ provinceType }}" [required]="showChildrenAsRequired && provinceList.length > 0" [valid]="isSubFieldValid('province', isDisabled || isProvinceDisabled)" errorMessage="Please select your {{provinceType.toLowerCase()}}">
-        <input formControlName="province" typeaheadOptionField="name" [typeahead]="provinceList" class="form-control">
+        <input formControlName="province" class="form-control" [matAutocomplete]="provinceAuto">
+        <mat-autocomplete #provinceAuto="matAutocomplete" (optionSelected)="onProvinceSelected($event.option.value)">
+          @for (item of filteredProvinces$ | async; track item.id) {
+            <mat-option [value]="item.name">{{item.name}}</mat-option>
+          }
+        </mat-autocomplete>
       </app-field>
     </div>
   </div>
@@ -35,7 +40,12 @@
   <div class="row">
     <div class="col-md-6">
       <app-field label="City" [required]="showChildrenAsRequired && cityList.length > 0" [valid]="isSubFieldValid('city', isDisabled || isCityDisabled)" errorMessage="Please select your city">
-        <input formControlName="city" typeaheadOptionField="name" [typeahead]="citySuggestions$" [typeaheadAsync]="true" class="form-control">
+        <input formControlName="city" class="form-control" [matAutocomplete]="cityAuto">
+        <mat-autocomplete #cityAuto="matAutocomplete">
+          @for (item of citySuggestions$ | async; track item.id) {
+            <mat-option [value]="item.name">{{item.name}}</mat-option>
+          }
+        </mat-autocomplete>
       </app-field>
     </div>
     <div class="col-md-6">

@@ -4,7 +4,7 @@
       <h3>Restitution Program - {{FORM_TYPE.name}} Application</h3>
       <section class="application-nav sticky-top">
         <div>
-          <mat-vertical-stepper linear (selectionChange)="gotoPage($event)" #stepper>
+          <mat-stepper orientation="vertical" linear (selectionChange)="gotoPage($event)" #stepper>
             <ng-template matStepperIcon="edit">
               <i class="fa fa-check"></i>
             </ng-template>
@@ -17,7 +17,7 @@
             <mat-step label="Overview" [stepControl]="fb.group({name: ['introduction']})" [hasError]="!isMyControlValid(form.get('introduction'))"></mat-step>
             <mat-step [label]="FORM_TYPE.name + ' Application'" [stepControl]="fb.group({name: ['restitutionInformation']})" [hasError]="!isMyControlValid(form.get('restitutionInformation'))"></mat-step>
             <mat-step label="Review & Submit"></mat-step>
-          </mat-vertical-stepper>
+          </mat-stepper>
 
 
           <div class="submit-container learn-benefits">

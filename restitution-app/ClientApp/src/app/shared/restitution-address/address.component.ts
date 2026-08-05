@@ -1,7 +1,7 @@
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
-import { noop, Observable, Observer, of } from 'rxjs';
-import { map, switchMap, tap } from 'rxjs/operators';
+import { noop, Observable, of } from 'rxjs';
+import { debounceTime, distinctUntilChanged, map, startWith, switchMap, tap } from 'rxjs/operators';
 import { LookupsService as ApiLookupsService } from '../../../api/lookups/lookups.service';
 import { config } from '../../../config';
 import { CityLookupDto, CitySearchResponseDto, CountryLookupDto, ProvinceLookupDto } from '../../../model';
@@ -27,6 +27,7 @@ export class RestitutionAddressComponent implements OnInit {
 
   cityList: CityLookupDto[] = [];
   search: string;
+  filteredProvinces$: Observable<ProvinceLookupDto[]>;
   citySuggestions$: Observable<CityLookupDto[]>;
   errorMessage: string;
 
@@ -60,74 +61,72 @@ export class RestitutionAddressComponent implements OnInit {
 
   ngOnInit() {
     //city search
-    this.citySuggestions$ = new Observable((observer: Observer<string>) => {
-      observer.next(this.group['controls']['city'].value.toString());
-    }).pipe(
+    const cityControl = this.group['controls']['city'] as UntypedFormControl;
+    this.citySuggestions$ = cityControl.valueChanges.pipe(
+      debounceTime(300),
+      distinctUntilChanged(),
       switchMap((query: string) => {
-        if (query) {
-          let countryVal = this.group['controls']['country'].value.toString();
-          let provinceVal = this.group['controls']['province'].value.toString();
-          let searchVal = this.group['controls']['city'].value.toString();
+        if (!query) return of([]);
 
-          const normalizedCountryVal = (countryVal ?? '').trim().toLowerCase();
-          const normalizedProvinceVal = (provinceVal ?? '').trim().toLowerCase();
+        let countryVal = this.group['controls']['country'].value?.toString() ?? '';
+        let provinceVal = this.group['controls']['province'].value?.toString() ?? '';
+        let searchVal = query;
 
-          const countryFromControl = this.lookupData.countries.find(
-            (country) => (country.name ?? '').toLowerCase() === normalizedCountryVal
+        const normalizedCountryVal = countryVal.trim().toLowerCase();
+        const normalizedProvinceVal = provinceVal.trim().toLowerCase();
+
+        const countryFromControl = this.lookupData.countries.find(
+          (country) => (country.name ?? '').toLowerCase() === normalizedCountryVal
+        );
+        const selectedCountryId = countryFromControl?.id ?? this.selectedCountry?.id;
+
+        const provinceFromControl = this.lookupData.provinces.find((province) => {
+          if ((province.name ?? '').toLowerCase() !== normalizedProvinceVal) {
+            return false;
+          }
+          if (!selectedCountryId) {
+            return true;
+          }
+          return province.countryId === selectedCountryId;
+        });
+
+        const selectedProvinceId = provinceFromControl?.id ?? this.selectedProvince?.id;
+
+        return this.apiLookupsService
+          .getApiLookupsCitiesSearch('application/json', {
+            country: selectedCountryId,
+            province: selectedProvinceId,
+            searchVal,
+            limit: 15
+          })
+          .pipe(
+            map((data: CitySearchResponseDto) => {
+              if (data && data.cityCollection) {
+                const normalizedSearch = (searchVal ?? '').trim().toLowerCase();
+                const cityCollection = [...data.cityCollection] as CityLookupDto[];
+                cityCollection.sort((a, b) => {
+                  const cityA = (a.name ?? '').toLowerCase();
+                  const cityB = (b.name ?? '').toLowerCase();
+
+                  const aStartsWithSearch = normalizedSearch ? cityA.startsWith(normalizedSearch) : false;
+                  const bStartsWithSearch = normalizedSearch ? cityB.startsWith(normalizedSearch) : false;
+
+                  if (aStartsWithSearch !== bStartsWithSearch) {
+                    return aStartsWithSearch ? -1 : 1;
+                  }
+
+                  return (a.name ?? '').localeCompare(b.name ?? '');
+                });
+                return cityCollection;
+              } else return [];
+            }),
+            tap(
+              () => noop,
+              (err) => {
+                this.errorMessage = (err && err.message) || 'Something goes wrong';
+              }
+            )
           );
-          const selectedCountryId = countryFromControl?.id ?? this.selectedCountry?.id;
-
-          const provinceFromControl = this.lookupData.provinces.find((province) => {
-            if ((province.name ?? '').toLowerCase() !== normalizedProvinceVal) {
-              return false;
-            }
-
-            if (!selectedCountryId) {
-              return true;
-            }
-
-            return province.countryId === selectedCountryId;
-          });
-
-          const selectedProvinceId = provinceFromControl?.id ?? this.selectedProvince?.id;
-
-          return this.apiLookupsService
-            .getApiLookupsCitiesSearch('application/json', {
-              country: selectedCountryId,
-              province: selectedProvinceId,
-              searchVal,
-              limit: 15
-            })
-            .pipe(
-              map((data: CitySearchResponseDto) => {
-                if (data && data.cityCollection) {
-                  const normalizedSearch = (searchVal ?? '').trim().toLowerCase();
-                  const cityCollection = [...data.cityCollection] as CityLookupDto[];
-                  cityCollection.sort((a, b) => {
-                    const cityA = (a.name ?? '').toLowerCase();
-                    const cityB = (b.name ?? '').toLowerCase();
-
-                    const aStartsWithSearch = normalizedSearch ? cityA.startsWith(normalizedSearch) : false;
-                    const bStartsWithSearch = normalizedSearch ? cityB.startsWith(normalizedSearch) : false;
-
-                    if (aStartsWithSearch !== bStartsWithSearch) {
-                      return aStartsWithSearch ? -1 : 1;
-                    }
-
-                    return (a.name ?? '').localeCompare(b.name ?? '');
-                  });
-                  return cityCollection;
-                } else return [];
-              }),
-              tap(
-                () => noop,
-                (err) => {
-                  // in case of http error
-                  this.errorMessage = (err && err.message) || 'Something goes wrong';
-                }
-              )
-            );
-        }
         return of([]);
       })
     );
@@ -244,6 +243,17 @@ export class RestitutionAddressComponent implements OnInit {
     if (this.selectedProvince && this.selectedProvince.name != 'British Columbia') this.updateCityList();
     else this.setCityValidators();
     this.setProvinceValidators();
+
+    const provinceControl = this.group['controls']['province'] as UntypedFormControl;
+    this.filteredProvinces$ = provinceControl.valueChanges.pipe(
+      startWith(provinceControl.value ?? ''),
+      map((value: string) => {
+        const filter = (value ?? '').toLowerCase();
+        return filter
+          ? this.provinceList.filter((p) => (p.name ?? '').toLowerCase().includes(filter))
+          : [...this.provinceList];
+      })
+    );
   }
 
   isSubFieldValid(field: string, disabled: boolean) {
@@ -290,6 +300,14 @@ export class RestitutionAddressComponent implements OnInit {
       this.cityList = [config.other_city];
       this.setCityValidators();
     }
+  }
+
+  onProvinceSelected(provinceName: string) {
+    this.group['controls']['city'].patchValue('');
+    this.selectedProvince = this.lookupData.provinces.find(
+      (p) => (p.name ?? '').toLowerCase() === (provinceName ?? '').toLowerCase()
+    );
+    this.updateCityList();
   }
 
   onProvinceChange(event) {
