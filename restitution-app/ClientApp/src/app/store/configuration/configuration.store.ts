@@ -1,24 +1,22 @@
 import { computed } from '@angular/core';
 import { patchState, signalStore, withComputed, withMethods, withState } from '@ngrx/signals';
-import moment from 'moment-timezone';
-import { Configuration } from '../../interfaces/configuration.interface';
+import { Configuration, FeatureFlagConfiguration } from '../../interfaces/configuration.interface';
 
 export interface ConfigurationStoreState {
-  configuration: Configuration;
+  outageStartDate: string;
+  outageEndDate: string;
+  outageMessage: string;
+  featureFlags: FeatureFlagConfiguration;
   isConfigurationLoaded: boolean;
   isConfigurationLoading: boolean;
   error: string | null;
 }
 
 const initialState: ConfigurationStoreState = {
-  configuration: {
-    outageStartDate: '',
-    outageEndDate: '',
-    outageMessage: '',
-    featureFlags: {
-      useUpdatedComplianceFields: false
-    }
-  },
+  outageStartDate: '',
+  outageEndDate: '',
+  outageMessage: '',
+  featureFlags: { useUpdatedComplianceFields: false },
   isConfigurationLoaded: false,
   isConfigurationLoading: false,
   error: null
@@ -28,13 +26,22 @@ export const ConfigurationStore = signalStore(
   { providedIn: 'root' },
   withState(initialState),
   withComputed((store) => ({
+    // Reconstructed for backward-compatibility with consumers that still call store.configuration().
+    configuration: computed<Configuration>(() => ({
+      outageStartDate: store.outageStartDate(),
+      outageEndDate: store.outageEndDate(),
+      outageMessage: store.outageMessage(),
+      featureFlags: store.featureFlags()
+    })),
     showAnnouncementBanner: computed(() => {
-      const { outageMessage: message, outageStartDate: startDate, outageEndDate: endDate } = store.configuration();
+      const message = store.outageMessage();
+      const startDate = store.outageStartDate();
+      const endDate = store.outageEndDate();
       if (!message || !startDate || !endDate) return false;
-      const current = moment().tz('America/Vancouver');
-      const start = moment(startDate).tz('America/Vancouver');
-      const end = moment(endDate).tz('America/Vancouver');
-      return current.isBetween(start, end, null, '[]');
+      // Dates are ISO 8601 UTC strings (e.g. "2025-09-25T04:00:00Z"). Compare as UTC epoch
+      // values so the banner appears at the same instant for all users regardless of locale.
+      const now = Date.now();
+      return now >= new Date(startDate).getTime() && now <= new Date(endDate).getTime();
     })
   })),
   withMethods((store) => ({
@@ -43,7 +50,10 @@ export const ConfigurationStore = signalStore(
     },
     setConfiguration(configuration: Configuration) {
       patchState(store, {
-        configuration,
+        outageStartDate: configuration.outageStartDate ?? '',
+        outageEndDate: configuration.outageEndDate ?? '',
+        outageMessage: configuration.outageMessage ?? '',
+        featureFlags: configuration.featureFlags ?? { useUpdatedComplianceFields: false },
         isConfigurationLoaded: true,
         isConfigurationLoading: false,
         error: null
