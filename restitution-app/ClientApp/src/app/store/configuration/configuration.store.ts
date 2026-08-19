@@ -6,6 +6,7 @@ export interface ConfigurationStoreState {
   outageStartDate: string;
   outageEndDate: string;
   outageMessage: string;
+  maintenanceMode: boolean;
   featureFlags: FeatureFlagConfiguration;
   isConfigurationLoaded: boolean;
   isConfigurationLoading: boolean;
@@ -16,6 +17,7 @@ const initialState: ConfigurationStoreState = {
   outageStartDate: '',
   outageEndDate: '',
   outageMessage: '',
+  maintenanceMode: false,
   featureFlags: { useUpdatedComplianceFields: false },
   isConfigurationLoaded: false,
   isConfigurationLoading: false,
@@ -31,6 +33,7 @@ export const ConfigurationStore = signalStore(
       outageStartDate: store.outageStartDate(),
       outageEndDate: store.outageEndDate(),
       outageMessage: store.outageMessage(),
+      maintenanceMode: store.maintenanceMode(),
       featureFlags: store.featureFlags()
     })),
     showAnnouncementBanner: computed(() => {
@@ -53,6 +56,7 @@ export const ConfigurationStore = signalStore(
         outageStartDate: configuration.outageStartDate ?? '',
         outageEndDate: configuration.outageEndDate ?? '',
         outageMessage: configuration.outageMessage ?? '',
+        maintenanceMode: configuration.maintenanceMode ?? false,
         featureFlags: configuration.featureFlags ?? { useUpdatedComplianceFields: false },
         isConfigurationLoaded: true,
         isConfigurationLoading: false,

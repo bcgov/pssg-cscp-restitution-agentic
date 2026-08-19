@@ -44,6 +44,7 @@ import { AppComponent } from './app.component';
 import { BreadcrumbComponent } from './breadcrumb/breadcrumb.component';
 import { FeatureEnabledDirective } from './directives/feature-enabled.directive';
 import { LoadingInterceptor } from './interceptors/loading.interceptor';
+import { MaintenanceComponent } from './maintenance/maintenance.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { OutageComponent } from './outage/outage.component';
 import { PhonePipe } from './pipes/phone.pipe';
@@ -83,6 +84,7 @@ import { SignPadDialog } from './sign-dialog/sign-dialog.component';
     FieldComponent,
     FileUploaderComponent,
     MessageDialog,
+    MaintenanceComponent,
     NotFoundComponent,
     OutageComponent,
     PhonePipe,

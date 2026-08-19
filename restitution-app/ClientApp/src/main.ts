@@ -4,6 +4,7 @@ import { Router } from '@angular/router';
 import { AppModule } from './app/app.module';
 import { ConfigurationLoaderService } from './app/services/configuration-loader.service';
 import { HealthCheckService } from './app/services/health-check.service';
+import { ConfigurationStore } from './app/store/configuration/configuration.store';
 import { LookupsStore } from './app/store/lookups/lookups.store';
 import { environment } from './environments/environment';
 
@@ -22,6 +23,7 @@ platformBrowserDynamic().bootstrapModule(AppModule, {
       const router = inject(Router);
       const configurationLoaderService = inject(ConfigurationLoaderService);
       const lookupsStore = inject(LookupsStore);
+      const configurationStore = inject(ConfigurationStore);
 
       const isHealthy = await healthCheckService.checkHealth();
 
@@ -43,6 +45,10 @@ platformBrowserDynamic().bootstrapModule(AppModule, {
       if (lookupsUnavailable) {
         router.navigateByUrl('/outage');
         return;
+      }
+
+      if (configurationStore.maintenanceMode()) {
+        router.navigateByUrl('/maintenance');
       }
     })
   ]
