@@ -31,6 +31,9 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
                     OutageMessage = configuration.GetValue<string>("CONFIGURATION_OUTAGEINFORMATION_MESSAGE"),
                     OutageStartDate = configuration.GetValue<string>("CONFIGURATION_OUTAGEINFORMATION_STARTDATE"),
                     OutageEndDate = configuration.GetValue<string>("CONFIGURATION_OUTAGEINFORMATION_ENDDATE"),
+                    MaintenanceMode =
+                        bool.TryParse(configuration["CONFIGURATION_MAINTENANCE_MODE"], out var maintenanceMode)
+                        && maintenanceMode,
                     FeatureFlags = new FeatureFlagConfiguration
                     {
                         UseUpdatedComplianceFields = !string.IsNullOrEmpty(
@@ -55,6 +58,7 @@ public class Configuration
     public string OutageMessage { get; set; }
     public string OutageStartDate { get; set; }
     public string OutageEndDate { get; set; }
+    public bool MaintenanceMode { get; set; }
     public FeatureFlagConfiguration FeatureFlags { get; set; }
 };
 

@@ -1,6 +1,8 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
 import { healthCheckGuard } from './guards/health-check.guard';
+import { maintenanceGuard } from './guards/maintenance.guard';
+import { MaintenanceComponent } from './maintenance/maintenance.component';
 import { NotFoundComponent } from './not-found/not-found.component';
 import { OutageComponent } from './outage/outage.component';
 import { RestitutionApplicationComponent } from './restitution-application/restitution-application.component';
@@ -13,6 +15,10 @@ const routes: Routes = [
     component: OutageComponent
   },
   {
+    path: 'maintenance',
+    component: MaintenanceComponent
+  },
+  {
     path: '',
     redirectTo: '/victim',
     pathMatch: 'full'
@@ -20,25 +26,25 @@ const routes: Routes = [
   {
     path: 'victim',
     component: RestitutionApplicationComponent,
-    canActivate: [healthCheckGuard],
+    canActivate: [healthCheckGuard, maintenanceGuard],
     data: { formType: ResitutionForm.Victim }
   },
   {
     path: 'offender',
     component: RestitutionApplicationComponent,
-    canActivate: [healthCheckGuard],
+    canActivate: [healthCheckGuard, maintenanceGuard],
     data: { formType: ResitutionForm.Offender }
   },
   {
     path: 'victim-entity',
     component: RestitutionApplicationComponent,
-    canActivate: [healthCheckGuard],
+    canActivate: [healthCheckGuard, maintenanceGuard],
     data: { formType: ResitutionForm.VictimEntity }
   },
   {
     path: 'restitution-success',
     component: RestitutionSuccessComponent,
-    canActivate: [healthCheckGuard]
+    canActivate: [healthCheckGuard, maintenanceGuard]
   },
   { path: '**', component: NotFoundComponent }
 ];

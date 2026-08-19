@@ -22,7 +22,7 @@
       <main class="app-content">
         <div class="app-main">          
           @if (showAnnouncementBanner) {
-            <app-alert [message]="announcementMessage"></app-alert>
+            <app-alert [message]="announcementMessage" type="danger"></app-alert>
           }
           <breadcrumb></breadcrumb>
           <router-outlet></router-outlet>
