@@ -369,3 +369,66 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 **Residual risk:** On-premise token acquisition fails until the ADFS application permits client-credentials authentication.
 
 - Reviewer: _______________ Date: _______________
+
+---
+
+# PR evidence — [RA CONFIG-002] Gate permissive CSP to Development
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/ra-config-002-fix-csp-header-security |
+| Spec refs | `spec/spec.md`; `spec/features/config-002-csp-unsafe.feature` (`@R-07.1`, `@R-07.2`) |
+| Constitution articles touched | P5, P7, J3, J5 |
+| Tasks | TASK-001, TASK-002, TASK-004 |
+| Authoring agent | Copilot |
+| Generated | 2026-09-03T20:52:34.125Z |
+
+## Intent
+
+The permissive Content-Security-Policy with `unsafe-eval` and `unsafe-inline` now applies only in Development for local Angular tooling. Non-Development responses retain the existing NWebsec CSP and no longer receive the weak appended policy.
+
+## Spec traceability
+
+| Scenario / requirement | Implemented? | Notes |
+| --- | --- | --- |
+| `@R-07.1` Non-development does not emit the weak always-on CSP | Yes | The unsafe CSP append is conditional on `IsDevelopment()`; the existing non-Development `UseCsp` block is unchanged. |
+| `@R-07.2` Development may keep a looser CSP for local tooling | Yes | Development retains the prior CDN allow-list and unsafe script directives. |
+
+
+## Design system & accessibility
+
+| Check | Result |
+| --- | --- |
+| DS components used (list) | N/A — server security-header change, no UI |
+| Tokens used (not hard-coded colour) | N/A — no UI |
+| BC Sans imported | N/A — no UI |
+| Manual a11y notes | N/A — no UI |
+
+## Public-service minimums
+
+Checklist IDs addressed this PR: N/A — no UI
+
+## Tests
+
+| Type | Command / path | Result |
+| --- | --- | --- |
+| Unit | `dotnet test restitution-app.Tests/restitution-app.Tests.csproj --no-restore` | Passed |
+| Manual runtime | Production host request to `/hc` | Confirmed no `unsafe-eval` or `unsafe-inline` in `Content-Security-Policy` |
+| Acceptance / feature | `spec/features/config-002-csp-unsafe.feature` (`@R-07.1`, `@R-07.2`) | Covered by the environment gate and manual production-header check |
+| A11y automation | N/A — no UI |
+
+## Risks & follow-ups
+
+- Development intentionally retains `unsafe-eval` and `unsafe-inline` for local Angular tooling; a nonce/hash CSP redesign remains out of scope.
+
+## Review receipt (checkpoint 3)
+
+Same shape as `REVIEW.md` — required before merge. Do not replace with a free-form sign-off.
+
+**Checked:** `@R-07.1` and `@R-07.2`; non-Development omits the permissive CSP while the NWebsec configuration is unchanged.
+
+**Could not check:** A browser-level production deployment with its managed reverse-proxy headers.
+
+**Residual risk:** Development retains unsafe script directives pending the explicitly deferred nonce/hash CSP redesign.
+
+- Reviewer: _______________ Date: _______________
