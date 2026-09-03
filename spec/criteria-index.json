@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T19:12:19.728Z",
+  "generatedAt": "2026-09-03T19:22:46.946Z",
   "criteria": [
     {
       "id": "R-01.1",
@@ -11,6 +11,18 @@
       "id": "R-01.2",
       "feature": "spec/features/config-001-trivy-gate.feature",
       "scenario": "Scan results are still published when the gate is configured",
+      "tier": null
+    },
+    {
+      "id": "R-02.1",
+      "feature": "spec/features/dep-001-healthchecks-inbox.feature",
+      "scenario": "Archived community health-check package is not referenced",
+      "tier": "high"
+    },
+    {
+      "id": "R-02.2",
+      "feature": "spec/features/dep-001-healthchecks-inbox.feature",
+      "scenario": "Health endpoint behaviour is preserved",
       "tier": null
     },
     {
