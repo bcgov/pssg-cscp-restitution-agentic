@@ -182,3 +182,65 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 **Residual risk:** Coverage is limited to `ConfigurationController`; the submission and lookup write paths stay unverified until the follow-up findings are addressed.
 
 - Reviewer: _______________ Date: _______________
+
+---
+
+# PR evidence — [RA F-TEST-004] First automated tests for the Dataverse client library
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/ra-f-test-004-add-automated-tests |
+| Spec refs | `spec/spec.md`; `spec/features/f-test-004-database-tests.feature` (`@R-04.1`, `@R-04.2`) |
+| Constitution articles touched | P5, J3 |
+| Tasks | TASK-001–TASK-004 |
+| Authoring agent | unspecified |
+| Generated | 2026-09-03T19:57:32.342Z |
+
+## Intent
+
+The Dataverse client library (`Database/`) now has a `Database.Tests` xUnit project in `restitution-app/restitution-app.sln`. It covers the in-process token cache wrap (`MemoryCache.GetOrSet`) and Dynamics API endpoint selection (`DynamicsTokenProviderOptions.GetDynamicsApiEndpointUrl`), so those paths can no longer regress unnoticed. No test needs Dynamics credentials or network access.
+
+## Spec traceability
+
+| Scenario / requirement | Implemented? | Notes |
+| --- | --- | --- |
+| `@R-04.1` a Database test project exists and can be executed | Yes | `Database.Tests/Database.Tests.csproj` (xUnit, net10.0) references `Database/Database.csproj` and is registered in `restitution-app/restitution-app.sln`. |
+| `@R-04.2` cache wrap and endpoint selection are covered | Yes | `MemoryCacheTests` asserts the factory runs once across two `GetOrSet` calls for one key; `DynamicsTokenProviderOptionsTests` asserts OnPremise vs Cloud endpoint selection with synthetic `https://example.test/...` URLs. No test performs HTTP. |
+
+## Design system & accessibility
+
+| Check | Result |
+| --- | --- |
+| DS components used (list) | N/A — test-only change, no UI |
+| Tokens used (not hard-coded colour) | N/A — test-only change, no UI |
+| BC Sans imported | N/A — test-only change, no UI |
+| Manual a11y notes | N/A — test-only change, no UI |
+
+## Public-service minimums
+
+Checklist IDs addressed this PR: N/A — test-only change, no UI
+
+## Tests
+
+| Type | Command / path | Result |
+| --- | --- | --- |
+| Unit | `dotnet test restitution-app/restitution-app.sln` | Passed — 9 Database.Tests, 10 restitution-app.Tests, run with no Dynamics environment variables |
+| Acceptance / feature | `spec/features/f-test-004-database-tests.feature` (`@R-04.1`, `@R-04.2`) | Covered by the unit tests above |
+| A11y automation | N/A — test-only change, no UI | |
+
+## Risks & follow-ups
+
+- Token acquisition over HTTP (`ADFSTokenProvider`, `EntraIdTokenProvider`) and `ServiceClient` construction remain untested — deferred to AUTH-001 / F-TEST-007.
+- CI still builds only `restitution-app.csproj` and does not run `dotnet test` — deferred to F-TEST-001.
+
+## Review receipt (checkpoint 3)
+
+Same shape as `REVIEW.md` — required before merge. Do not replace with a free-form sign-off.
+
+**Checked:** `@R-04.1` and `@R-04.2`; `dotnet test restitution-app/restitution-app.sln` passes offline without Dynamics credentials; fixtures use synthetic URLs only.
+
+**Could not check:** Live Dataverse connectivity, real ADFS/Entra token acquisition, and `ServiceClient` readiness — explicitly out of scope for this slice.
+
+**Residual risk:** The Dataverse connection and token HTTP paths in `Database/Extensions` are still only exercised in a live environment.
+
+- Reviewer: _______________ Date: _______________
