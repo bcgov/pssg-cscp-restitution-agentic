@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T23:03:44.857Z",
+  "generatedAt": "2026-09-03T23:27:19.626Z",
   "criteria": [
     {
       "id": "R-06.1",
@@ -203,6 +203,18 @@
       "id": "R-05.2",
       "feature": "spec/features/f-test-007-security-tests.feature",
       "scenario": "Disallowed file types are not added to documents",
+      "tier": null
+    },
+    {
+      "id": "R-17.1",
+      "feature": "spec/features/log-001-dev-exception-disclosure.feature",
+      "scenario": "Development may use the developer exception page",
+      "tier": "medium"
+    },
+    {
+      "id": "R-17.2",
+      "feature": "spec/features/log-001-dev-exception-disclosure.feature",
+      "scenario": "Staging and Production do not use the developer exception page",
       "tier": null
     }
   ]
