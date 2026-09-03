@@ -1,11 +1,11 @@
-# Tasks — LOG-001
+# Tasks — LOG-002
 
 ## Milestone 1
 
-- [x] **TASK-001** — Add testable exception-page policy helper; wire `Program.cs` to it. Covers `@R-17.1` `@R-17.2`.
-- [x] **TASK-002** — Unit tests for Development vs Staging/Production. Covers both.
-- [x] **TASK-003** — Append `docs/pr-evidence.md` (CONFIG-003 cross-ref). Covers both.
+- [ ] **TASK-001** — Add testable success-audit helper (`LogInformation` / non-PII fields); wire `RestitutionsController` success path (pass form type from victim / victim-entity / offender actions). Covers `@R-18.1` `@R-18.2`.
+- [ ] **TASK-002** — Unit test with mock/fake logger verifying audit/`LogInformation` on success path; assert no OrganizationResponse/PII dump. Covers both.
+- [ ] **TASK-003** — Append `docs/pr-evidence.md`. Covers both.
 
 ## Backlog
 
-- [ ] VULN-003 hygiene — later
+- [ ] LOG-003 failure-path OrganizationResponse logging — later (#32)
