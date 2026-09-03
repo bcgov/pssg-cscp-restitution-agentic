@@ -909,3 +909,16 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 **Residual risk:** The new blocking scan may surface pre-existing filesystem vulnerabilities on first run; this is the intended behaviour of the fix, not a regression.
 
 - Reviewer: _______________ Date: _______________
+# Evidence — F-TEST-005 Angular unit test substance
+
+| Field | Value |
+| --- | --- |
+| Spec refs | `spec/features/f-test-005-angular-unit-substance.feature` (`@R-15.1`, `@R-15.2`) |
+| Tasks | `TASK-001`–`TASK-003` |
+| Verification | `npm test -- --watch=false --include=src/app/not-found/not-found.component.spec.ts` |
+
+## Review receipt
+
+- Checked: `not-found.component.spec.ts` uses a Router spy and asserts navigation to `/404`.
+- Checked: the tautological `expect(true)` stub was removed.
+- Residual risk: the remaining Angular spec files are outside this focused slice.
