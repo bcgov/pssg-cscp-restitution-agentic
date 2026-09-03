@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T19:51:19.029Z",
+  "generatedAt": "2026-09-03T20:00:54.300Z",
   "criteria": [
     {
       "id": "R-01.1",
@@ -59,6 +59,18 @@
       "id": "R-04.2",
       "feature": "spec/features/f-test-004-database-tests.feature",
       "scenario": "Cache wrap and endpoint selection are covered",
+      "tier": null
+    },
+    {
+      "id": "R-05.1",
+      "feature": "spec/features/f-test-007-security-tests.feature",
+      "scenario": "A security-focused unit test exists",
+      "tier": "high"
+    },
+    {
+      "id": "R-05.2",
+      "feature": "spec/features/f-test-007-security-tests.feature",
+      "scenario": "Disallowed file types are not added to documents",
       "tier": null
     }
   ]
