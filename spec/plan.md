@@ -1,20 +1,20 @@
-# Plan — F-TEST-001 (CI dotnet test)
+# Plan — F-TEST-002 (blocking CI security scans)
 
 ## Summary
 
-In `ci-restitution.yml`, after `dotnet build`, add `dotnet test restitution-app/restitution-app.sln -c Release --no-build` (or build+test). Extend `on.pull_request.paths` / `on.push.paths` with `restitution-app.Tests/**`, `Database.Tests/**`, and optionally the workflow file. Append evidence. Do not add Karma/Playwright.
+Add `aquasecurity/trivy-action` filesystem scan to `ci-restitution.yml` after checkout/build (scan repo or published paths) with `severity: CRITICAL,HIGH` and `exit-code: "1"`. Keep SARIF upload with `if: always()` if used. Verify CodeQL has no `continue-on-error`. Append evidence noting CONFIG-001 CD image gates and removed Sonar.
 
 ## Key decisions
 
 | Decision | Choice | Rationale |
 | --- | --- | --- |
-| Command | Solution `dotnet test` | Covers API + Database tests from F-TEST-003/004 |
-| Angular | Out of scope | F-TEST-005/006 |
+| Scanner | Trivy FS in CI | Matches finding; CD already has image Trivy |
+| Sonar | Do not re-add | Absent from current repo |
 
-## Test approach
+## Residual
 
-- Diff review; optional local `dotnet test`
-- `@R-13.1` `@R-13.2`
+- First CI run may fail on existing CRITICAL/HIGH deps — treat as intended gate; do not disable workflows
+- CodeQL default-setup conflict remains a separate residual
 
 ## Approval (checkpoint 2)
 
