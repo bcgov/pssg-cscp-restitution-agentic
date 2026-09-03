@@ -1,27 +1,28 @@
-## Description
+## Summary
 
-<!-- Please include a summary of the changes and the related issue. Please also include relevant motivation and context. List any dependencies that are required for this change. -->
+<!-- What user-visible change does this PR make? -->
 
-:information_source: [**Jira Ticket Number here**](Jira web address here)  
+## Spec traceability
 
-* List changes here
+- Spec / feature: <!-- e.g. spec/features/….feature -->
+- Criterion IDs: <!-- e.g. @R-14.1 -->
+- Task: <!-- e.g. TASK-001 -->
+- Constitution articles: <!-- e.g. P1, P2 -->
 
-## Type of change
+## PR evidence
 
-<!-- Please delete options that are not relevant. -->
+- [ ] `docs/pr-evidence.md` updated (or N/A — docs-only)
 
-- [ ] Bug fix (non-breaking change which fixes an issue)
-- [ ] New feature (non-breaking change which adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
-- [ ] This change requires a documentation update
+## Review receipt (checkpoint 3 — implementation PRs)
 
-## Checklist
+<!-- Required before merge per REVIEW.md. Delete this section for docs-only PRs. -->
 
-- [ ] My code follows the style guidelines of this project
-- [ ] I have performed a self-review of my code
-- [ ] I have commented my code, particularly in hard-to-understand areas
-- [ ] I have made corresponding changes to the documentation
-- [ ] My changes generate no new warnings
-- [ ] I have added tests that prove my fix is effective or that my feature works
-- [ ] New and existing unit tests pass locally with my changes
-- [ ] Any dependent changes have been merged and published in downstream modules
+**Checked:** <!-- criterion IDs, scenarios, spec sections verified -->
+
+**Could not check:** <!-- what you lacked time, access, or environment to verify -->
+
+**Residual risk:** <!-- accepted on trust or deferred to a follow-up issue -->
+
+## Test plan
+
+- [ ] …
