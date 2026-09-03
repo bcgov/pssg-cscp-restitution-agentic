@@ -780,3 +780,66 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 **Residual risk:** Pinned digests age; base image CVE fixes will not be picked up until the digests are intentionally bumped.
 
 - Reviewer: _______________ Date: _______________
+
+---
+
+# PR evidence — [RA F-TEST-001] Run dotnet test in the CI gate
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/ra-f-test-001-add-test-execution-to-ci |
+| Spec refs | `spec/spec.md`; `spec/features/f-test-001-ci-dotnet-test.feature` (`@R-13.1`, `@R-13.2`) |
+| Constitution articles touched | P5, J3, J5 |
+| Tasks | TASK-001–TASK-003 |
+| Authoring agent | unspecified |
+| Generated | 2026-09-03T22:17:41.687Z |
+
+## Intent
+
+The CI `gate` job now builds `restitution-app/restitution-app.sln` and runs `dotnet test` against it, so the API and Database unit suites execute on every pull request and a failing test fails the gate. Workflow path filters also cover the two test projects and the workflow file itself, so test-only changes still trigger CI.
+
+## Spec traceability
+
+| Scenario / requirement | Implemented? | Notes |
+| --- | --- | --- |
+| `@R-13.1` CI gate runs the solution test suite | Yes | `dotnet test restitution-app/restitution-app.sln -c Release --no-build` runs after the solution build; a non-zero exit fails the job. |
+| `@R-13.2` test project path changes trigger CI | Yes | `restitution-app.Tests/**`, `Database.Tests/**`, and `.github/workflows/ci-restitution.yml` added to the `pull_request` and `push` path filters. |
+
+
+## Design system & accessibility
+
+| Check | Result |
+| --- | --- |
+| DS components used (list) | N/A — workflow-only change |
+| Tokens used (not hard-coded colour) | N/A — workflow-only change |
+| BC Sans imported | N/A — workflow-only change |
+| Manual a11y notes | N/A — workflow-only change |
+
+## Public-service minimums
+
+Checklist IDs addressed this PR: N/A — workflow-only change
+
+## Tests
+
+| Type | Command / path | Result |
+| --- | --- | --- |
+| Unit | `dotnet build restitution-app/restitution-app.sln -c Release` then `dotnet test restitution-app/restitution-app.sln -c Release --no-build` | Passed — 24 tests (14 API, 10 Database) |
+| Acceptance / feature | `spec/features/f-test-001-ci-dotnet-test.feature` — workflow diff review | Passed |
+| A11y automation | N/A — workflow-only change | |
+
+## Risks & follow-ups
+
+- Angular Karma and Playwright suites remain out of CI (F-TEST-005 / F-TEST-006).
+- The build step now compiles the whole solution rather than only the API project, which slightly lengthens the gate but also widens CodeQL C# extraction.
+
+## Review receipt (checkpoint 3)
+
+Same shape as `REVIEW.md` — required before merge. Do not replace with a free-form sign-off.
+
+**Checked:** `@R-13.1` and `@R-13.2`; the build/test steps and the `pull_request` / `push` path filters in `.github/workflows/ci-restitution.yml`; the solution test run locally (24 passing tests).
+
+**Could not check:** A live GitHub-hosted CI run of the updated workflow, including CodeQL analysis timing.
+
+**Residual risk:** Test execution covers only the .NET projects; front-end suites are still unguarded until the follow-up findings land.
+
+- Reviewer: _______________ Date: _______________

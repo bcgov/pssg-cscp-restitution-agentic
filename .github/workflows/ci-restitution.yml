@@ -7,11 +7,17 @@ on:
     paths:
       - "restitution-app/**"
       - "Database/**"
+      - "restitution-app.Tests/**"
+      - "Database.Tests/**"
+      - ".github/workflows/ci-restitution.yml"
   push:
     branches: [development]
     paths:
       - "restitution-app/**"
       - "Database/**"
+      - "restitution-app.Tests/**"
+      - "Database.Tests/**"
+      - ".github/workflows/ci-restitution.yml"
   schedule:
     - cron: "0 3 1,15 * *"
   workflow_dispatch:
@@ -56,7 +62,10 @@ jobs:
       - uses: actions/setup-dotnet@v6
         with:
           dotnet-version: "10.0.x"
-      - run: dotnet build restitution-app/restitution-app.csproj -c Release
+      - run: dotnet build restitution-app/restitution-app.sln -c Release
+
+      # ── API HALF: run the unit tests — a failing test fails the gate ──
+      - run: dotnet test restitution-app/restitution-app.sln -c Release --no-build
 
       # ── WHOLE CODEBASE: CodeQL writes its report — C# + TypeScript, one run ──
       - uses: github/codeql-action/analyze@v4
