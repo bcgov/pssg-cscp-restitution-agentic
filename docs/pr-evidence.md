@@ -120,3 +120,65 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 **Residual risk:** The existing Dataverse health check may be unhealthy without credentials; this is expected by the feature and unchanged by this slice.
 
 - Reviewer: _______________ Date: _______________
+
+---
+
+# PR evidence — [RA F-TEST-003] First automated tests for the ASP.NET Core API
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/ra-f-test-003-add-automated-tests |
+| Spec refs | `spec/spec.md`; `spec/features/f-test-003-api-tests.feature` (`@R-03.1`, `@R-03.2`) |
+| Constitution articles touched | P5, J3, J5 |
+| Tasks | TASK-001–TASK-004 |
+| Authoring agent | unspecified |
+| Generated | 2026-09-03T19:45:02.548Z |
+
+## Intent
+
+The API is no longer a zero-test surface. A new xUnit project `restitution-app.Tests` targets `net10.0`, references the API project, and is part of `restitution-app/restitution-app.sln`. `ConfigurationControllerTests` exercises `ConfigurationController.GetConfiguration` with in-memory settings and asserts the outage, maintenance-mode, and feature-flag mapping. No production behaviour or public JSON was changed.
+
+## Spec traceability
+
+| Scenario / requirement | Implemented? | Notes |
+| --- | --- | --- |
+| `@R-03.1` An API test project exists and can be executed | Yes | `restitution-app.Tests/restitution-app.Tests.csproj` added to the solution; `dotnet test` passes with no Dataverse credentials configured. |
+| `@R-03.2` Configuration endpoint mapping is covered | Yes | 10 assertions across outage fields, `MaintenanceMode` parsing (including invalid values), and `UseUpdatedComplianceFields`. Temporarily inverting the maintenance-mode expression made a test fail, confirming the tests are not stubs. |
+
+## Design system & accessibility
+
+| Check | Result |
+| --- | --- |
+| DS components used (list) | N/A — test-only change, no UI |
+| Tokens used (not hard-coded colour) | N/A — test-only change, no UI |
+| BC Sans imported | N/A — test-only change, no UI |
+| Manual a11y notes | N/A — test-only change, no UI |
+
+## Public-service minimums
+
+Checklist IDs addressed this PR: N/A — test-only change, no UI
+
+## Tests
+
+| Type | Command / path | Result |
+| --- | --- | --- |
+| Unit | `dotnet test restitution-app/restitution-app.sln` | Passed — 10 passed, 0 failed |
+| Acceptance / feature | `spec/features/f-test-003-api-tests.feature` (`@R-03.1`, `@R-03.2`) | Passed |
+| A11y automation | N/A — test-only change, no UI | |
+
+## Risks & follow-ups
+
+- `dotnet test` is not yet wired into CI RESTITUTION — tracked separately as **F-TEST-001**.
+- Lookup, restitution submission, and Dataverse client paths remain untested — **F-TEST-004** / **F-TEST-007**.
+
+## Review receipt (checkpoint 3)
+
+Same shape as `REVIEW.md` — required before merge. Do not replace with a free-form sign-off.
+
+**Checked:** `@R-03.1` and `@R-03.2`; new test project builds and runs offline via the solution, and the configuration mapping assertions fail when the mapping is mutated.
+
+**Could not check:** Behaviour of the endpoint under a live host with Dataverse configured; a full `WebApplicationFactory` host is out of scope for this slice.
+
+**Residual risk:** Coverage is limited to `ConfigurationController`; the submission and lookup write paths stay unverified until the follow-up findings are addressed.
+
+- Reviewer: _______________ Date: _______________

@@ -17,6 +17,14 @@ dotnet run
 
 Default local URL (from launch settings): `http://localhost:5000`
 
+## Tests
+
+Unit tests live in the sibling `restitution-app.Tests` project, which is part of `restitution-app.sln`. They run offline and do not need Dataverse credentials.
+
+```bash
+dotnet test restitution-app.sln
+```
+
 ## User secrets
 
 [Setup secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets?view=aspnetcore-9.0&tabs=windows#secret-manager)
