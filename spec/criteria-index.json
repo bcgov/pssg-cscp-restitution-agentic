@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T22:29:22.943Z",
+  "generatedAt": "2026-09-03T22:46:36.856Z",
   "criteria": [
     {
       "id": "R-06.1",
@@ -167,6 +167,18 @@
       "id": "R-04.2",
       "feature": "spec/features/f-test-004-database-tests.feature",
       "scenario": "Cache wrap and endpoint selection are covered",
+      "tier": null
+    },
+    {
+      "id": "R-15.1",
+      "feature": "spec/features/f-test-005-angular-unit-substance.feature",
+      "scenario": "NotFound navigates to the 404 route",
+      "tier": "medium"
+    },
+    {
+      "id": "R-15.2",
+      "feature": "spec/features/f-test-005-angular-unit-substance.feature",
+      "scenario": "The always-true stub is removed from NotFound",
       "tier": null
     },
     {
