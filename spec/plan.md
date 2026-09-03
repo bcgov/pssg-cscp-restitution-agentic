@@ -1,39 +1,43 @@
-# Plan — DEP-001 (archived HealthChecks package)
+# Plan — F-TEST-003 (first API tests)
 
 ## Summary
 
-Remove `PackageReference Include="Microsoft.AspNetCore.HealthChecks" Version="1.0.0"` from `restitution-app/restitution-app.csproj`. Custom checks already implement `Microsoft.Extensions.Diagnostics.HealthChecks.IHealthCheck`. Confirm `dotnet build` and that `/hc` mapping in `Program.cs` is unchanged.
+Add an xUnit test project that references `restitution-app` and covers `ConfigurationController.GetConfiguration` with `Microsoft.Extensions.Configuration` in-memory values. Do not boot the full web host (Dataverse is registered in `Program.cs`). Do not add a CI test stage (F-TEST-001).
 
 ## Architecture
 
 ```text
-Program.cs AddHealthChecks + MapHealthChecks("/hc")
-  → ApiSelfHealthCheck, DataverseHealthCheck
-  → Microsoft.Extensions.Diagnostics.HealthChecks (in-box)
+restitution-app.sln
+  restitution-app
+  Database
+  restitution-app.Tests  (new)
+    ConfigurationControllerTests
+      → new ConfigurationController(logger, inMemoryConfig).GetConfiguration()
 ```
 
 ## Key decisions
 
 | Decision | Choice | Rationale |
 | --- | --- | --- |
-| Replacement | In-box Extensions library (no extra NuGet unless build requires it) | Already imported in HealthChecks/*.cs |
-| Behaviour | Do not change JSON writer / path / tags | Out of AUTH-003 scope |
-| Tests | Build + optional smoke that `/hc` still maps; no live Dataverse | Pilot |
+| Runner | xUnit + Microsoft.NET.Test.Sdk | Standard for net10 |
+| Host | Controller unit test, not WebApplicationFactory | Avoid `AddDatabase` / live URI at startup |
+| Surface | ConfigurationController only | No Dynamics; proves non-stub coverage |
+| CI | Leave CI RESTITUTION as build-only | Owned by F-TEST-001 |
 
 ## Security & privacy
 
-- Removes unmaintained dependency from the API graph
-- Residual: Dataverse check still needs credentials locally
+- Synthetic config strings only
+- Residual: lookups and submit remain untested until later slices
 
 ## Test approach
 
-- `dotnet build restitution-app/restitution-app.csproj`
-- Criterion `@R-02.1` `@R-02.2`
-- Append `docs/pr-evidence.md`
+- `dotnet test` on the new project
+- Criterion `@R-03.1` `@R-03.2`
+- Append `docs/pr-evidence.md` (keep CONFIG-001 and DEP-001 evidence)
 
 ## Rollout
 
-- Merge to `development`; no deploy-specific steps
+- Merge to `development`; CI still does not run tests (documented residual)
 
 ## Approval (checkpoint 2)
 
