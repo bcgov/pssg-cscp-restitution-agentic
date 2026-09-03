@@ -4,49 +4,51 @@
 
 ## Upstream intent
 
-GitHub issue [#8](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/8) — rapid assessment **CONFIG-003**.
+GitHub issue [#9](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/9) — rapid assessment **CRYPTO-001**.
 
 ## Problem
 
-The developer exception page (full stack traces and request details) is enabled for **every non-Production** environment name — Staging, Testing, UAT, Development. Shared lower environments that are reachable externally can leak internals on unhandled errors.
+When a key-ring directory is configured, Data Protection keys are written to disk **without an at-rest protector**. On Linux/OpenShift that means plaintext key XML on the volume.
 
 ## Outcome
 
-The developer exception page runs **only in Development**. All other environments use the generic exception handler path (no detailed exception page). Reviewers can see the condition is `IsDevelopment()`, not `!IsProduction()`.
+Whenever keys are persisted to the filesystem, they are **also protected at rest** using an X.509 certificate (or equivalent ProtectKeysWith* provider suitable for OpenShift). Configuration documents the new certificate setting. Local Development without a key-ring directory remains unchanged (ephemeral keys).
 
 ## Users & personas
 
 | Persona | Goal |
 | --- | --- |
-| Security reviewer | No stack traces in shared Staging/Test |
-| Local developer | Still get detailed exceptions when ASPNETCORE_ENVIRONMENT=Development |
+| Security reviewer | No plaintext key material on the volume |
+| Platform operator | Clear config knobs for cert mount |
 
 ## Scope
 
 ### In scope (this release)
 
-- Change the exception-page gate in `Program.cs` from `!IsProduction()` to `IsDevelopment()`
-- Keep `UseExceptionHandler` for non-Development
-- Evidence note; mention LOG-001 / VULN-003 as related residual if still open
+- Chain `ProtectKeysWithCertificate` (or documented ProtectKeysWith*) when persisting keys to the filesystem
+- Add configuration key(s) for certificate path (and optional password) — no secrets committed
+- Update README secrets / env docs
+- Fail closed if persistence is enabled without a usable certificate in non-Development (preferred)
 
 ### Out of scope
 
-- Changing `/Home/Error` UI
-- LOG-001 / VULN-003 duplicate filings beyond this code fix
-- Splunk logging changes
+- Standing up Azure Key Vault (unless already wired — it is not)
+- CRYPTO-002 Splunk TLS
+- Rotating existing production key rings (ops runbook residual)
 
 ## Journeys
 
-1. Development keeps detail — `features/config-003-dev-exception-page.feature` (@R-08.1)
-2. Non-Development uses handler — same feature (@R-08.2)
+1. Protected persist — `features/crypto-001-key-ring-protect.feature` (@R-09.1)
+2. Local without directory — same feature (@R-09.2)
 
 ## Non-functional requirements
 
-- Privacy: stack traces must not appear on shared lower envs
+- Privacy: certificate password only via secrets/env
+- Residual: ops must mount a cert before enabling KEY_RING_DIRECTORY in shared envs
 
 ## Open questions
 
-- [x] Same code change likely closes LOG-001 / VULN-003 behaviourally; leave those issues to their own slices unless product asks to close as duplicate after this merges.
+- [x] Prefer filesystem X.509 over inventing Key Vault for this brownfield OpenShift app.
 
 ## Sign-off (checkpoint 1)
 
