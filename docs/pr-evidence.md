@@ -244,3 +244,66 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 **Residual risk:** The Dataverse connection and token HTTP paths in `Database/Extensions` are still only exercised in a live environment.
 
 - Reviewer: _______________ Date: _______________
+
+---
+
+# PR evidence — [RA F-TEST-007] Add security-focused uploader tests
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/ra-f-test-007-add-security-tests |
+| Spec refs | `spec/spec.md`; `spec/features/f-test-007-security-tests.feature` (`@R-05.1`, `@R-05.2`) |
+| Constitution articles touched | P5, J3, J5 |
+| Tasks | see spec/tasks.md |
+| Authoring agent | unspecified |
+| Generated | 2026-09-03T20:14:00.827Z |
+
+## Intent
+
+The file uploader unit spec now exercises security-relevant rejection controls instead of only checking component creation. Synthetic unsupported and oversized files are asserted to remain out of the documents array and to produce the corresponding snackbar notification.
+
+## Spec traceability
+
+| Scenario / requirement | Implemented? | Notes |
+| --- | --- | --- |
+| `@R-05.1` security-focused uploader unit test exists | Yes | The spec retains the create assertion and adds behavioural rejection assertions. |
+| `@R-05.2` disallowed file types are not added | Yes | `malware.exe` leaves the documents array empty and opens the unsupported-type snackbar. |
+| Oversized files are not added | Yes | A synthetic file larger than `MAX_FILE_SIZE` leaves the documents array empty and opens the size-limit snackbar. |
+
+
+## Design system & accessibility
+
+| Check | Result |
+| --- | --- |
+| DS components used (list) | N/A — test-only change, no UI |
+| Tokens used (not hard-coded colour) | N/A — test-only change, no UI |
+| BC Sans imported | N/A — test-only change, no UI |
+| Manual a11y notes | N/A — test-only change, no UI |
+
+## Public-service minimums
+
+Checklist IDs addressed this PR: N/A — test-only change, no UI
+
+## Tests
+
+| Type | Command / path | Result |
+| --- | --- | --- |
+| Unit | `npx ng test --no-watch --no-progress --include='src/app/shared/file-uploader/file-uploader.component.spec.ts'` | Passed — 3 tests |
+| Acceptance / feature | `spec/features/f-test-007-security-tests.feature` (`@R-05.1`, `@R-05.2`) | Covered by the focused uploader unit spec |
+| A11y automation | N/A — test-only change, no UI | |
+
+## Risks & follow-ups
+
+- The test remains client-side; server MIME enforcement is explicitly deferred to VULN-002.
+
+## Review receipt (checkpoint 3)
+
+Same shape as `REVIEW.md` — required before merge. Do not replace with a free-form sign-off.
+
+**Checked:** `@R-05.1`, `@R-05.2`, and the in-scope oversized-file control; the focused uploader spec passes with synthetic files and no Dataverse or browser.
+
+**Could not check:** Server-side MIME enforcement, CSRF, rate limiting, and unauthenticated API behaviour because they are out of scope for this slice.
+
+**Residual risk:** The extension allow-list is a client-side control until VULN-002 adds server-side MIME validation.
+
+- Reviewer: _______________ Date: _______________
