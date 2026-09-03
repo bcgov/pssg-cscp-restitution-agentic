@@ -1,30 +1,26 @@
-# Plan — CONFIG-002 (CSP unsafe-*)
+# Plan — CONFIG-003 (dev exception page)
 
 ## Summary
 
-Wrap the `Content-Security-Policy` Append middleware in `Program.cs` so it runs **only when `IsDevelopment()`**. Leave `UseCsp` for non-Development unchanged. Append evidence. Optional: small note in README. No Angular rewrite.
+In `restitution-app/Program.cs`, change `if (!app.Environment.IsProduction())` around `UseDeveloperExceptionPage` to `if (app.Environment.IsDevelopment())`, keep `else UseExceptionHandler("/Home/Error")`. Append evidence. No new host tests required unless easy.
 
 ## Architecture
 
 ```text
-Development → Append permissive CSP (existing string)
-non-Development → NWebsec UseCsp only (no Append)
+Development → UseDeveloperExceptionPage
+else → UseExceptionHandler("/Home/Error")
 ```
 
 ## Key decisions
 
 | Decision | Choice | Rationale |
 | --- | --- | --- |
-| Fix | Gate Append to Development | Removes weak dual header in prod; keeps local DX |
-| Tests | Code review + evidence; optional unit if host testable | No WebApplicationFactory without Dataverse |
-
-## Security & privacy
-
-- Residual: Development still has unsafe-*; nonce/hash CSP later
+| Gate | IsDevelopment only | Matches finding; Staging/Test safe |
+| Related issues | Leave LOG-001 / VULN-003 open | Separate tickets; may close later as dup |
 
 ## Test approach
 
-- Diff review of Program.cs; `@R-07.1` `@R-07.2`
+- Diff review; `@R-08.1` `@R-08.2`
 - Append `docs/pr-evidence.md`
 
 ## Rollout
