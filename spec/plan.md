@@ -1,21 +1,20 @@
-# Plan — DEP-006 (Dockerfile net10 + digests)
+# Plan — F-TEST-001 (CI dotnet test)
 
 ## Summary
 
-Delete or replace `openshift/Dockerfile.ubi8.net8_customized` with a short `openshift/README.md` noting CD uses `restitution-app/Dockerfile`. Pin `mcr.microsoft.com/dotnet/aspnet:10.0-alpine` and `sdk:10.0-alpine` FROM lines with `@sha256:…` digests (resolve via `docker buildx imagetools inspect` or registry). Confirm `cd-restitution-api.yml` still points at `./restitution-app/Dockerfile`. Append evidence.
+In `ci-restitution.yml`, after `dotnet build`, add `dotnet test restitution-app/restitution-app.sln -c Release --no-build` (or build+test). Extend `on.pull_request.paths` / `on.push.paths` with `restitution-app.Tests/**`, `Database.Tests/**`, and optionally the workflow file. Append evidence. Do not add Karma/Playwright.
 
 ## Key decisions
 
 | Decision | Choice | Rationale |
 | --- | --- | --- |
-| Stale file | Remove + README pointer | Not used by CD; avoids false net8 path |
-| Runtime | Keep MCR alpine net10 | Already working in CD |
-| Digests | Pin both stages | Supply-chain half of finding |
+| Command | Solution `dotnet test` | Covers API + Database tests from F-TEST-003/004 |
+| Angular | Out of scope | F-TEST-005/006 |
 
 ## Test approach
 
-- Diff review of Dockerfiles + workflow path
-- `@R-12.1` `@R-12.2`
+- Diff review; optional local `dotnet test`
+- `@R-13.1` `@R-13.2`
 
 ## Approval (checkpoint 2)
 
