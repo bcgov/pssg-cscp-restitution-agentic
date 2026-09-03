@@ -1,6 +1,18 @@
 {
-  "generatedAt": "2026-09-03T20:00:54.300Z",
+  "generatedAt": "2026-09-03T20:33:20.684Z",
   "criteria": [
+    {
+      "id": "R-06.1",
+      "feature": "spec/features/auth-001-adfs-client-credentials.feature",
+      "scenario": "Resource owner password grant is not used",
+      "tier": "medium"
+    },
+    {
+      "id": "R-06.2",
+      "feature": "spec/features/auth-001-adfs-client-credentials.feature",
+      "scenario": "Client credentials grant is used instead",
+      "tier": null
+    },
     {
       "id": "R-01.1",
       "feature": "spec/features/config-001-trivy-gate.feature",
