@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T21:05:23.782Z",
+  "generatedAt": "2026-09-03T21:21:52.376Z",
   "criteria": [
     {
       "id": "R-06.1",
@@ -47,6 +47,18 @@
       "id": "R-08.2",
       "feature": "spec/features/config-003-dev-exception-page.feature",
       "scenario": "Non-Development uses the generic exception handler",
+      "tier": null
+    },
+    {
+      "id": "R-09.1",
+      "feature": "spec/features/crypto-001-key-ring-protect.feature",
+      "scenario": "Filesystem key persistence uses a protector",
+      "tier": "medium"
+    },
+    {
+      "id": "R-09.2",
+      "feature": "spec/features/crypto-001-key-ring-protect.feature",
+      "scenario": "Local Development without a key-ring directory is unchanged",
       "tier": null
     },
     {
