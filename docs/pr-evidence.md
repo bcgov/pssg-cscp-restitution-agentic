@@ -432,3 +432,65 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 **Residual risk:** Development retains unsafe script directives pending the explicitly deferred nonce/hash CSP redesign.
 
 - Reviewer: _______________ Date: _______________
+
+---
+
+# PR evidence — [RA CONFIG-003] Developer Exception Page active in all non-production environments
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/ra-config-003-fix-dev-exception-page |
+| Spec refs | `spec/spec.md`; `spec/features/config-003-dev-exception-page.feature` (`@R-08.1`, `@R-08.2`) |
+| Constitution articles touched | P5, P7, J3, J5 |
+| Tasks | TASK-001, TASK-002, TASK-003 |
+| Authoring agent | Copilot |
+| Generated | 2026-09-03T21:13:11.000Z |
+
+## Intent
+
+`app.UseDeveloperExceptionPage()` previously activated for any environment name other than Production (`!IsProduction()`), so Staging, Testing, UAT, and any other non-Production `ASPNETCORE_ENVIRONMENT` value received full stack-trace and request-detail disclosure. The gate now checks `IsDevelopment()` instead, so only local Development gets the developer exception page; every other environment name uses the generic `/Home/Error` handler. The API Dockerfile also now sets `ASPNETCORE_ENVIRONMENT=Production` explicitly at runtime so an unset environment variable cannot default to a non-Development value that previously would have exposed the developer page.
+
+## Spec traceability
+
+| Scenario / requirement | Implemented? | Notes |
+| --- | --- | --- |
+| `@R-08.1` Development still shows the developer exception page | Yes | `Program.cs` registers `UseDeveloperExceptionPage()` when `app.Environment.IsDevelopment()` is true. |
+| `@R-08.2` Non-Development uses the generic exception handler | Yes | Every other environment name (Staging, Testing, UAT, Production, etc.) falls into the `else` branch and registers `UseExceptionHandler("/Home/Error")` instead. |
+
+## Design system & accessibility
+
+| Check | Result |
+| --- | --- |
+| DS components used (list) | N/A — server middleware change, no UI |
+| Tokens used (not hard-coded colour) | N/A — no UI |
+| BC Sans imported | N/A — no UI |
+| Manual a11y notes | N/A — no UI |
+
+## Public-service minimums
+
+Checklist IDs addressed this PR: N/A — no UI
+
+## Tests
+
+| Type | Command / path | Result |
+| --- | --- | --- |
+| Build | `dotnet build restitution-app/restitution-app.csproj` | Succeeded, 0 warnings, 0 errors |
+| Diff review | `restitution-app/Program.cs` gate condition | Confirmed `IsDevelopment()` replaces `!IsProduction()`; `else` branch unchanged |
+| Acceptance / feature | `spec/features/config-003-dev-exception-page.feature` (`@R-08.1`, `@R-08.2`) | Covered by the environment gate change |
+| A11y automation | N/A — no UI |
+
+## Risks & follow-ups
+
+- LOG-001 / VULN-003 reference the same underlying behaviour; leaving those tickets open per `spec/spec.md` open questions unless product asks to close as duplicates after this merges.
+
+## Review receipt (checkpoint 3)
+
+Same shape as `REVIEW.md` — required before merge. Do not replace with a free-form sign-off.
+
+**Checked:** `@R-08.1` and `@R-08.2`; Development still registers the developer exception page, and every other environment name registers the generic exception handler instead.
+
+**Could not check:** A live externally-reachable Staging/Test deployment; verified via code review and local build only.
+
+**Residual risk:** None identified for this change; the gate is now environment-name-safe by construction.
+
+- Reviewer: _______________ Date: _______________
