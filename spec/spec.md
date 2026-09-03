@@ -4,41 +4,45 @@
 
 ## Upstream intent
 
-GitHub issue [#13](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/13) — rapid assessment **F-TEST-001**.
+GitHub issue [#14](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/14) — rapid assessment **F-TEST-002**.
 
 ## Problem
 
-CI builds the Angular SPA and compiles the API but **never runs automated tests**. Unit suites added for the API and Database projects can fail locally without failing the pipeline.
+The assessment found security scanners configured as non-blocking (`continue-on-error` on CodeQL/Sonar; Trivy `exit-code: 0`). Current `development` already removed Sonar and CodeQL `continue-on-error`, and CD Trivy image gates fail on CRITICAL/HIGH (CONFIG-001). **CI still has no blocking vulnerability filesystem scan**, so PR-time security scanning is weaker than the finding intended.
 
 ## Outcome
 
-The CI gate job **runs `dotnet test`** against the solution (API + Database test projects) after restore/build. A failing test fails the job. Path filters include the test project directories so changes to tests also trigger CI.
+CI includes a **blocking Trivy filesystem vulnerability scan** (CRITICAL/HIGH fail the job). CodeQL remains without `continue-on-error`. Reviewers can see that PR CI fails on critical/high FS findings, not only CD image scans.
 
 ## Users & personas
 
 | Persona | Goal |
 | --- | --- |
-| Delivery reviewer | Green CI means tests ran and passed |
-| Developer | Test-only PRs still exercise CI |
+| Security reviewer | Critical/high vulns fail CI, not just CD |
+| Developer | Clear residual: CD image Trivy already from CONFIG-001 |
 
 ## Scope
 
 ### In scope
 
-- Add a `dotnet test` step to `.github/workflows/ci-restitution.yml` for `restitution-app/restitution-app.sln` (or equivalent covering both test projects)
-- Extend workflow `paths` filters to include `restitution-app.Tests/**` and `Database.Tests/**`
-- No live Dataverse required (existing tests are offline)
+- Add Trivy filesystem scan step(s) to `ci-restitution.yml` with failing exit on CRITICAL/HIGH
+- Confirm CodeQL analyze step has no `continue-on-error`
+- Document that assessment Sonar/`continue-on-error` paths are already gone; CD image Trivy already blocking
 
 ### Out of scope
 
-- Angular Karma / Playwright in CI (F-TEST-005 / F-TEST-006)
-- Making Trivy/CodeQL blocking beyond current CONFIG-001 work (F-TEST-002)
-- Fixing unrelated CodeQL default-setup conflicts (record residual if gate still noisy)
+- SEC-SECRETS-003 dedicated secret-scanner exit (separate issue) unless the same Trivy step naturally covers secrets with a second call
+- ZAP workflow redesign
+- Disabling CodeQL to “make CI green”
 
 ## Journeys
 
-1. Tests run in CI — `features/f-test-001-ci-dotnet-test.feature` (@R-13.1)
-2. Path coverage — same feature (@R-13.2)
+1. CI FS scan blocks — `features/f-test-002-blocking-security-scans.feature` (@R-14.1)
+2. CodeQL remains blocking — same feature (@R-14.2)
+
+## Open questions
+
+- [x] Prefer adding CI Trivy FS over inventing SonarCloud again.
 
 ## Sign-off (checkpoint 1)
 
