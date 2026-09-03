@@ -4,36 +4,35 @@
 
 ## Upstream intent
 
-GitHub issue [#18](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/18) — rapid assessment **LOG-002**.
+GitHub issue [#19](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/19) — rapid assessment **SEC-SECRETS-001**.
 
 ## Problem
 
-Successful restitution form submissions return `Ok(response)` from `SubmitRestitutionInternal` **without** an application-level audit log. Serilog request logging only captures HTTP method/path/status — not form type or a clear success audit for a justice application handling victim/offender data.
+The developer README user-secrets template embeds real internal BC Government hostnames (Dataverse proxy, ADFS token endpoint, JAG Dataverse resource, Dynamics cloud endpoints). Credential values are already placeholders, but the hostnames themselves are reconnaissance material in a public `bcgov` repository.
 
 ## Outcome
 
-On successful submit, the API writes a **structured information-level audit log** with **non-PII** identifiers (for example correlation id, form type, success). Operators can see that a victim / victim-entity / offender submission succeeded without reading Dynamics response bodies or form PII (those remain LOG-003 / privacy concerns).
+The README secrets template uses **generic placeholders** for every Dynamics / ADFS / Entra endpoint URL and resource name (for example `<dynamics-api-endpoint-url>`, `<adfs-token-endpoint>`, `<dynamics-resource-url>`). No real internal hostname remains in that template. Developers still understand which keys to set locally.
 
 ## Scope
 
 ### In scope
 
-- Info-level audit on the **success** path of restitution submit (victim, victim-entity, offender)
-- Non-PII fields only (form type, correlation id, success flag — or equivalent)
-- Unit test with a mock/fake logger verifying the audit / `LogInformation` call on the success path
+- Replace hardcoded hostnames/URLs in `restitution-app/README.md` user-secrets template with angle-bracket placeholders
+- Keep credential placeholders as they are (`<onpremise_client_id>`, etc.)
 - Evidence in `docs/pr-evidence.md`
 
 ### Out of scope
 
-- LOG-003: logging full Dynamics `OrganizationResponse` on failure (do not expand body logging)
-- Live Dynamics / Dataverse integration tests
-- Splunk sinks or new log shipping
-- Changing invalid-model or exception error logging shape beyond what’s needed to call the success audit
+- Changing runtime config, OpenShift secrets, or appsettings
+- Inventing or documenting new real hostnames
+- SEC-SECRETS-002 (ZAP workflow hostname) — separate issue
+- Rotating or inventing live credentials
 
 ## Journeys
 
-1. Success audit written — `features/log-002-submit-audit-log.feature` (@R-18.1)
-2. No PII / OrganizationResponse on success audit — same feature (@R-18.2)
+1. Template has no real hostnames — `features/sec-secrets-001-readme-placeholders.feature` (@R-19.1)
+2. Placeholder keys remain clear for local setup — same feature (@R-19.2)
 
 ## Sign-off (checkpoint 1)
 
