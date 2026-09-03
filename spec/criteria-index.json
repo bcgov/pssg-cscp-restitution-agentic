@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T23:27:19.626Z",
+  "generatedAt": "2026-09-03T23:44:04.389Z",
   "criteria": [
     {
       "id": "R-06.1",
@@ -215,6 +215,18 @@
       "id": "R-17.2",
       "feature": "spec/features/log-001-dev-exception-disclosure.feature",
       "scenario": "Staging and Production do not use the developer exception page",
+      "tier": null
+    },
+    {
+      "id": "R-18.1",
+      "feature": "spec/features/log-002-submit-audit-log.feature",
+      "scenario": "Successful submit writes an info-level audit log",
+      "tier": "medium"
+    },
+    {
+      "id": "R-18.2",
+      "feature": "spec/features/log-002-submit-audit-log.feature",
+      "scenario": "Success audit log excludes PII and Dynamics response body",
       "tier": null
     }
   ]
