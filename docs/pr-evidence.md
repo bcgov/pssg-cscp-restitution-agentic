@@ -956,3 +956,20 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 - Checked: added `ExceptionPagePolicyTests` covering Development (allowed) and Staging/Test/Production (not allowed); 4/4 passed.
 - Could not check: a live Staging/Production deployment; verification is via the unit tests plus code inspection of the wired call site.
 - Residual risk: VULN-003 references the same underlying behaviour and remains open as a separate ticket per `spec/spec.md`.
+
+# Evidence — LOG-002 Success-path submit audit log
+
+| Field | Value |
+| --- | --- |
+| Spec refs | `spec/features/log-002-submit-audit-log.feature` (`@R-18.1`, `@R-18.2`) |
+| Tasks | `TASK-001`–`TASK-003` |
+| Verification | `dotnet test restitution-app.Tests/restitution-app.Tests.csproj --filter FullyQualifiedName~RestitutionSubmitAuditTests` |
+
+## Review receipt
+
+- Checked: added `RestitutionSubmitAudit.WriteSuccess(ILogger, formType, correlationId)` — a small, directly-testable helper that writes one information-level audit entry with non-PII fields only (`FormType`, `CorrelationId`, `Success`).
+- Checked: `RestitutionsController.SubmitRestitutionInternal` calls the helper immediately before `return Ok(response)`, with the form type supplied by the `victim` / `victim-entity` / `offender` actions and the correlation id taken from `HttpContext.TraceIdentifier`.
+- Checked: the controller now takes an injected `ILogger<RestitutionsController>` (Serilog remains the backing sink via `UseSerilog`) instead of the static `Log.Logger`, so the success audit is exercised through standard logging abstractions; existing error messages are unchanged.
+- Checked: `RestitutionSubmitAuditTests` asserts `LogLevel.Information`, the three non-PII properties for each form type, the `unknown` fallback when no correlation id is available, and that no other state values (no form payload, no Dynamics `OrganizationResponse`) are logged; 6/6 new tests pass, 24/24 in the project.
+- Could not check: a live Dynamics/Dataverse submission and the resulting entry in the deployed Splunk/console sink; no outbound Dataverse access in this sandbox.
+- Residual risk: the failure-path `{@Response}` `OrganizationResponse` destructuring is unchanged and remains LOG-003 (#32).
