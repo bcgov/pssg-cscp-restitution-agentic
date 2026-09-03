@@ -55,15 +55,17 @@ test.describe('Routing & health guard', () => {
   });
 
   test('TC-HC-01: root path redirects to /victim', async ({ page }) => {
-    await page.goto('.');
-    await expect(page).toHaveURL(/victim/);
+    // Path-relative so Playwright keeps /restwebforms/ baseHref.
+    await page.goto('./');
+    await expect(page).toHaveURL(/\/restwebforms\/victim/);
+    // Angular Material 21 uses mat-stepper (not mat-vertical-stepper).
     await expect(page.locator('mat-stepper')).toBeVisible({ timeout: 15_000 });
   });
 
   test('TC-HC-02: /outage page shows service unavailable with contact details', async ({ page }) => {
     await page.unroute('**/restwebforms/hc');
     await mockOfflineApis(page, { healthStatus: 503 });
-    await page.goto('.');
+    await page.goto('./');
     await expect(page.locator('h1')).toContainText('Service Unavailable');
     await expect(page.getByText('604-660-4898')).toBeVisible();
     await expect(page.getByRole('link', { name: 'restitution@gov.bc.ca' })).toBeVisible();
