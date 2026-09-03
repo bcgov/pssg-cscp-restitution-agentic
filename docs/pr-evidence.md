@@ -923,3 +923,20 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 - Checked: the tautological `expect(true)` stub was removed.
 - Could not check: browser-based execution is unavailable; the configured Angular Vitest test environment passed the focused spec.
 - Residual risk: the remaining Angular spec files are outside this focused slice.
+
+# Evidence — F-TEST-006 Playwright in CI
+
+| Field | Value |
+| --- | --- |
+| Spec refs | `spec/features/f-test-006-playwright-ci.feature` (`@R-16.1`, `@R-16.2`) |
+| Tasks | `TASK-001`–`TASK-003` |
+| Verification | Separate `e2e` job in `ci-restitution.yml`; Chromium (no Chrome channel); offline API mocks |
+
+## Review receipt
+
+- Checked: `e2e` job runs `playwright test --project=localhost e2e/tests/health-and-routing.spec.ts`.
+- Checked: Playwright config uses bundled Chromium (dropped `channel: 'chrome'`) and `webServer` for local SPA.
+- Checked: health-and-routing mocks `/restwebforms/hc` + configuration/lookups so CI does not need Dynamics.
+- Fixed: `mat-vertical-stepper` selector (used by the spec and shared `e2e/helpers/form.helpers.ts`) did not match the real markup (`<mat-stepper orientation="vertical">`), so every stepper-visibility assertion was a silent false negative — direct evidence the suite had never actually run. Corrected to `mat-stepper` in both files; re-ran the full suite locally in CI mode (`CI=true npx playwright test --project=localhost e2e/tests/health-and-routing.spec.ts`), 7/7 passed.
+- Could not check: full form E2E suites remain out of scope / remote; an actual GitHub Actions run of the `e2e` job (no outbound access in this sandbox to trigger one).
+- Residual risk: `gate` may still fail on known CodeQL default-setup noise; `e2e` is independent.

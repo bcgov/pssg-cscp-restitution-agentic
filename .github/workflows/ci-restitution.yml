@@ -84,3 +84,26 @@ jobs:
         with:
           sarif_file: trivy-ci-restitution-fs.sarif
           category: trivy-ci-restitution-fs
+
+  # Separate from gate so CodeQL/Trivy residuals do not skip Playwright
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: restitution-app/ClientApp
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22.x"
+          cache: npm
+          cache-dependency-path: restitution-app/ClientApp/package-lock.json
+      - name: Install npm dependencies
+        run: npm install --legacy-peer-deps --ignore-scripts
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
+      - name: Run localhost health-and-routing E2E
+        env:
+          CI: "true"
+        run: npx playwright test --project=localhost e2e/tests/health-and-routing.spec.ts

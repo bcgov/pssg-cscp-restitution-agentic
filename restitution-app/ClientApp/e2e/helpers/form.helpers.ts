@@ -4,7 +4,7 @@ import { Page, expect } from '@playwright/test';
 
 export async function navigateToForm(page: Page, route: 'victim' | 'offender' | 'victim-entity') {
   await page.goto(route);
-  await expect(page.locator('mat-vertical-stepper')).toBeVisible({ timeout: 15_000 });
+  await expect(page.locator('mat-stepper')).toBeVisible({ timeout: 15_000 });
 }
 
 export async function continueToApplication(page: Page) {
