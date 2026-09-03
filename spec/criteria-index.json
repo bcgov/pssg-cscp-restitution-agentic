@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T19:39:05.188Z",
+  "generatedAt": "2026-09-03T19:51:19.029Z",
   "criteria": [
     {
       "id": "R-01.1",
@@ -47,6 +47,18 @@
       "id": "R-03.2",
       "feature": "spec/features/f-test-003-api-tests.feature",
       "scenario": "Configuration endpoint mapping is covered",
+      "tier": null
+    },
+    {
+      "id": "R-04.1",
+      "feature": "spec/features/f-test-004-database-tests.feature",
+      "scenario": "A Database test project exists and can be executed",
+      "tier": "high"
+    },
+    {
+      "id": "R-04.2",
+      "feature": "spec/features/f-test-004-database-tests.feature",
+      "scenario": "Cache wrap and endpoint selection are covered",
       "tier": null
     }
   ]
