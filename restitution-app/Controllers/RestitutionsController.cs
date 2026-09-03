@@ -4,8 +4,8 @@ using DataverseModel;
 using Gov.Cscp.VictimServices.Public.Models;
 using Gov.Cscp.VictimServices.Public.Models.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using Microsoft.PowerPlatform.Dataverse.Client;
-using Serilog;
 
 namespace Gov.Cscp.VictimServices.Public.Controllers
 {
@@ -13,18 +13,25 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
     public class RestitutionsController : Controller
     {
         private readonly IOrganizationServiceAsync _organizationService;
-        private readonly ILogger _logger;
+        private readonly ILogger<RestitutionsController> _logger;
 
-        public RestitutionsController(IOrganizationServiceAsync organizationService)
+        public RestitutionsController(
+            IOrganizationServiceAsync organizationService,
+            ILogger<RestitutionsController> logger
+        )
         {
             _organizationService = organizationService;
-            _logger = Log.Logger;
+            _logger = logger;
         }
 
         [HttpPost("victim")]
         public async Task<IActionResult> SubmitVictimRestitution([FromBody] CreateVictimRestitutionCaseRequestDto model)
         {
-            return await SubmitRestitutionInternal(model, x => x.ConvertToDynamicsRequest());
+            return await SubmitRestitutionInternal(
+                model,
+                x => x.ConvertToDynamicsRequest(),
+                RestitutionSubmitAudit.VictimFormType
+            );
         }
 
         [HttpPost("victim-entity")]
@@ -32,7 +39,11 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
             [FromBody] CreateVictimEntityRestitutionCaseRequestDto model
         )
         {
-            return await SubmitRestitutionInternal(model, x => x.ConvertToDynamicsRequest());
+            return await SubmitRestitutionInternal(
+                model,
+                x => x.ConvertToDynamicsRequest(),
+                RestitutionSubmitAudit.VictimEntityFormType
+            );
         }
 
         [HttpPost("offender")]
@@ -40,12 +51,17 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
             [FromBody] CreateOffenderRestitutionCaseRequestDto model
         )
         {
-            return await SubmitRestitutionInternal(model, x => x.ConvertToDynamicsRequest());
+            return await SubmitRestitutionInternal(
+                model,
+                x => x.ConvertToDynamicsRequest(),
+                RestitutionSubmitAudit.OffenderFormType
+            );
         }
 
         private async Task<IActionResult> SubmitRestitutionInternal<TModel>(
             TModel model,
-            System.Func<TModel, VSd_CreateRestitutionCaseRequest> dynamicsRequestFactory
+            System.Func<TModel, VSd_CreateRestitutionCaseRequest> dynamicsRequestFactory,
+            string formType
         )
         {
             try
@@ -57,7 +73,7 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
                         .Select(entry =>
                             $"{entry.Key}: {string.Join(", ", entry.Value.Errors.Select(err => err.ErrorMessage))}"
                         );
-                    _logger.Error(
+                    _logger.LogError(
                         "API call to 'SubmitRestitution' made with invalid model state. Errors are:\n{Errors}",
                         string.Join("\n", errors)
                     );
@@ -69,7 +85,7 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
 
                 if (response.Results["IsSuccess"] is not true)
                 {
-                    _logger.Error(
+                    _logger.LogError(
                         "Error while saving victim restitution. Response from Dynamics was:\n{@Response}",
                         response
                     );
@@ -77,11 +93,13 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
                     return StatusCode(500, "An error occurred while saving the restitution case.");
                 }
 
+                RestitutionSubmitAudit.WriteSuccess(_logger, formType, HttpContext?.TraceIdentifier);
+
                 return Ok(response);
             }
             catch (System.Exception e)
             {
-                _logger.Error(e, "Unexpected error while saving victim restitution.", model);
+                _logger.LogError(e, "Unexpected error while saving victim restitution.");
                 return StatusCode(500, "An unexpected error occurred.");
             }
         }
