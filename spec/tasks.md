@@ -1,14 +1,12 @@
-# Tasks — CONFIG-001
+# Tasks — DEP-001
 
-Derive from `spec/spec.md` + `features/config-001-trivy-gate.feature`.
+## Milestone 1
 
-## Milestone 1 — blocking image scan
-
-- [x] **TASK-001** — On `.github/workflows/cd-restitution-api.yml` Trivy step: set `exit-code: "1"` and `severity: CRITICAL,HIGH` (or current `trivy-action` equivalents). Covers `@R-01.1`.
-- [x] **TASK-002** — Same inputs on `.github/workflows/cd-restitution-ui.yml`. Covers `@R-01.1`.
-- [x] **TASK-003** — Keep SARIF upload; if the scan step can fail, upload with `if: always()` so `@R-01.2` still holds.
-- [x] **TASK-004** — Append `docs/pr-evidence.md` for CONFIG-001 (criterion IDs `@R-01.1` `@R-01.2`). Do not overwrite prior slices.
+- [ ] **TASK-001** — Remove `Microsoft.AspNetCore.HealthChecks` 1.0.0 from `restitution-app/restitution-app.csproj`. Covers `@R-02.1`.
+- [ ] **TASK-002** — Confirm HealthChecks classes still compile against `Microsoft.Extensions.Diagnostics.HealthChecks`; add an explicit PackageReference only if the SDK does not supply it. Covers `@R-02.1`.
+- [ ] **TASK-003** — Do not change `/hc` path, JSON shaping, or check registration unless required to compile. Covers `@R-02.2`.
+- [ ] **TASK-004** — `dotnet build` the API project; append `docs/pr-evidence.md` (CONFIG-001 slice must remain).
 
 ## Backlog
 
-- [ ] Re-introduce a PR-time filesystem/secret scan (related: F-TEST-002 / SEC-SECRETS-003) — **not this slice**
+- [ ] DEP-002 EOL netcore packages — **not this slice**
