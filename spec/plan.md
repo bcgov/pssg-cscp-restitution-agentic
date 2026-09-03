@@ -1,31 +1,34 @@
-# Plan — CONFIG-003 (dev exception page)
+# Plan — CRYPTO-001 (key ring at-rest protection)
 
 ## Summary
 
-In `restitution-app/Program.cs`, change `if (!app.Environment.IsProduction())` around `UseDeveloperExceptionPage` to `if (app.Environment.IsDevelopment())`, keep `else UseExceptionHandler("/Home/Error")`. Append evidence. No new host tests required unless easy.
+When `KEY_RING_DIRECTORY` is set, load an X.509 cert from `KEY_RING_CERTIFICATE_PATH` (optional `KEY_RING_CERTIFICATE_PASSWORD`) and chain `.ProtectKeysWithCertificate(cert)` after `PersistKeysToFileSystem`. Document in README. If directory is set but cert cannot be loaded, throw at startup in non-Development. Development without directory unchanged.
 
 ## Architecture
 
 ```text
-Development → UseDeveloperExceptionPage
-else → UseExceptionHandler("/Home/Error")
+KEY_RING_DIRECTORY set
+  → PersistKeysToFileSystem
+  → ProtectKeysWithCertificate(X509 from path)
+KEY_RING_DIRECTORY unset
+  → skip (ephemeral / default DP)
 ```
 
 ## Key decisions
 
 | Decision | Choice | Rationale |
 | --- | --- | --- |
-| Gate | IsDevelopment only | Matches finding; Staging/Test safe |
-| Related issues | Leave LOG-001 / VULN-003 open | Separate tickets; may close later as dup |
+| Protector | X.509 file | OpenShift-friendly; no new Azure dependency |
+| Fail closed | Yes when persist enabled without cert | Avoid silent plaintext |
 
 ## Test approach
 
-- Diff review; `@R-08.1` `@R-08.2`
-- Append `docs/pr-evidence.md`
+- Diff + evidence; optional unit that registration throws without cert when directory set
+- `@R-09.1` `@R-09.2`
 
 ## Rollout
 
-- Merge to `development`
+- Ops must mount cert before enabling key ring volume in shared envs
 
 ## Approval (checkpoint 2)
 
