@@ -4,40 +4,41 @@
 
 ## Upstream intent
 
-GitHub issue [#10](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/10) — rapid assessment **DEP-002**.
+GitHub issue [#11](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/11) — rapid assessment **DEP-003**.
 
 ## Problem
 
-The net10.0 API project still lists **EOL** `Microsoft.NETCore.App` 2.2.8 and `Microsoft.NETCore.Jit` 2.0.8 package references — leftover migration noise that confuses dependency review.
+Neither the API nor Database project uses NuGet **lock files**. Transitive packages can resolve differently across machines and CI.
 
 ## Outcome
 
-Those two PackageReferences are **removed**. The project still targets net10.0 and builds. Reviewers see no EOL meta-packages in the csproj.
+Both `restitution-app` and `Database` enable restore-with-lock-file and commit `packages.lock.json`. A restore/build succeeds with those locks present.
 
 ## Users & personas
 
 | Persona | Goal |
 | --- | --- |
-| Security / dependency reviewer | Clean net10 graph without EOL meta-packages |
-| Developer | Build still succeeds |
+| Security / supply-chain | Reproducible NuGet graph |
+| Developer | Lock files checked in and documented |
 
 ## Scope
 
 ### In scope
 
-- Remove both PackageReferences from `restitution-app.csproj`
-- Confirm `dotnet build` succeeds
+- Set `RestorePackagesWithLockFile` on both csproj files
+- Generate and commit `packages.lock.json` for both
+- Document how to refresh locks in README or evidence
 
 ### Out of scope
 
-- DEP-003 lock files
-- DEP-006 OpenShift base image vs net10
-- Broader dependency upgrades
+- Forcing `RestoreLockedMode` in CI (nice-to-have if easy; not required)
+- npm lock changes
+- DEP-006 Dockerfile
 
 ## Journeys
 
-1. Packages gone — `features/dep-002-eol-netcore-packages.feature` (@R-10.1)
-2. Build still works — same feature (@R-10.2)
+1. Locks exist — `features/dep-003-nuget-lock-files.feature` (@R-11.1)
+2. Build works — same feature (@R-11.2)
 
 ## Sign-off (checkpoint 1)
 
