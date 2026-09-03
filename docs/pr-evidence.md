@@ -921,4 +921,5 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 
 - Checked: `not-found.component.spec.ts` uses a Router spy and asserts navigation to `/404`.
 - Checked: the tautological `expect(true)` stub was removed.
+- Could not check: browser-based execution is unavailable; the configured Angular Vitest test environment passed the focused spec.
 - Residual risk: the remaining Angular spec files are outside this focused slice.
