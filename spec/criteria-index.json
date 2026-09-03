@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T23:44:04.389Z",
+  "generatedAt": "2026-09-03T23:58:43.249Z",
   "criteria": [
     {
       "id": "R-06.1",
@@ -227,6 +227,18 @@
       "id": "R-18.2",
       "feature": "spec/features/log-002-submit-audit-log.feature",
       "scenario": "Success audit log excludes PII and Dynamics response body",
+      "tier": null
+    },
+    {
+      "id": "R-19.1",
+      "feature": "spec/features/sec-secrets-001-readme-placeholders.feature",
+      "scenario": "User-secrets template contains no real internal hostnames",
+      "tier": "medium"
+    },
+    {
+      "id": "R-19.2",
+      "feature": "spec/features/sec-secrets-001-readme-placeholders.feature",
+      "scenario": "Developers can still identify which secrets keys to set",
       "tier": null
     }
   ]
