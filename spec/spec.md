@@ -4,41 +4,41 @@
 
 ## Upstream intent
 
-GitHub issue [#15](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/15) — rapid assessment **F-TEST-005**.
+GitHub issue [#16](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/16) — rapid assessment **F-TEST-006**.
 
 ## Problem
 
-Several Angular unit specs are **boilerplate stubs** (`expect(true).toEqual(true)` / create-only). They do not assert component behaviour.
+Playwright E2E tests exist under ClientApp but **CI never runs them**. Regressions in routing/health UI can merge unnoticed.
 
 ## Outcome
 
-At least the **NotFound** component spec asserts real behaviour (navigation to `/404` on construct). Remaining stubs may stay for later; this slice proves meaningful Angular unit coverage beyond create stubs. File-uploader security tests from F-TEST-007 remain.
+CI runs a **Playwright localhost suite** (at least `health-and-routing` scenarios) against a locally served SPA. A failing E2E fails the workflow. No dependency on live Dynamics or remote `dev.justice.gov.bc.ca`.
 
 ## Users & personas
 
 | Persona | Goal |
 | --- | --- |
-| QA / developer | Specs that fail when behaviour regresses |
-| Security reviewer | Fewer always-green stubs in the SPA suite |
+| QA | Routing/health regressions fail PRs |
+| Developer | E2E stays offline-capable |
 
 ## Scope
 
 ### In scope
 
-- Replace `not-found.component.spec.ts` stub with assertions on Router navigation to `/404`
-- Optionally fix one additional stub if low-cost (field or app component)
-- Tests run via existing Karma/`ng test` tooling locally (CI Angular tests still F-TEST-001 residual / later)
+- Add a CI job (or steps) in `ci-restitution.yml` that installs Playwright browsers and runs `--project=localhost` for `e2e/tests/health-and-routing.spec.ts` (minimum)
+- Serve the SPA for that job (dev server or static serve of build output) without live Dynamics
+- Mock/stub API/health as the existing specs already do where needed
 
 ### Out of scope
 
-- Converting every stub in the repo
-- Wiring `ng test` into CI (follow-up)
-- Playwright (F-TEST-006)
+- Running `dev`/`test` remote projects against real environments
+- Full victim/offender form submit E2E in CI
+- Self-hosted ZAP
 
 ## Journeys
 
-1. NotFound is meaningful — `features/f-test-005-angular-unit-substance.feature` (@R-15.1)
-2. Stub gone — same feature (@R-15.2)
+1. CI runs Playwright — `features/f-test-006-playwright-ci.feature` (@R-16.1)
+2. Offline localhost only — same feature (@R-16.2)
 
 ## Sign-off (checkpoint 1)
 
