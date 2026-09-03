@@ -4,41 +4,34 @@
 
 ## Upstream intent
 
-GitHub issue [#16](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/16) — rapid assessment **F-TEST-006**.
+GitHub issue [#17](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/17) — rapid assessment **LOG-001**.
 
 ## Problem
 
-Playwright E2E tests exist under ClientApp but **CI never runs them**. Regressions in routing/health UI can merge unnoticed.
+Developer exception pages expose stack traces outside Production. **CONFIG-003** already changed the gate to Development-only; LOG-001 is the logging/disclosure twin of that finding and remains open as its own ticket.
 
 ## Outcome
 
-CI runs a **Playwright localhost suite** (at least `health-and-routing` scenarios) against a locally served SPA. A failing E2E fails the workflow. No dependency on live Dynamics or remote `dev.justice.gov.bc.ca`.
-
-## Users & personas
-
-| Persona | Goal |
-| --- | --- |
-| QA | Routing/health regressions fail PRs |
-| Developer | E2E stays offline-capable |
+A **regression guard** locks the Development-only rule: shared Staging/Test must not register the developer exception page. Behaviour matches CONFIG-003; this slice adds an explicit testable helper/assertion and evidence so LOG-001 can close.
 
 ## Scope
 
 ### In scope
 
-- Add a CI job (or steps) in `ci-restitution.yml` that installs Playwright browsers and runs `--project=localhost` for `e2e/tests/health-and-routing.spec.ts` (minimum)
-- Serve the SPA for that job (dev server or static serve of build output) without live Dynamics
-- Mock/stub API/health as the existing specs already do where needed
+- Keep developer exception page only when `IsDevelopment()` (already true — do not regress)
+- Extract a small testable helper (or equivalent) and unit-test Development vs Staging/Production
+- Evidence links CONFIG-003; note VULN-003 may still be open as duplicate hygiene
 
 ### Out of scope
 
-- Running `dev`/`test` remote projects against real environments
-- Full victim/offender form submit E2E in CI
-- Self-hosted ZAP
+- Changing `/Home/Error` UI
+- Splunk sinks
+- VULN-003 ticket close (separate unless product asks)
 
 ## Journeys
 
-1. CI runs Playwright — `features/f-test-006-playwright-ci.feature` (@R-16.1)
-2. Offline localhost only — same feature (@R-16.2)
+1. Helper/test covers environments — `features/log-001-dev-exception-disclosure.feature` (@R-17.1)
+2. Staging excluded — same feature (@R-17.2)
 
 ## Sign-off (checkpoint 1)
 
