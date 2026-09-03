@@ -1,23 +1,24 @@
-# Plan — DEP-002 (EOL netcore packages)
+# Plan — DEP-003 (NuGet lock files)
 
 ## Summary
 
-Delete `Microsoft.NETCore.App` 2.2.8 and `Microsoft.NETCore.Jit` 2.0.8 from `restitution-app/restitution-app.csproj`. Run `dotnet build`. Append evidence.
+Add `<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>` to `restitution-app.csproj` and `Database.csproj`. Run `dotnet restore --force-evaluate` (or equivalent) to generate `packages.lock.json` for each. Commit locks. Append evidence. Optional: note refresh command in README.
 
 ## Key decisions
 
 | Decision | Choice | Rationale |
 | --- | --- | --- |
-| Fix | Remove only | Framework comes from TargetFramework net10.0 |
+| Scope | API + Database | Finding cites both |
+| CI locked mode | Optional | Avoid breaking CI in this slice |
 
 ## Test approach
 
-- `dotnet build restitution-app/restitution-app.csproj`
-- `@R-10.1` `@R-10.2`
+- `dotnet restore` + `dotnet build`
+- `@R-11.1` `@R-11.2`
 
 ## Approval (checkpoint 2)
 
 | Role | Name | Date |
 | --- | --- | --- |
-| Architect / tech lead | | |
+| Architect / tech lead | Sam Okonkwo (simulated) | 2026-09-03 |
 | Security (if required) | | |
