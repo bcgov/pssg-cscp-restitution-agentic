@@ -937,5 +937,6 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 - Checked: `e2e` job runs `playwright test --project=localhost e2e/tests/health-and-routing.spec.ts`.
 - Checked: Playwright config uses bundled Chromium (dropped `channel: 'chrome'`) and `webServer` for local SPA.
 - Checked: health-and-routing mocks `/restwebforms/hc` + configuration/lookups so CI does not need Dynamics.
-- Could not check: full form E2E suites remain out of scope / remote.
+- Fixed: `mat-vertical-stepper` selector (used by the spec and shared `e2e/helpers/form.helpers.ts`) did not match the real markup (`<mat-stepper orientation="vertical">`), so every stepper-visibility assertion was a silent false negative — direct evidence the suite had never actually run. Corrected to `mat-stepper` in both files; re-ran the full suite locally in CI mode (`CI=true npx playwright test --project=localhost e2e/tests/health-and-routing.spec.ts`), 7/7 passed.
+- Could not check: full form E2E suites remain out of scope / remote; an actual GitHub Actions run of the `e2e` job (no outbound access in this sandbox to trigger one).
 - Residual risk: `gate` may still fail on known CodeQL default-setup noise; `e2e` is independent.

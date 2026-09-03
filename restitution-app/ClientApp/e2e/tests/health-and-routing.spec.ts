@@ -57,7 +57,7 @@ test.describe('Routing & health guard', () => {
   test('TC-HC-01: root path redirects to /victim', async ({ page }) => {
     await page.goto('.');
     await expect(page).toHaveURL(/victim/);
-    await expect(page.locator('mat-vertical-stepper')).toBeVisible({ timeout: 15_000 });
+    await expect(page.locator('mat-stepper')).toBeVisible({ timeout: 15_000 });
   });
 
   test('TC-HC-02: /outage page shows service unavailable with contact details', async ({ page }) => {
