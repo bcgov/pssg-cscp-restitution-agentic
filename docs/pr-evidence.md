@@ -940,3 +940,19 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 - Fixed: `mat-vertical-stepper` selector (used by the spec and shared `e2e/helpers/form.helpers.ts`) did not match the real markup (`<mat-stepper orientation="vertical">`), so every stepper-visibility assertion was a silent false negative — direct evidence the suite had never actually run. Corrected to `mat-stepper` in both files; re-ran the full suite locally in CI mode (`CI=true npx playwright test --project=localhost e2e/tests/health-and-routing.spec.ts`), 7/7 passed.
 - Could not check: full form E2E suites remain out of scope / remote; an actual GitHub Actions run of the `e2e` job (no outbound access in this sandbox to trigger one).
 - Residual risk: `gate` may still fail on known CodeQL default-setup noise; `e2e` is independent.
+
+# Evidence — LOG-001 Developer exception page disclosure guard
+
+| Field | Value |
+| --- | --- |
+| Spec refs | `spec/features/log-001-dev-exception-disclosure.feature` (`@R-17.1`, `@R-17.2`) |
+| Tasks | `TASK-001`–`TASK-003` |
+| Verification | `dotnet test restitution-app.Tests/restitution-app.Tests.csproj --filter FullyQualifiedName~ExceptionPagePolicyTests` |
+
+## Review receipt
+
+- Checked: `Program.cs` already only registered `UseDeveloperExceptionPage()` behind `IsDevelopment()` (CONFIG-003); behaviour unchanged.
+- Checked: extracted `ExceptionPagePolicy.AllowDeveloperExceptionPage(IHostEnvironment)` as a small, directly-testable helper and wired `Program.cs` to call it instead of inlining `IsDevelopment()`.
+- Checked: added `ExceptionPagePolicyTests` covering Development (allowed) and Staging/Test/Production (not allowed); 4/4 passed.
+- Could not check: a live Staging/Production deployment; verification is via the unit tests plus code inspection of the wired call site.
+- Residual risk: VULN-003 references the same underlying behaviour and remains open as a separate ticket per `spec/spec.md`.

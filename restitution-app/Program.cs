@@ -124,7 +124,7 @@ if (!string.IsNullOrEmpty(pathBase))
     app.UsePathBase(pathBase);
 }
 
-if (app.Environment.IsDevelopment())
+if (ExceptionPagePolicy.AllowDeveloperExceptionPage(app.Environment))
 {
     app.UseDeveloperExceptionPage();
 }
