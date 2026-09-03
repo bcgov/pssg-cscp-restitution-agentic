@@ -1,43 +1,41 @@
-# Plan — F-TEST-003 (first API tests)
+# Plan — F-TEST-004 (Database tests)
 
 ## Summary
 
-Add an xUnit test project that references `restitution-app` and covers `ConfigurationController.GetConfiguration` with `Microsoft.Extensions.Configuration` in-memory values. Do not boot the full web host (Dataverse is registered in `Program.cs`). Do not add a CI test stage (F-TEST-001).
+Add `Database.Tests` (xUnit, net10) next to `restitution-app.Tests`. Cover `Database.Extensions.MemoryCache.GetOrSet` and `DynamicsTokenProviderOptions.GetDynamicsApiEndpointUrl`. Do not construct `ServiceClient` or call token HTTP.
 
 ## Architecture
 
 ```text
 restitution-app.sln
-  restitution-app
   Database
-  restitution-app.Tests  (new)
-    ConfigurationControllerTests
-      → new ConfigurationController(logger, inMemoryConfig).GetConfiguration()
+  Database.Tests (new)
+    MemoryCacheTests
+    DynamicsTokenProviderOptionsTests
 ```
 
 ## Key decisions
 
 | Decision | Choice | Rationale |
 | --- | --- | --- |
-| Runner | xUnit + Microsoft.NET.Test.Sdk | Standard for net10 |
-| Host | Controller unit test, not WebApplicationFactory | Avoid `AddDatabase` / live URI at startup |
-| Surface | ConfigurationController only | No Dynamics; proves non-stub coverage |
-| CI | Leave CI RESTITUTION as build-only | Owned by F-TEST-001 |
+| Location | Repo-root `Database.Tests/` (sibling of `Database/`) | Matches F-TEST-003 layout |
+| Network | None | Pilot: no live Dynamics |
+| Token HTTP | Out of scope | AUTH-001 / later |
 
 ## Security & privacy
 
-- Synthetic config strings only
-- Residual: lookups and submit remain untested until later slices
+- Fixture URLs are fake (`https://example.test/...`)
+- Residual: token acquire and ServiceClient still untested
 
 ## Test approach
 
-- `dotnet test` on the new project
-- Criterion `@R-03.1` `@R-03.2`
-- Append `docs/pr-evidence.md` (keep CONFIG-001 and DEP-001 evidence)
+- `dotnet test restitution-app/restitution-app.sln` (or the new project)
+- `@R-04.1` `@R-04.2`
+- Append `docs/pr-evidence.md`
 
 ## Rollout
 
-- Merge to `development`; CI still does not run tests (documented residual)
+- Merge to `development`; CI still build-only (F-TEST-001)
 
 ## Approval (checkpoint 2)
 
