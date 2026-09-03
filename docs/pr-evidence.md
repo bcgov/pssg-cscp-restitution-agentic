@@ -706,3 +706,77 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 **Residual risk:** Lock files must be regenerated whenever a `PackageReference` is intentionally added, removed, or upgraded; this is a manual developer step with no automated check yet.
 
 - Reviewer: _______________ Date: _______________
+
+---
+
+# PR evidence — [RA DEP-006] OpenShift net8 Dockerfile removed; net10 base images digest-pinned
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/ra-dep-006-fix-dockerfile-runtime |
+| Spec refs | `spec/spec.md`; `spec/features/dep-006-dotnet10-dockerfile.feature` (`@R-12.1`, `@R-12.2`) |
+| Constitution articles touched | J5 |
+| Tasks | TASK-001–TASK-005 |
+| Authoring agent | Copilot |
+| Generated | 2026-09-03T22:05:40.231Z |
+
+## Intent
+
+`openshift/Dockerfile.ubi8.net8_customized` built on `registry.access.redhat.com/ubi8/dotnet-80-runtime` (.NET 8) even though the application targets `net10.0`, so it could only ever have produced a broken deployment. It is unused by CD and has been deleted in favour of a short `openshift/README.md` that points at the real build paths. The active API Dockerfile now pins its .NET 10 runtime and SDK base images by `sha256` digest so builds are reproducible and immune to moving tags.
+
+## Spec traceability
+
+| Scenario / requirement | Implemented? | Notes |
+| --- | --- | --- |
+| `@R-12.1` Misleading net8 OpenShift Dockerfile is removed or superseded | Yes | `openshift/Dockerfile.ubi8.net8_customized` deleted; `openshift/README.md` added stating that CD builds the API from `restitution-app/Dockerfile` (.NET 10) and the UI from `restitution-app/ClientApp/Dockerfile`. `.github/workflows/cd-restitution-api.yml` still references `file: ./restitution-app/Dockerfile`, so CD is unaffected. |
+| `@R-12.2` Active API Dockerfile pins .NET 10 base images by digest | Yes | `mcr.microsoft.com/dotnet/aspnet:10.0-alpine@sha256:c4b29bf368004ad9076c1ab9bc91fb373561e3905b4345637e14e8b8c57e3be8` and `mcr.microsoft.com/dotnet/sdk:10.0-alpine@sha256:620e765fe18186c08399f7aa978f79f04b6bbf0ee1b3b8a91e2d5c9619e59da1`. Tags are retained alongside the digests, so the .NET 10 family stays explicit and readable. |
+
+## Refreshing base image digests
+
+Resolve the current digest for a tag before bumping it:
+
+```bash
+docker buildx imagetools inspect mcr.microsoft.com/dotnet/aspnet:10.0-alpine
+docker buildx imagetools inspect mcr.microsoft.com/dotnet/sdk:10.0-alpine
+```
+
+Update both `FROM` lines in `restitution-app/Dockerfile` together so the SDK and runtime stay on the same patch level.
+
+## Design system & accessibility
+
+| Check | Result |
+| --- | --- |
+| DS components used (list) | N/A — container build change, no UI |
+| Tokens used (not hard-coded colour) | N/A — container build change, no UI |
+| BC Sans imported | N/A — container build change, no UI |
+| Manual a11y notes | N/A — container build change, no UI |
+
+## Public-service minimums
+
+Checklist IDs addressed this PR: N/A — container build change, no user-facing surface
+
+## Tests
+
+| Type | Command / path | Result |
+| --- | --- | --- |
+| Unit | N/A — no application code change | Not run |
+| Acceptance / feature | `spec/features/dep-006-dotnet10-dockerfile.feature` (`@R-12.1`, `@R-12.2`) | Verified by diff review: net8 file removed, both `FROM` lines digest-pinned, workflow path unchanged. |
+| Build | Registry manifest check for both pinned digests (`HTTP 200` from `mcr.microsoft.com/v2/dotnet/{aspnet,sdk}/manifests/sha256:…`) | Passed — both digests resolve and were read from the `10.0-alpine` tags |
+| A11y automation | N/A — container build change, no UI | |
+
+## Risks & follow-ups
+
+- Digest pins must be refreshed deliberately to pick up base image security patches; without an automated bump (e.g. Dependabot/Renovate for Docker) the images will drift behind upstream fixes.
+- A .NET 10 UBI/S2I image was not created; if OpenShift S2I builds are needed later, the new image must use a .NET 10 base and be digest-pinned in the same way.
+
+## Review receipt (checkpoint 3)
+
+Same shape as `REVIEW.md` — required before merge. Do not replace with a free-form sign-off.
+
+**Checked:** `@R-12.1` and `@R-12.2` — the net8 OpenShift Dockerfile is gone, `openshift/README.md` documents the superseding build paths, `cd-restitution-api.yml` still builds `./restitution-app/Dockerfile`, and both .NET 10 `FROM` lines carry verified `sha256` digests.
+
+**Could not check:** A full `docker build` of `restitution-app/Dockerfile` was not executed in this environment (no container runtime with registry pull access), so the pinned images were validated via registry manifest lookups rather than an end-to-end image build.
+
+**Residual risk:** Pinned digests age; base image CVE fixes will not be picked up until the digests are intentionally bumped.
+
+- Reviewer: _______________ Date: _______________
