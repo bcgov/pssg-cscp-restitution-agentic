@@ -4,54 +4,53 @@
 
 ## Upstream intent
 
-GitHub issue [#3](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/3) — rapid assessment **F-TEST-003**.
+GitHub issue [#4](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/4) — rapid assessment **F-TEST-004**.
 
 ## Problem
 
-The ASP.NET Core API has **no automated tests**. Controllers that expose configuration, lookups, and restitution submission have never been verified by a test runner. Regressions in public JSON and input handling can only be caught by humans.
+The Dataverse client library (`Database/`) has **no automated tests**. Token routing, cache wrap, and endpoint selection can only fail in a live Dynamics environment.
 
 ## Outcome
 
-There is a **first API test project** that runs without live Dataverse. At least one automated test asserts a real controller behaviour (configuration / maintenance flags), not an empty stub. Reviewers can run the tests locally and see them pass.
+There is a **Database test project** that runs without a live Dataverse org. At least one test covers in-process cache behaviour, and at least one covers how the Dynamics API endpoint is chosen from authentication type. Tests must not call ADFS or Entra over the network.
 
 ## Users & personas
 
 | Persona | Goal |
 | --- | --- |
-| Developer | Catch API configuration regressions before merge |
-| Security / QA | Proof that the API is no longer a zero-test surface |
+| Developer | Catch cache / endpoint-selection regressions without a Dynamics org |
+| Security / QA | Proof the client library is no longer a zero-test surface |
 
 ## Scope
 
 ### In scope (this release)
 
-- Add an API test project (xUnit or equivalent) wired into the existing solution
-- Cover `GET /api/configuration` (or the `ConfigurationController` equivalent) with in-memory configuration — no Dynamics
-- At least one `*Tests.cs` (or equivalent) that fails if maintenance-mode / feature-flag mapping is wrong
+- Add a test project targeting the `Database` assembly, included in `restitution-app/restitution-app.sln`
+- Cover `MemoryCache.GetOrSet` (hit vs miss) with the in-memory cache
+- Cover `DynamicsTokenProviderOptions.GetDynamicsApiEndpointUrl` for OnPremise vs Cloud
+- `dotnet test` succeeds with no Dynamics URI or secrets
 
 ### Out of scope
 
-- Wiring `dotnet test` into CI RESTITUTION (**F-TEST-001**)
-- Dataverse client / token-provider tests (**F-TEST-004**)
-- Security-focused tests across Angular/API (**F-TEST-007**)
-- Playwright / e2e
-- Live Dataverse or submission write-path tests
-- Changing production controller behaviour except if required to make it testable without altering public JSON
+- Live `ServiceClient` / WhoAmI / `AddDatabase` host spin-up
+- Real ADFS or Entra token HTTP (AUTH-001)
+- API controller tests (already F-TEST-003)
+- CI test stage (F-TEST-001)
+- Security-focused tests (F-TEST-007)
 
 ## Journeys
 
-1. Tests exist — `features/f-test-003-api-tests.feature` (@R-03.1)
-2. Configuration mapping is asserted — same feature (@R-03.2)
+1. Tests exist — `features/f-test-004-database-tests.feature` (@R-04.1)
+2. Cache and endpoint selection asserted — same feature (@R-04.2)
 
 ## Non-functional requirements
 
-- Accessibility: n/a
-- Privacy: tests use synthetic config values only; no live PII or Dynamics secrets
-- Availability: tests must run offline (`dotnet test`)
+- Privacy: synthetic URLs and keys only; no real tenant IDs or secrets in fixtures
+- Availability: tests run fully offline
 
 ## Open questions
 
-- [x] Full `WebApplicationFactory` host likely registers Dataverse at startup. Prefer **controller unit tests** with in-memory `IConfiguration` unless the agent can stub `AddDatabase` cleanly without live URI.
+- [x] Do not require HttpClient mocks for token providers in this slice. Endpoint options + cache are enough to close the “zero tests under Database/” finding.
 
 ## Sign-off (checkpoint 1)
 
