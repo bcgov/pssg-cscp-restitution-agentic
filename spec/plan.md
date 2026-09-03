@@ -1,38 +1,23 @@
-# Plan — CRYPTO-001 (key ring at-rest protection)
+# Plan — DEP-002 (EOL netcore packages)
 
 ## Summary
 
-When `KEY_RING_DIRECTORY` is set, load an X.509 cert from `KEY_RING_CERTIFICATE_PATH` (optional `KEY_RING_CERTIFICATE_PASSWORD`) and chain `.ProtectKeysWithCertificate(cert)` after `PersistKeysToFileSystem`. Document in README. If directory is set but cert cannot be loaded, throw at startup in non-Development. Development without directory unchanged.
-
-## Architecture
-
-```text
-KEY_RING_DIRECTORY set
-  → PersistKeysToFileSystem
-  → ProtectKeysWithCertificate(X509 from path)
-KEY_RING_DIRECTORY unset
-  → skip (ephemeral / default DP)
-```
+Delete `Microsoft.NETCore.App` 2.2.8 and `Microsoft.NETCore.Jit` 2.0.8 from `restitution-app/restitution-app.csproj`. Run `dotnet build`. Append evidence.
 
 ## Key decisions
 
 | Decision | Choice | Rationale |
 | --- | --- | --- |
-| Protector | X.509 file | OpenShift-friendly; no new Azure dependency |
-| Fail closed | Yes when persist enabled without cert | Avoid silent plaintext |
+| Fix | Remove only | Framework comes from TargetFramework net10.0 |
 
 ## Test approach
 
-- Diff + evidence; optional unit that registration throws without cert when directory set
-- `@R-09.1` `@R-09.2`
-
-## Rollout
-
-- Ops must mount cert before enabling key ring volume in shared envs
+- `dotnet build restitution-app/restitution-app.csproj`
+- `@R-10.1` `@R-10.2`
 
 ## Approval (checkpoint 2)
 
 | Role | Name | Date |
 | --- | --- | --- |
-| Architect / tech lead | Sam Okonkwo (simulated) | 2026-09-03 |
+| Architect / tech lead | | |
 | Security (if required) | | |
