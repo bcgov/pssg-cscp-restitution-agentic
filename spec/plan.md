@@ -1,41 +1,39 @@
-# Plan — F-TEST-004 (Database tests)
+# Plan — F-TEST-007 (security-focused tests)
 
 ## Summary
 
-Add `Database.Tests` (xUnit, net10) next to `restitution-app.Tests`. Cover `Database.Extensions.MemoryCache.GetOrSet` and `DynamicsTokenProviderOptions.GetDynamicsApiEndpointUrl`. Do not construct `ServiceClient` or call token HTTP.
+Extend `restitution-app/ClientApp/src/app/shared/file-uploader/file-uploader.component.spec.ts` so `onFilesAdded` is exercised with a fake `FileList`. Disallowed extension (e.g. `.exe`) must not push into `documents`. Mock `MatSnackBar`. Provide parent form `totalAttachmentSize`. Do not add Playwright. Do not add server MIME.
 
 ## Architecture
 
 ```text
-restitution-app.sln
-  Database
-  Database.Tests (new)
-    MemoryCacheTests
-    DynamicsTokenProviderOptionsTests
+FileUploaderComponent.onFilesAdded
+  → config.accepted_file_extensions
+  → snackBar 'Unsupported file type'
+  → documents FormArray unchanged
 ```
 
 ## Key decisions
 
 | Decision | Choice | Rationale |
 | --- | --- | --- |
-| Location | Repo-root `Database.Tests/` (sibling of `Database/`) | Matches F-TEST-003 layout |
-| Network | None | Pilot: no live Dynamics |
-| Token HTTP | Out of scope | AUTH-001 / later |
+| Layer | Karma/Jasmine unit test | Finding cites SPA; no Dynamics |
+| Size check | Optional extra assertion | Same method; keep primary on extension |
+| CI | Not this slice | F-TEST-001 |
 
 ## Security & privacy
 
-- Fixture URLs are fake (`https://example.test/...`)
-- Residual: token acquire and ServiceClient still untested
+- Residual: client-only allow-list (VULN-002)
 
 ## Test approach
 
-- `dotnet test restitution-app/restitution-app.sln` (or the new project)
-- `@R-04.1` `@R-04.2`
+- `npx ng test --watch=false --browsers=ChromeHeadless` from ClientApp if possible; else document Karma command in evidence
+- `@R-05.1` `@R-05.2`
 - Append `docs/pr-evidence.md`
 
 ## Rollout
 
-- Merge to `development`; CI still build-only (F-TEST-001)
+- Merge to `development`
 
 ## Approval (checkpoint 2)
 

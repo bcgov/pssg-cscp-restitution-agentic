@@ -1,13 +1,13 @@
-# Tasks — F-TEST-004
+# Tasks — F-TEST-007
 
 ## Milestone 1
 
-- [x] **TASK-001** — Add `Database.Tests` (xUnit, net10.0) with a ProjectReference to `Database/Database.csproj` and include it in `restitution-app/restitution-app.sln`. Covers `@R-04.1`.
-- [x] **TASK-002** — Tests for `MemoryCache.GetOrSet`: factory invoked on miss, not invoked on hit. Covers `@R-04.2`.
-- [x] **TASK-003** — Tests for `GetDynamicsApiEndpointUrl` OnPremise vs Cloud with synthetic URLs. Covers `@R-04.2`.
-- [x] **TASK-004** — `dotnet test` without Dynamics env vars; append `docs/pr-evidence.md`. Covers `@R-04.1`.
+- [ ] **TASK-001** — Set up `FileUploaderComponent` tests with FormBuilder documents array, parent `totalAttachmentSize`, mocked `MatSnackBar`. Covers `@R-05.1`.
+- [ ] **TASK-002** — Test that an unaccepted extension (e.g. `malware.exe`) does not add a document and opens the unsupported-type snackbar. Covers `@R-05.2`.
+- [ ] **TASK-003** — Keep `should create` or equivalent; do not convert the spec back into a stub-only file. Covers `@R-05.1`.
+- [ ] **TASK-004** — Run the uploader spec (headless if available); append `docs/pr-evidence.md`. Covers `@R-05.1`.
 
 ## Backlog
 
-- [ ] Token HTTP / AUTH-001 — **not this slice**
-- [ ] F-TEST-001 CI — **not this slice**
+- [ ] VULN-002 server MIME — **not this slice**
+- [ ] F-TEST-001 / F-TEST-005 / F-TEST-006 — **not this slice**
