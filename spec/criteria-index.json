@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T19:22:46.946Z",
+  "generatedAt": "2026-09-03T19:39:05.188Z",
   "criteria": [
     {
       "id": "R-01.1",
@@ -35,6 +35,18 @@
       "id": "R-00.2",
       "feature": "spec/features/example-happy-path.feature",
       "scenario": "Validation prevents incomplete submission",
+      "tier": null
+    },
+    {
+      "id": "R-03.1",
+      "feature": "spec/features/f-test-003-api-tests.feature",
+      "scenario": "An API test project exists and can be executed",
+      "tier": "high"
+    },
+    {
+      "id": "R-03.2",
+      "feature": "spec/features/f-test-003-api-tests.feature",
+      "scenario": "Configuration endpoint mapping is covered",
       "tier": null
     }
   ]

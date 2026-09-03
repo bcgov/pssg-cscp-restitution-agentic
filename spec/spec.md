@@ -4,52 +4,54 @@
 
 ## Upstream intent
 
-GitHub issue [#2](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/2) — rapid assessment **DEP-001**.
+GitHub issue [#3](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/3) — rapid assessment **F-TEST-003**.
 
 ## Problem
 
-The API still pulls in an **archived, unmaintained health-check package** from 2017. Process liveness and Dataverse connectivity checks already use the platform’s built-in health-check types. The old package is leftover dependency risk: no maintainer, no security updates.
+The ASP.NET Core API has **no automated tests**. Controllers that expose configuration, lookups, and restitution submission have never been verified by a test runner. Regressions in public JSON and input handling can only be caught by humans.
 
 ## Outcome
 
-The shipped application **does not reference** the archived community health-check package. Health endpoints keep working using the supported platform library. A reviewer can see that package is absent from the project file.
+There is a **first API test project** that runs without live Dataverse. At least one automated test asserts a real controller behaviour (configuration / maintenance flags), not an empty stub. Reviewers can run the tests locally and see them pass.
 
 ## Users & personas
 
 | Persona | Goal |
 | --- | --- |
-| Operator / platform | `/hc` still reports API process status (and Dataverse status when configured) |
-| Security reviewer | No archived HealthChecks 1.0.0 on the production graph |
+| Developer | Catch API configuration regressions before merge |
+| Security / QA | Proof that the API is no longer a zero-test surface |
 
 ## Scope
 
 ### In scope (this release)
 
-- Remove the archived package reference
-- Keep existing health-check behaviour (API self-check + Dataverse check, JSON `/hc`)
-- Use only the in-box / currently supported health-check APIs already used in source
+- Add an API test project (xUnit or equivalent) wired into the existing solution
+- Cover `GET /api/configuration` (or the `ConfigurationController` equivalent) with in-memory configuration — no Dynamics
+- At least one `*Tests.cs` (or equivalent) that fails if maintenance-mode / feature-flag mapping is wrong
 
 ### Out of scope
 
-- Changing `/hc` auth (AUTH-003 / AUTHZ-001)
-- Replacing Dataverse WhoAmI with a mock (unless required to compile)
-- DEP-002 EOL `Microsoft.NETCore.App` / JIT packages
-- Adding new health checks
+- Wiring `dotnet test` into CI RESTITUTION (**F-TEST-001**)
+- Dataverse client / token-provider tests (**F-TEST-004**)
+- Security-focused tests across Angular/API (**F-TEST-007**)
+- Playwright / e2e
+- Live Dataverse or submission write-path tests
+- Changing production controller behaviour except if required to make it testable without altering public JSON
 
 ## Journeys
 
-1. Package gone — `features/dep-001-healthchecks-inbox.feature` (@R-02.1)
-2. Health endpoint still serves — same feature (@R-02.2)
+1. Tests exist — `features/f-test-003-api-tests.feature` (@R-03.1)
+2. Configuration mapping is asserted — same feature (@R-03.2)
 
 ## Non-functional requirements
 
 - Accessibility: n/a
-- Privacy: health payload must not grow to include extra PII
-- Availability: `/hc` remains reachable for probes
+- Privacy: tests use synthetic config values only; no live PII or Dynamics secrets
+- Availability: tests must run offline (`dotnet test`)
 
 ## Open questions
 
-- [x] Source already implements `IHealthCheck` from `Microsoft.Extensions.Diagnostics.HealthChecks`. This slice is primarily **removing the unused archived PackageReference**.
+- [x] Full `WebApplicationFactory` host likely registers Dataverse at startup. Prefer **controller unit tests** with in-memory `IConfiguration` unless the agent can stub `AddDatabase` cleanly without live URI.
 
 ## Sign-off (checkpoint 1)
 
