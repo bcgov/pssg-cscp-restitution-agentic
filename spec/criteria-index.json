@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T21:49:09.717Z",
+  "generatedAt": "2026-09-03T22:01:50.994Z",
   "criteria": [
     {
       "id": "R-06.1",
@@ -95,6 +95,18 @@
       "id": "R-11.2",
       "feature": "spec/features/dep-003-nuget-lock-files.feature",
       "scenario": "Restore and build succeed with locks present",
+      "tier": null
+    },
+    {
+      "id": "R-12.1",
+      "feature": "spec/features/dep-006-dotnet10-dockerfile.feature",
+      "scenario": "Misleading net8 OpenShift Dockerfile is removed or superseded",
+      "tier": "medium"
+    },
+    {
+      "id": "R-12.2",
+      "feature": "spec/features/dep-006-dotnet10-dockerfile.feature",
+      "scenario": "Active API Dockerfile pins .NET 10 base images by digest",
       "tier": null
     },
     {
