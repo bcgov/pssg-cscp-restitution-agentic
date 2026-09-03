@@ -59,6 +59,23 @@ dotnet test restitution-app.sln
 
 The on-premise ADFS application must be configured to allow the client-credentials grant.
 
+## Data Protection key ring (container deployments)
+
+When `KEY_RING_DIRECTORY` is set, the ASP.NET Core Data Protection key ring is persisted to that
+directory instead of the in-memory default. Because Windows DPAPI is unavailable on Linux/OpenShift,
+the persisted keys must also be protected at rest with an X.509 certificate:
+
+| Variable | Required | Description |
+| --- | --- | --- |
+| `KEY_RING_DIRECTORY` | When enabling filesystem persistence | Directory (e.g. a mounted volume) the key ring XML is written to. |
+| `KEY_RING_CERTIFICATE_PATH` | Yes, once `KEY_RING_DIRECTORY` is set (except local Development) | Path to a certificate file (`.pfx`/`.p12`, or a public-only `.cer`/`.pem`) used to encrypt the key ring at rest. |
+| `KEY_RING_CERTIFICATE_PASSWORD` | Only if the certificate file is password-protected | Password for the `.pfx`/`.p12` file. Set via secrets/environment only — never commit it. |
+
+If `KEY_RING_DIRECTORY` is set but no usable certificate can be loaded from
+`KEY_RING_CERTIFICATE_PATH`, the application fails to start in any environment other than
+Development, to avoid silently persisting plaintext key material. Local Development without
+`KEY_RING_DIRECTORY` set is unaffected (Data Protection keys remain ephemeral/in-memory).
+
 ## Swagger
 
 - UI: `http://localhost:5000/swagger`
