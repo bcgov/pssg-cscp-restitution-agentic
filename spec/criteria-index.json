@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T22:12:09.770Z",
+  "generatedAt": "2026-09-03T22:29:22.943Z",
   "criteria": [
     {
       "id": "R-06.1",
@@ -131,6 +131,18 @@
       "id": "R-13.2",
       "feature": "spec/features/f-test-001-ci-dotnet-test.feature",
       "scenario": "Test project path changes trigger CI",
+      "tier": null
+    },
+    {
+      "id": "R-14.1",
+      "feature": "spec/features/f-test-002-blocking-security-scans.feature",
+      "scenario": "CI runs a blocking filesystem vulnerability scan",
+      "tier": "medium"
+    },
+    {
+      "id": "R-14.2",
+      "feature": "spec/features/f-test-002-blocking-security-scans.feature",
+      "scenario": "CodeQL analysis is not continue-on-error",
       "tier": null
     },
     {
