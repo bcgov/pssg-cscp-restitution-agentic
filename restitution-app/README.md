@@ -44,8 +44,6 @@ dotnet test restitution-app.sln
       "OAuth2TokenEndpoint": "https://ststest.gov.bc.ca/adfs/oauth2/token",
       "ClientId": "<onpremise_client_id>",
       "ClientSecret": "<onpremise_client_secret>",
-      "ServiceAccountName": "<onpremise_service_account_username>",
-      "ServiceAccountPassword": "<onpremise_service_account_password>",
       "ResourceName": "https://cscp-vs.dev.jag.gov.bc.ca/api/data/v9.0/"
     },
     "EntraId": {
@@ -58,6 +56,8 @@ dotnet test restitution-app.sln
   }
 }
 ```
+
+The on-premise ADFS application must be configured to allow the client-credentials grant.
 
 ## Swagger
 
