@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T21:36:43.718Z",
+  "generatedAt": "2026-09-03T21:49:09.717Z",
   "criteria": [
     {
       "id": "R-06.1",
@@ -83,6 +83,18 @@
       "id": "R-10.2",
       "feature": "spec/features/dep-002-eol-netcore-packages.feature",
       "scenario": "The API project still builds on net10.0",
+      "tier": null
+    },
+    {
+      "id": "R-11.1",
+      "feature": "spec/features/dep-003-nuget-lock-files.feature",
+      "scenario": "Lock files are enabled and committed",
+      "tier": "medium"
+    },
+    {
+      "id": "R-11.2",
+      "feature": "spec/features/dep-003-nuget-lock-files.feature",
+      "scenario": "Restore and build succeed with locks present",
       "tier": null
     },
     {
