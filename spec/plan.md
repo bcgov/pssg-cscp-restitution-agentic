@@ -1,39 +1,41 @@
-# Plan — F-TEST-007 (security-focused tests)
+# Plan — AUTH-001 (ADFS client credentials)
 
 ## Summary
 
-Extend `restitution-app/ClientApp/src/app/shared/file-uploader/file-uploader.component.spec.ts` so `onFilesAdded` is exercised with a fake `FileList`. Disallowed extension (e.g. `.exe`) must not push into `documents`. Mock `MatSnackBar`. Provide parent form `totalAttachmentSize`. Do not add Playwright. Do not add server MIME.
+Replace `RequestPasswordTokenAsync` / `PasswordTokenRequest` in `Database/Extensions/ADFSTokenProvider.cs` with `RequestClientCredentialsTokenAsync` / `ClientCredentialsTokenRequest` (mirror Entra). Remove ServiceAccountName/Password from README secrets template for ADFS. Add `ADFSTokenProviderTests` with `HttpMessageHandler` mock asserting `grant_type=client_credentials` and absence of username/password. Optional: mark ServiceAccount* options obsolete or leave unused for config backward-compat without reading them.
 
 ## Architecture
 
 ```text
-FileUploaderComponent.onFilesAdded
-  → config.accepted_file_extensions
-  → snackBar 'Unsupported file type'
-  → documents FormArray unchanged
+ADFSTokenProvider.AcquireTokenInternal
+  → HttpClient.RequestClientCredentialsTokenAsync
+  → ClientId + ClientSecret + Resource/Scope
+  → no UserName / Password
 ```
 
 ## Key decisions
 
 | Decision | Choice | Rationale |
 | --- | --- | --- |
-| Layer | Karma/Jasmine unit test | Finding cites SPA; no Dynamics |
-| Size check | Optional extra assertion | Same method; keep primary on extension |
-| CI | Not this slice | F-TEST-001 |
+| Grant | Client credentials | Matches Entra; removes ROPC |
+| Options fields | Leave properties but unused (or Obsolete) | Avoid breaking deserialization of old secrets JSON |
+| Live ADFS | Not required | Pilot; residual ops config |
+| Tests | Mock handler in Database.Tests | No network |
 
 ## Security & privacy
 
-- Residual: client-only allow-list (VULN-002)
+- Removes password grant from code path
+- Residual: ADFS app must allow client credentials; ops outside repo
 
 ## Test approach
 
-- `npx ng test --watch=false --browsers=ChromeHeadless` from ClientApp if possible; else document Karma command in evidence
-- `@R-05.1` `@R-05.2`
+- `dotnet test Database.Tests`
+- `@R-06.1` `@R-06.2`
 - Append `docs/pr-evidence.md`
 
 ## Rollout
 
-- Merge to `development`
+- Merge to `development`; human smoke against on-prem ADFS when credentials available
 
 ## Approval (checkpoint 2)
 
