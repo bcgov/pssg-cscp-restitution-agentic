@@ -494,3 +494,85 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 **Residual risk:** None identified for this change; the gate is now environment-name-safe by construction.
 
 - Reviewer: _______________ Date: _______________
+
+---
+
+# PR evidence — [RA CRYPTO-001] Data Protection Key Ring Persisted Without At-Rest Encryption
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/ra-crypto-001-fix-key-ring-encryption |
+| Spec refs | `spec/spec.md`; `spec/features/crypto-001-key-ring-protect.feature` (`@R-09.1`, `@R-09.2`) |
+| Constitution articles touched | P5, P7, J3, J5 |
+| Tasks | TASK-001, TASK-002, TASK-003, TASK-004 |
+| Authoring agent | Copilot |
+| Generated | 2026-09-03T21:28:50.000Z |
+
+## Intent
+
+`AddDataProtection().PersistKeysToFileSystem(...)` was called without a chained `.ProtectKeysWith*()`
+provider. On Linux/OpenShift, Windows DPAPI is unavailable, so the key ring XML (containing raw
+AES-256/HMAC-SHA256 key material protecting antiforgery tokens and other Data Protection payloads) was
+written to the `KEY_RING_DIRECTORY` volume in plaintext. Registration is now extracted into a testable
+`DataProtectionSetup.Configure` helper (`restitution-app/DataProtectionSetup.cs`) that, when
+`KEY_RING_DIRECTORY` is set, loads an X.509 certificate from `KEY_RING_CERTIFICATE_PATH` (optional
+`KEY_RING_CERTIFICATE_PASSWORD`) and chains `.ProtectKeysWithCertificate(cert)`. If the directory is set
+but no usable certificate can be loaded, the application throws at startup in any environment other than
+Development, so plaintext persistence can never happen silently. Local Development without
+`KEY_RING_DIRECTORY` is unchanged (ephemeral keys, no new certificate requirement).
+
+## Spec traceability
+
+| Scenario / requirement | Implemented? | Notes |
+| --- | --- | --- |
+| `@R-09.1` Filesystem key persistence uses a protector | Yes | `DataProtectionSetup.Configure` chains `ProtectKeysWithCertificate` after `PersistKeysToFileSystem` when a certificate loads; throws otherwise outside Development. `restitution-app/README.md` documents `KEY_RING_CERTIFICATE_PATH`/`KEY_RING_CERTIFICATE_PASSWORD`. |
+| `@R-09.2` Local Development without a key-ring directory is unchanged | Yes | `Configure` returns immediately when `KEY_RING_DIRECTORY` is empty/unset — no Data Protection filesystem registration, no certificate requirement. |
+
+## Design system & accessibility
+
+| Check | Result |
+| --- | --- |
+| DS components used (list) | N/A — server startup change, no UI |
+| Tokens used (not hard-coded colour) | N/A — no UI |
+| BC Sans imported | N/A — no UI |
+| Manual a11y notes | N/A — no UI |
+
+## Public-service minimums
+
+Checklist IDs addressed this PR: N/A — no UI
+
+## Tests
+
+| Type | Command / path | Result |
+| --- | --- | --- |
+| Build | `dotnet build restitution-app/restitution-app.csproj` | Succeeded, 0 warnings, 0 errors |
+| Unit tests | `dotnet test restitution-app.Tests/restitution-app.Tests.csproj` | Passed: 14/14, including new `DataProtectionSetupTests` (no directory → no registration; directory + valid cert → `ProtectKeysWithCertificate` chained; directory + missing cert → throws outside Development; directory + missing cert → no throw in Development) |
+| Acceptance / feature | `spec/features/crypto-001-key-ring-protect.feature` (`@R-09.1`, `@R-09.2`) | Covered by `DataProtectionSetupTests` and the `Configure` implementation |
+| A11y automation | N/A — no UI |
+
+## Risks & follow-ups
+
+- Ops must mount a certificate and set `KEY_RING_CERTIFICATE_PATH` (and `KEY_RING_CERTIFICATE_PASSWORD`
+  if applicable) before enabling `KEY_RING_DIRECTORY` in shared/OpenShift environments — tracked as an
+  ops runbook item per `spec/spec.md`.
+- Rotating any existing production key ring written in plaintext prior to this change is out of scope
+  and remains an ops follow-up.
+- Azure Key Vault protection was intentionally not introduced (not already wired) — X.509 certificate
+  protection was chosen as the OpenShift-friendly option per `spec/plan.md`.
+
+## Review receipt (checkpoint 3)
+
+Same shape as `REVIEW.md` — required before merge. Do not replace with a free-form sign-off.
+
+**Checked:** `@R-09.1` and `@R-09.2`; filesystem persistence is always paired with a certificate
+protector or a startup failure outside Development, and Development without a key-ring directory is
+unaffected.
+
+**Could not check:** A live OpenShift deployment with a mounted certificate volume; verified via unit
+tests and local build only.
+
+**Residual risk:** Ops must mount a certificate before enabling `KEY_RING_DIRECTORY` in shared
+environments; no automated enforcement of that mount exists outside this application's own fail-closed
+check.
+
+- Reviewer: _______________ Date: _______________

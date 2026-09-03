@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Text.Json;
 using Database.Extensions;
+using Gov.Cscp.VictimServices.Public;
 using Gov.Cscp.VictimServices.Public.HealthChecks;
 using Gov.Cscp.VictimServices.Public.Services;
 using Microsoft.AspNetCore.Builder;
@@ -77,12 +78,7 @@ services
     });
 
 // Data Protection key ring persistence (for container deployments)
-if (!string.IsNullOrEmpty(builder.Configuration["KEY_RING_DIRECTORY"]))
-{
-    services
-        .AddDataProtection()
-        .PersistKeysToFileSystem(new DirectoryInfo(builder.Configuration["KEY_RING_DIRECTORY"]!));
-}
+DataProtectionSetup.Configure(services, builder.Configuration, builder.Environment);
 
 // Allow large file uploads (1 GB)
 services.Configure<FormOptions>(options =>
