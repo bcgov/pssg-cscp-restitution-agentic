@@ -2,9 +2,9 @@
 
 ## Milestone 1
 
-- [ ] **TASK-001** — Remove `Microsoft.NETCore.App` and `Microsoft.NETCore.Jit` PackageReferences from `restitution-app.csproj`. Covers `@R-10.1`.
-- [ ] **TASK-002** — `dotnet build` the API project. Covers `@R-10.2`.
-- [ ] **TASK-003** — Append `docs/pr-evidence.md`. Covers both.
+- [x] **TASK-001** — Remove `Microsoft.NETCore.App` and `Microsoft.NETCore.Jit` PackageReferences from `restitution-app.csproj`. Covers `@R-10.1`.
+- [x] **TASK-002** — `dotnet build` the API project. Covers `@R-10.2`.
+- [x] **TASK-003** — Append `docs/pr-evidence.md`. Covers both.
 
 ## Backlog
 
