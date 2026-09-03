@@ -1,11 +1,12 @@
-# Tasks — F-TEST-002
+# Tasks — F-TEST-005
 
 ## Milestone 1
 
-- [x] **TASK-001** — Add blocking Trivy filesystem scan to `ci-restitution.yml` (`severity: CRITICAL,HIGH`, `exit-code: "1"`). Covers `@R-14.1`.
-- [x] **TASK-002** — Confirm CodeQL analyze has no `continue-on-error`. Covers `@R-14.2`.
-- [x] **TASK-003** — Append `docs/pr-evidence.md` (note CONFIG-001 CD Trivy; Sonar absent). Covers both.
+- [ ] **TASK-001** — Rewrite `not-found.component.spec.ts` with Router mock; assert `navigateByUrl('/404')`. Covers `@R-15.1`.
+- [ ] **TASK-002** — Remove always-true stub from that file. Covers `@R-15.2`.
+- [ ] **TASK-003** — Run the NotFound spec if headless Chrome available; append `docs/pr-evidence.md`. Covers both.
 
 ## Backlog
 
-- [ ] SEC-SECRETS-003 secret-specific exit — **not this slice** unless trivial second Trivy secret step
+- [ ] Remaining Angular stubs — later
+- [ ] `ng test` in CI — later
