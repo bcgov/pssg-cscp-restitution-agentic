@@ -21,6 +21,14 @@ From the repo root:
 dotnet build Database/Database.csproj
 ```
 
+## Test
+
+Automated tests live in `Database.Tests/` and run without Dataverse credentials or network access:
+
+```bash
+dotnet test Database.Tests/Database.Tests.csproj
+```
+
 ## Notes
 
 - Most files in this project are generated from Dataverse metadata.
