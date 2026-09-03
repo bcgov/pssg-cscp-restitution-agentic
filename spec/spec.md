@@ -4,50 +4,49 @@
 
 ## Upstream intent
 
-GitHub issue [#7](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/7) — rapid assessment **CONFIG-002**.
+GitHub issue [#8](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/8) — rapid assessment **CONFIG-003**.
 
 ## Problem
 
-Every response gets a Content-Security-Policy that allows **`unsafe-eval` and `unsafe-inline` in script-src**. In non-development, a stricter CSP also exists, but the weak header is still sent, so browsers see a permissive policy and XSS hardening depends on the second header staying correct.
+The developer exception page (full stack traces and request details) is enabled for **every non-Production** environment name — Staging, Testing, UAT, Development. Shared lower environments that are reachable externally can leak internals on unhandled errors.
 
 ## Outcome
 
-Non-development responses **do not** advertise `unsafe-eval` or `unsafe-inline` in script-src via that always-on CSP middleware. Production continues to use the existing stricter CSP configuration. Reviewers can see the weak directives are gone from the production path.
+The developer exception page runs **only in Development**. All other environments use the generic exception handler path (no detailed exception page). Reviewers can see the condition is `IsDevelopment()`, not `!IsProduction()`.
 
 ## Users & personas
 
 | Persona | Goal |
 | --- | --- |
-| Security reviewer | No dual weak CSP in production |
-| Developer | Local Angular may still need a looser CSP in Development |
+| Security reviewer | No stack traces in shared Staging/Test |
+| Local developer | Still get detailed exceptions when ASPNETCORE_ENVIRONMENT=Development |
 
 ## Scope
 
 ### In scope (this release)
 
-- Stop emitting the permissive always-on CSP (with unsafe-eval / unsafe-inline) on non-Development responses — preferred: Development-only for that middleware, or delete unsafe-* from it and rely on NWebsec in non-Development
-- Leave NWebsec `UseCsp` for non-Development intact unless a conflict requires a tiny fix
-- Evidence / note residual if Angular needs unsafe-* only in Development
+- Change the exception-page gate in `Program.cs` from `!IsProduction()` to `IsDevelopment()`
+- Keep `UseExceptionHandler` for non-Development
+- Evidence note; mention LOG-001 / VULN-003 as related residual if still open
 
 ### Out of scope
 
-- Full nonce/hash CSP redesign for Angular
-- Permissions-Policy (CONFIG-004)
-- Developer exception page (CONFIG-003)
+- Changing `/Home/Error` UI
+- LOG-001 / VULN-003 duplicate filings beyond this code fix
+- Splunk logging changes
 
 ## Journeys
 
-1. Production path — `features/config-002-csp-unsafe.feature` (@R-07.1)
-2. Development path — same feature (@R-07.2)
+1. Development keeps detail — `features/config-003-dev-exception-page.feature` (@R-08.1)
+2. Non-Development uses handler — same feature (@R-08.2)
 
 ## Non-functional requirements
 
-- Do not weaken the existing non-Development NWebsec CSP
-- Residual: Development may still use unsafe-* for local tooling
+- Privacy: stack traces must not appear on shared lower envs
 
 ## Open questions
 
-- [x] Prefer gating the Append middleware to Development over deleting NWebsec.
+- [x] Same code change likely closes LOG-001 / VULN-003 behaviourally; leave those issues to their own slices unless product asks to close as duplicate after this merges.
 
 ## Sign-off (checkpoint 1)
 

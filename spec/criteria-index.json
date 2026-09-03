@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T20:46:00.459Z",
+  "generatedAt": "2026-09-03T21:05:23.782Z",
   "criteria": [
     {
       "id": "R-06.1",
@@ -35,6 +35,18 @@
       "id": "R-07.2",
       "feature": "spec/features/config-002-csp-unsafe.feature",
       "scenario": "Development may keep a looser CSP for local tooling",
+      "tier": null
+    },
+    {
+      "id": "R-08.1",
+      "feature": "spec/features/config-003-dev-exception-page.feature",
+      "scenario": "Development still shows the developer exception page",
+      "tier": "medium"
+    },
+    {
+      "id": "R-08.2",
+      "feature": "spec/features/config-003-dev-exception-page.feature",
+      "scenario": "Non-Development uses the generic exception handler",
       "tier": null
     },
     {
