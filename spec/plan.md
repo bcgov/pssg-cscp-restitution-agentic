@@ -1,20 +1,21 @@
-# Plan — DEP-003 (NuGet lock files)
+# Plan — DEP-006 (Dockerfile net10 + digests)
 
 ## Summary
 
-Add `<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>` to `restitution-app.csproj` and `Database.csproj`. Run `dotnet restore --force-evaluate` (or equivalent) to generate `packages.lock.json` for each. Commit locks. Append evidence. Optional: note refresh command in README.
+Delete or replace `openshift/Dockerfile.ubi8.net8_customized` with a short `openshift/README.md` noting CD uses `restitution-app/Dockerfile`. Pin `mcr.microsoft.com/dotnet/aspnet:10.0-alpine` and `sdk:10.0-alpine` FROM lines with `@sha256:…` digests (resolve via `docker buildx imagetools inspect` or registry). Confirm `cd-restitution-api.yml` still points at `./restitution-app/Dockerfile`. Append evidence.
 
 ## Key decisions
 
 | Decision | Choice | Rationale |
 | --- | --- | --- |
-| Scope | API + Database | Finding cites both |
-| CI locked mode | Optional | Avoid breaking CI in this slice |
+| Stale file | Remove + README pointer | Not used by CD; avoids false net8 path |
+| Runtime | Keep MCR alpine net10 | Already working in CD |
+| Digests | Pin both stages | Supply-chain half of finding |
 
 ## Test approach
 
-- `dotnet restore` + `dotnet build`
-- `@R-11.1` `@R-11.2`
+- Diff review of Dockerfiles + workflow path
+- `@R-12.1` `@R-12.2`
 
 ## Approval (checkpoint 2)
 

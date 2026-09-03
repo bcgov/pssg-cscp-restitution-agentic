@@ -1,13 +1,14 @@
-# Tasks — DEP-003
+# Tasks — DEP-006
 
 ## Milestone 1
 
-- [x] **TASK-001** — Enable `RestorePackagesWithLockFile` on `restitution-app.csproj` and `Database.csproj`. Covers `@R-11.1`.
-- [x] **TASK-002** — Generate and commit `packages.lock.json` for both projects. Covers `@R-11.1`.
-- [x] **TASK-003** — `dotnet restore` / `dotnet build` succeed. Covers `@R-11.2`.
-- [x] **TASK-004** — Append `docs/pr-evidence.md` (refresh command noted). Covers both.
+- [ ] **TASK-001** — Delete `openshift/Dockerfile.ubi8.net8_customized` (or replace with a short superseded notice). Covers `@R-12.1`.
+- [ ] **TASK-002** — Add `openshift/README.md` pointing CD/API builds at `restitution-app/Dockerfile`. Covers `@R-12.1`.
+- [ ] **TASK-003** — Pin `FROM` digests on `restitution-app/Dockerfile` for aspnet/sdk 10.0-alpine (keep .NET 10 family). Covers `@R-12.2`.
+- [ ] **TASK-004** — Confirm `.github/workflows/cd-restitution-api.yml` still uses `./restitution-app/Dockerfile`. Covers `@R-12.1`.
+- [ ] **TASK-005** — Append `docs/pr-evidence.md`. Covers both.
 
 ## Backlog
 
-- [ ] CI `RestoreLockedMode` — optional follow-up
-- [ ] DEP-006 — **not this slice**
+- [ ] ClientApp/Caddy Dockerfile hygiene — out of scope
+- [ ] UBI net10 S2I migration — out of scope this slice
