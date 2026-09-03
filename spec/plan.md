@@ -1,41 +1,35 @@
-# Plan — AUTH-001 (ADFS client credentials)
+# Plan — CONFIG-002 (CSP unsafe-*)
 
 ## Summary
 
-Replace `RequestPasswordTokenAsync` / `PasswordTokenRequest` in `Database/Extensions/ADFSTokenProvider.cs` with `RequestClientCredentialsTokenAsync` / `ClientCredentialsTokenRequest` (mirror Entra). Remove ServiceAccountName/Password from README secrets template for ADFS. Add `ADFSTokenProviderTests` with `HttpMessageHandler` mock asserting `grant_type=client_credentials` and absence of username/password. Optional: mark ServiceAccount* options obsolete or leave unused for config backward-compat without reading them.
+Wrap the `Content-Security-Policy` Append middleware in `Program.cs` so it runs **only when `IsDevelopment()`**. Leave `UseCsp` for non-Development unchanged. Append evidence. Optional: small note in README. No Angular rewrite.
 
 ## Architecture
 
 ```text
-ADFSTokenProvider.AcquireTokenInternal
-  → HttpClient.RequestClientCredentialsTokenAsync
-  → ClientId + ClientSecret + Resource/Scope
-  → no UserName / Password
+Development → Append permissive CSP (existing string)
+non-Development → NWebsec UseCsp only (no Append)
 ```
 
 ## Key decisions
 
 | Decision | Choice | Rationale |
 | --- | --- | --- |
-| Grant | Client credentials | Matches Entra; removes ROPC |
-| Options fields | Leave properties but unused (or Obsolete) | Avoid breaking deserialization of old secrets JSON |
-| Live ADFS | Not required | Pilot; residual ops config |
-| Tests | Mock handler in Database.Tests | No network |
+| Fix | Gate Append to Development | Removes weak dual header in prod; keeps local DX |
+| Tests | Code review + evidence; optional unit if host testable | No WebApplicationFactory without Dataverse |
 
 ## Security & privacy
 
-- Removes password grant from code path
-- Residual: ADFS app must allow client credentials; ops outside repo
+- Residual: Development still has unsafe-*; nonce/hash CSP later
 
 ## Test approach
 
-- `dotnet test Database.Tests`
-- `@R-06.1` `@R-06.2`
+- Diff review of Program.cs; `@R-07.1` `@R-07.2`
 - Append `docs/pr-evidence.md`
 
 ## Rollout
 
-- Merge to `development`; human smoke against on-prem ADFS when credentials available
+- Merge to `development`
 
 ## Approval (checkpoint 2)
 
