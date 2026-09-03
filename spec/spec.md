@@ -4,47 +4,41 @@
 
 ## Upstream intent
 
-GitHub issue [#12](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/12) — rapid assessment **DEP-006**.
+GitHub issue [#13](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/13) — rapid assessment **F-TEST-001**.
 
 ## Problem
 
-An OpenShift Dockerfile still advertises a **.NET 8** runtime while the app targets **net10.0**. If anyone used that file to ship the API, the runtime would be wrong. CD today builds from `restitution-app/Dockerfile` (already net10), but the stale file remains confusing. Base images are also not digest-pinned.
+CI builds the Angular SPA and compiles the API but **never runs automated tests**. Unit suites added for the API and Database projects can fail locally without failing the pipeline.
 
 ## Outcome
 
-1. The stale .NET 8 OpenShift Dockerfile is **removed or clearly marked unused / superseded** so it cannot be mistaken for the deploy path.
-2. The **active** API Dockerfile continues to use a **.NET 10** runtime/SDK and documents that it is the CD path.
-3. Active API Dockerfile base images are **pinned by digest** (or an equivalent immutable reference).
+The CI gate job **runs `dotnet test`** against the solution (API + Database test projects) after restore/build. A failing test fails the job. Path filters include the test project directories so changes to tests also trigger CI.
 
 ## Users & personas
 
 | Persona | Goal |
 | --- | --- |
-| Platform / CD | No net8/net10 mismatch on the real build path |
-| Security | Digests stop floating tag drift |
+| Delivery reviewer | Green CI means tests ran and passed |
+| Developer | Test-only PRs still exercise CI |
 
 ## Scope
 
 ### In scope
 
-- Deprecate/remove `openshift/Dockerfile.ubi8.net8_customized` (or replace with a short README pointing at `restitution-app/Dockerfile`)
-- Confirm CD workflow still references the net10 Dockerfile
-- Pin `FROM` digests on the active API Dockerfile runtime/SDK images
+- Add a `dotnet test` step to `.github/workflows/ci-restitution.yml` for `restitution-app/restitution-app.sln` (or equivalent covering both test projects)
+- Extend workflow `paths` filters to include `restitution-app.Tests/**` and `Database.Tests/**`
+- No live Dataverse required (existing tests are offline)
 
 ### Out of scope
 
-- Rewriting ClientApp/Caddy Dockerfile
-- Migrating to UBI net10 custom S2I (unless a real UBI net10 image is already approved — prefer MCR net10 already in use)
-- OpenShift template rewrites beyond Dockerfile hygiene
+- Angular Karma / Playwright in CI (F-TEST-005 / F-TEST-006)
+- Making Trivy/CodeQL blocking beyond current CONFIG-001 work (F-TEST-002)
+- Fixing unrelated CodeQL default-setup conflicts (record residual if gate still noisy)
 
 ## Journeys
 
-1. No misleading net8 deploy Dockerfile — `features/dep-006-dotnet10-dockerfile.feature` (@R-12.1)
-2. Active path pinned — same feature (@R-12.2)
-
-## Open questions
-
-- [x] Assessment path is stale relative to CD: prefer fixing active `restitution-app/Dockerfile` + remove/deprecate openshift net8 file rather than inventing a UBI net10 S2I tree.
+1. Tests run in CI — `features/f-test-001-ci-dotnet-test.feature` (@R-13.1)
+2. Path coverage — same feature (@R-13.2)
 
 ## Sign-off (checkpoint 1)
 

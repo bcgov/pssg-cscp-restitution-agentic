@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T22:01:50.994Z",
+  "generatedAt": "2026-09-03T22:12:09.770Z",
   "criteria": [
     {
       "id": "R-06.1",
@@ -119,6 +119,18 @@
       "id": "R-00.2",
       "feature": "spec/features/example-happy-path.feature",
       "scenario": "Validation prevents incomplete submission",
+      "tier": null
+    },
+    {
+      "id": "R-13.1",
+      "feature": "spec/features/f-test-001-ci-dotnet-test.feature",
+      "scenario": "CI gate runs the solution test suite",
+      "tier": "medium"
+    },
+    {
+      "id": "R-13.2",
+      "feature": "spec/features/f-test-001-ci-dotnet-test.feature",
+      "scenario": "Test project path changes trigger CI",
       "tier": null
     },
     {
