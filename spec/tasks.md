@@ -1,13 +1,13 @@
-# Tasks — F-TEST-003
+# Tasks — F-TEST-004
 
 ## Milestone 1
 
-- [x] **TASK-001** — Add `restitution-app.Tests` (xUnit, net10.0) under `restitution-app/` (or sibling) and include it in `restitution-app/restitution-app.sln`. Covers `@R-03.1`.
-- [x] **TASK-002** — ProjectReference the API project; InternalsVisibleTo only if needed. Do not change public JSON of configuration. Covers `@R-03.1`.
-- [x] **TASK-003** — Add `ConfigurationControllerTests` that set in-memory `CONFIGURATION_*` keys, call `GetConfiguration`, and assert HTTP 200 plus `MaintenanceMode` / outage fields. Covers `@R-03.2`.
-- [x] **TASK-004** — `dotnet test` the new project without Dataverse env vars; append `docs/pr-evidence.md`. Covers `@R-03.1`.
+- [ ] **TASK-001** — Add `Database.Tests` (xUnit, net10.0) with a ProjectReference to `Database/Database.csproj` and include it in `restitution-app/restitution-app.sln`. Covers `@R-04.1`.
+- [ ] **TASK-002** — Tests for `MemoryCache.GetOrSet`: factory invoked on miss, not invoked on hit. Covers `@R-04.2`.
+- [ ] **TASK-003** — Tests for `GetDynamicsApiEndpointUrl` OnPremise vs Cloud with synthetic URLs. Covers `@R-04.2`.
+- [ ] **TASK-004** — `dotnet test` without Dynamics env vars; append `docs/pr-evidence.md`. Covers `@R-04.1`.
 
 ## Backlog
 
-- [ ] F-TEST-001 CI test stage — **not this slice**
-- [ ] F-TEST-004 Database tests — **not this slice**
+- [ ] Token HTTP / AUTH-001 — **not this slice**
+- [ ] F-TEST-001 CI — **not this slice**
