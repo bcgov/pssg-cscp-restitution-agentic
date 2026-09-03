@@ -307,3 +307,65 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 **Residual risk:** The extension allow-list is a client-side control until VULN-002 adds server-side MIME validation.
 
 - Reviewer: _______________ Date: _______________
+
+---
+
+# PR evidence — [RA AUTH-001] Replace ADFS password grant
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/ra-auth-001-adfs-token-provider-update |
+| Spec refs | `spec/spec.md`; `spec/features/auth-001-adfs-client-credentials.feature` (`@R-06.1`, `@R-06.2`) |
+| Constitution articles touched | P5, J2, J3, J5 |
+| Tasks | TASK-001–TASK-004 |
+| Authoring agent | unspecified |
+| Generated | 2026-09-03T20:37:02.608Z |
+
+## Intent
+
+ADFS token acquisition now uses the OAuth client-credentials grant with the configured client ID, client secret, and resource. The provider no longer posts a service-account username or password; operators must enable client credentials on the ADFS application.
+
+## Spec traceability
+
+| Scenario / requirement | Implemented? | Notes |
+| --- | --- | --- |
+| `@R-06.1` Password grant is not used | Yes | `ADFSTokenProvider` uses `RequestClientCredentialsTokenAsync`; its request has no username or password fields. |
+| `@R-06.2` Client credentials obtain token | Yes | Mocked HTTP test asserts the form grant and returns a synthetic access token. |
+
+
+## Design system & accessibility
+
+| Check | Result |
+| --- | --- |
+| DS components used (list) | N/A — database authentication and documentation change |
+| Tokens used (not hard-coded colour) | N/A — no UI |
+| BC Sans imported | N/A — no UI |
+| Manual a11y notes | N/A — no UI |
+
+## Public-service minimums
+
+Checklist IDs addressed this PR: N/A — no UI
+
+## Tests
+
+| Type | Command / path | Result |
+| --- | --- | --- |
+| Unit | `dotnet test Database.Tests/Database.Tests.csproj --no-restore` | Passed |
+| Acceptance / feature | `spec/features/auth-001-adfs-client-credentials.feature` (`@R-06.1`, `@R-06.2`) | Covered by `ADFSTokenProviderTests` |
+| A11y automation | N/A — no UI | |
+
+## Risks & follow-ups
+
+- ADFS application registration must support client credentials before deployment; registration changes are outside this repository.
+
+## Review receipt (checkpoint 3)
+
+Same shape as `REVIEW.md` — required before merge. Do not replace with a free-form sign-off.
+
+**Checked:** `@R-06.1` and `@R-06.2`; the mocked request contains `grant_type=client_credentials` and resource, authenticates with the configured client ID and secret, has no username or password form fields, and returns the synthetic access token.
+
+**Could not check:** Live ADFS token acquisition because credentials and ADFS configuration are environment-managed.
+
+**Residual risk:** On-premise token acquisition fails until the ADFS application permits client-credentials authentication.
+
+- Reviewer: _______________ Date: _______________

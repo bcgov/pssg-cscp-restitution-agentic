@@ -37,16 +37,14 @@ public class ADFSTokenProvider : ITokenProvider
         logger.LogDebug("Acquiring ADFS token from {0}", options.OAuth2TokenEndpoint);
         using var httpClient = httpClientFactory.CreateClient("adfs_token");
 
-        var response = await httpClient.RequestPasswordTokenAsync(
-            new PasswordTokenRequest
+        var response = await httpClient.RequestClientCredentialsTokenAsync(
+            new ClientCredentialsTokenRequest
             {
                 Address = options.OAuth2TokenEndpoint,
+                GrantType = "client_credentials",
                 ClientId = options.ClientId,
                 ClientSecret = options.ClientSecret,
                 Resource = { options.ResourceName },
-                UserName = options.ServiceAccountName,
-                Password = options.ServiceAccountPassword,
-                Scope = "openid",
             }
         );
 
