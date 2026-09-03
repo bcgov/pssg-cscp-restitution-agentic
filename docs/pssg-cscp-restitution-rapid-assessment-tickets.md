@@ -15,42 +15,42 @@ Generated: 2026-09-03 · Raw findings: **39** · Recommended to file: **36** · 
 
 | ID | Severity | Domain | Component | Title | File? | GitHub |
 | --- | --- | --- | --- | --- | --- | --- |
-| CONFIG-001 | High | CONFIGURATION | cicd-pipeline | CI/CD security gate disabled — Trivy exit-code set to 0 on all scan s... | yes | pending |
-| DEP-001 | High | DEPENDENCIES | health-checks | Microsoft.AspNetCore.HealthChecks 1.0.0 is an archived community pack... | yes | pending |
-| F-TEST-003 | High | TESTING | aspnet-api | ASP.NET Core API has zero automated tests | yes | pending |
-| F-TEST-004 | High | TESTING | dataverse-client | Dataverse Client Library has zero automated tests | yes | pending |
-| F-TEST-007 | High | TESTING | angular-spa | No security-focused tests exist in any component | yes | pending |
-| AUTH-001 | Medium | AUTHENTICATION | dataverse-client | ADFS Token Provider Uses Deprecated Resource Owner Password Credentia... | yes | pending |
-| CONFIG-002 | Medium | CONFIGURATION | aspnet-api | CSP header includes unsafe-eval and unsafe-inline in script-src witho... | yes | pending |
-| CONFIG-003 | Medium | CONFIGURATION | aspnet-api | Developer Exception Page active in all non-production environments | yes | pending |
-| CRYPTO-001 | Medium | CRYPTOGRAPHY | aspnet-api | Data Protection Key Ring Persisted Without At-Rest Encryption | yes | pending |
-| DEP-002 | Medium | DEPENDENCIES | aspnet-api | EOL Microsoft.NETCore.App 2.2.8 / Microsoft.NETCore.Jit 2.0.8 in a ne... | yes | pending |
-| DEP-003 | Medium | DEPENDENCIES | aspnet-api | No NuGet lock files; unpinned transitive dependencies (supply-chain r... | yes | pending |
-| DEP-006 | Medium | DEPENDENCIES | cicd-pipeline | OpenShift Dockerfile uses .NET 8 base image while app targets net10.0... | yes | pending |
-| F-TEST-001 | Medium | TESTING | cicd-pipeline | No automated test execution stage in CI pipeline | yes | pending |
-| F-TEST-002 | Medium | TESTING | cicd-pipeline | All security-scanning quality gates configured as non-blocking | yes | pending |
-| F-TEST-005 | Medium | TESTING | angular-spa | Angular unit tests contain only boilerplate stubs with no meaningful ... | yes | pending |
-| F-TEST-006 | Medium | TESTING | e2e-tests | Playwright E2E tests exist but are not integrated into the CI pipeline | yes | pending |
-| LOG-001 | Medium | SECURITY_LOGGING | aspnet-api | Developer Exception Page exposes full stack traces in non-production ... | yes | pending |
-| LOG-002 | Medium | SECURITY_LOGGING | aspnet-api | No application-level audit logging for successful restitution form su... | yes | pending |
-| SEC-SECRETS-001 | Medium | SECRETS | aspnet-api | Internal BC Government infrastructure URLs hardcoded in developer doc... | yes | pending |
-| SEC-SECRETS-002 | Medium | SECRETS | cicd-pipeline | Development environment hostname hardcoded in OWASP ZAP security scan... | yes | pending |
-| VULN-001 | Medium | CODE_VULNERABILITY | angular-spa | DOM-based XSS via [innerHTML] binding with unencoded user-controlled ... | yes | pending |
-| VULN-002 | Medium | CODE_VULNERABILITY | aspnet-api | Client-side-only file type validation — no server-side MIME or extens... | yes | pending |
-| AUTH-002 | Low | AUTHENTICATION | aspnet-api | Global Cookie Policy Sets MinimumSameSitePolicy to SameSiteMode.None | yes | pending |
-| AUTH-003 | Low | AUTHENTICATION | health-checks | Health Check Endpoint /hc Accessible Without Authentication | yes | pending |
-| AUTHZ-001 | Low | AUTHORIZATION | health-checks | Health Check Endpoint Publicly Accessible Without Authorization — Dis... | yes | pending |
-| AUTHZ-002 | Low | AUTHORIZATION | aspnet-api | UseAuthorization() Middleware Absent from Pipeline — [Authorize] Attr... | yes | pending |
-| CONFIG-004 | Low | CONFIGURATION | aspnet-api | Missing Permissions-Policy header | yes | pending |
-| CONFIG-005 | Low | CONFIGURATION | aspnet-api | AllowedHosts set to wildcard — host header filtering disabled | yes | pending |
-| CRYPTO-002 | Low | CRYPTOGRAPHY | aspnet-api | TLS Certificate Validation Disabled for Splunk HTTP Sink in Developme... | yes | pending |
-| DEP-004 | Low | DEPENDENCIES | e2e-tests | ts-node pinned to 7.0.1 (2018), three major versions behind (dev-only... | yes | pending |
-| DEP-005 | Low | DEPENDENCIES | angular-spa | moment.js 2.30.1 in maintenance mode; no known CVEs at assessment time | yes | pending |
-| LOG-003 | Low | SECURITY_LOGGING | aspnet-api | Full Dynamics OrganizationResponse object logged via Serilog destruct... | yes | pending |
-| LOG-004 | Low | SECURITY_LOGGING | angular-spa | Incomplete console output suppression in production — console.error a... | yes | pending |
-| SEC-SECRETS-003 | Low | SECRETS | cicd-pipeline | Trivy secret scanner configured with non-enforcing exit code across a... | yes | pending |
-| VULN-003 | Low | CODE_VULNERABILITY | aspnet-api | Developer exception page enabled for all non-production environments ... | yes | pending |
-| VULN-004 | Low | CODE_VULNERABILITY | aspnet-api | No input length or format constraints on submission API DTO string fi... | yes | pending |
+| CONFIG-001 | High | CONFIGURATION | cicd-pipeline | CI/CD security gate disabled — Trivy exit-code set to 0 on all scan s... | yes | [#1](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/1) |
+| DEP-001 | High | DEPENDENCIES | health-checks | Microsoft.AspNetCore.HealthChecks 1.0.0 is an archived community pack... | yes | [#2](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/2) |
+| F-TEST-003 | High | TESTING | aspnet-api | ASP.NET Core API has zero automated tests | yes | [#3](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/3) |
+| F-TEST-004 | High | TESTING | dataverse-client | Dataverse Client Library has zero automated tests | yes | [#4](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/4) |
+| F-TEST-007 | High | TESTING | angular-spa | No security-focused tests exist in any component | yes | [#5](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/5) |
+| AUTH-001 | Medium | AUTHENTICATION | dataverse-client | ADFS Token Provider Uses Deprecated Resource Owner Password Credentia... | yes | [#6](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/6) |
+| CONFIG-002 | Medium | CONFIGURATION | aspnet-api | CSP header includes unsafe-eval and unsafe-inline in script-src witho... | yes | [#7](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/7) |
+| CONFIG-003 | Medium | CONFIGURATION | aspnet-api | Developer Exception Page active in all non-production environments | yes | [#8](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/8) |
+| CRYPTO-001 | Medium | CRYPTOGRAPHY | aspnet-api | Data Protection Key Ring Persisted Without At-Rest Encryption | yes | [#9](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/9) |
+| DEP-002 | Medium | DEPENDENCIES | aspnet-api | EOL Microsoft.NETCore.App 2.2.8 / Microsoft.NETCore.Jit 2.0.8 in a ne... | yes | [#10](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/10) |
+| DEP-003 | Medium | DEPENDENCIES | aspnet-api | No NuGet lock files; unpinned transitive dependencies (supply-chain r... | yes | [#11](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/11) |
+| DEP-006 | Medium | DEPENDENCIES | cicd-pipeline | OpenShift Dockerfile uses .NET 8 base image while app targets net10.0... | yes | [#12](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/12) |
+| F-TEST-001 | Medium | TESTING | cicd-pipeline | No automated test execution stage in CI pipeline | yes | [#13](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/13) |
+| F-TEST-002 | Medium | TESTING | cicd-pipeline | All security-scanning quality gates configured as non-blocking | yes | [#14](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/14) |
+| F-TEST-005 | Medium | TESTING | angular-spa | Angular unit tests contain only boilerplate stubs with no meaningful ... | yes | [#15](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/15) |
+| F-TEST-006 | Medium | TESTING | e2e-tests | Playwright E2E tests exist but are not integrated into the CI pipeline | yes | [#16](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/16) |
+| LOG-001 | Medium | SECURITY_LOGGING | aspnet-api | Developer Exception Page exposes full stack traces in non-production ... | yes | [#17](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/17) |
+| LOG-002 | Medium | SECURITY_LOGGING | aspnet-api | No application-level audit logging for successful restitution form su... | yes | [#18](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/18) |
+| SEC-SECRETS-001 | Medium | SECRETS | aspnet-api | Internal BC Government infrastructure URLs hardcoded in developer doc... | yes | [#19](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/19) |
+| SEC-SECRETS-002 | Medium | SECRETS | cicd-pipeline | Development environment hostname hardcoded in OWASP ZAP security scan... | yes | [#20](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/20) |
+| VULN-001 | Medium | CODE_VULNERABILITY | angular-spa | DOM-based XSS via [innerHTML] binding with unencoded user-controlled ... | yes | [#21](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/21) |
+| VULN-002 | Medium | CODE_VULNERABILITY | aspnet-api | Client-side-only file type validation — no server-side MIME or extens... | yes | [#22](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/22) |
+| AUTH-002 | Low | AUTHENTICATION | aspnet-api | Global Cookie Policy Sets MinimumSameSitePolicy to SameSiteMode.None | yes | [#23](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/23) |
+| AUTH-003 | Low | AUTHENTICATION | health-checks | Health Check Endpoint /hc Accessible Without Authentication | yes | [#24](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/24) |
+| AUTHZ-001 | Low | AUTHORIZATION | health-checks | Health Check Endpoint Publicly Accessible Without Authorization — Dis... | yes | [#25](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/25) |
+| AUTHZ-002 | Low | AUTHORIZATION | aspnet-api | UseAuthorization() Middleware Absent from Pipeline — [Authorize] Attr... | yes | [#26](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/26) |
+| CONFIG-004 | Low | CONFIGURATION | aspnet-api | Missing Permissions-Policy header | yes | [#27](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/27) |
+| CONFIG-005 | Low | CONFIGURATION | aspnet-api | AllowedHosts set to wildcard — host header filtering disabled | yes | [#28](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/28) |
+| CRYPTO-002 | Low | CRYPTOGRAPHY | aspnet-api | TLS Certificate Validation Disabled for Splunk HTTP Sink in Developme... | yes | [#29](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/29) |
+| DEP-004 | Low | DEPENDENCIES | e2e-tests | ts-node pinned to 7.0.1 (2018), three major versions behind (dev-only... | yes | [#30](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/30) |
+| DEP-005 | Low | DEPENDENCIES | angular-spa | moment.js 2.30.1 in maintenance mode; no known CVEs at assessment time | yes | [#31](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/31) |
+| LOG-003 | Low | SECURITY_LOGGING | aspnet-api | Full Dynamics OrganizationResponse object logged via Serilog destruct... | yes | [#32](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/32) |
+| LOG-004 | Low | SECURITY_LOGGING | angular-spa | Incomplete console output suppression in production — console.error a... | yes | [#33](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/33) |
+| SEC-SECRETS-003 | Low | SECRETS | cicd-pipeline | Trivy secret scanner configured with non-enforcing exit code across a... | yes | [#34](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/34) |
+| VULN-003 | Low | CODE_VULNERABILITY | aspnet-api | Developer exception page enabled for all non-production environments ... | yes | [#35](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/35) |
+| VULN-004 | Low | CODE_VULNERABILITY | aspnet-api | No input length or format constraints on submission API DTO string fi... | yes | [#36](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/36) |
 | AUTHZ-003 | Informational | AUTHORIZATION | aspnet-api | [AllowAnonymous] Attribute Applied Without Authorization Framework — ... | optional | pending |
 | CRYPTO-003 | Informational | CRYPTOGRAPHY | dataverse-client | OAuth Access Tokens Cached as Plaintext in In-Process Memory | optional | pending |
 | LOG-005 | Informational | SECURITY_LOGGING | dataverse-client | Token endpoint URLs including Entra ID tenant ID logged at Debug level | optional | pending |
