@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T22:46:36.856Z",
+  "generatedAt": "2026-09-03T23:03:44.857Z",
   "criteria": [
     {
       "id": "R-06.1",
@@ -179,6 +179,18 @@
       "id": "R-15.2",
       "feature": "spec/features/f-test-005-angular-unit-substance.feature",
       "scenario": "The always-true stub is removed from NotFound",
+      "tier": null
+    },
+    {
+      "id": "R-16.1",
+      "feature": "spec/features/f-test-006-playwright-ci.feature",
+      "scenario": "CI executes Playwright against localhost",
+      "tier": "medium"
+    },
+    {
+      "id": "R-16.2",
+      "feature": "spec/features/f-test-006-playwright-ci.feature",
+      "scenario": "CI E2E does not require live Dynamics",
       "tier": null
     },
     {
