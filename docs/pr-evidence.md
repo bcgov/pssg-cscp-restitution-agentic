@@ -576,3 +576,66 @@ environments; no automated enforcement of that mount exists outside this applica
 check.
 
 - Reviewer: _______________ Date: _______________
+
+---
+
+# PR evidence — [RA DEP-002] Remove EOL .NET Core meta-package references
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/ra-dep-002-remove-eol-packages |
+| Spec refs | `spec/spec.md`; `spec/features/dep-002-eol-netcore-packages.feature` (`@R-10.1`, `@R-10.2`) |
+| Constitution articles touched | J5 |
+| Tasks | TASK-001–TASK-003 |
+| Authoring agent | Copilot |
+| Generated | 2026-09-03T21:40:11.874Z |
+
+## Intent
+
+The obsolete EOL `Microsoft.NETCore.App` 2.2.8 and `Microsoft.NETCore.Jit` 2.0.8 PackageReferences were removed from the net10.0 API project. Framework-provided runtime components remain supplied by the net10.0 SDK.
+
+## Spec traceability
+
+| Scenario / requirement | Implemented? | Notes |
+| --- | --- | --- |
+| `@R-10.1` EOL PackageReferences are absent | Yes | Removed both obsolete references from `restitution-app/restitution-app.csproj`. |
+| `@R-10.2` API project still builds on net10.0 | Yes | Verified by the API project build. |
+
+
+## Design system & accessibility
+
+| Check | Result |
+| --- | --- |
+| DS components used (list) | N/A — dependency-only API change |
+| Tokens used (not hard-coded colour) | N/A — dependency-only API change |
+| BC Sans imported | N/A — dependency-only API change |
+| Manual a11y notes | N/A — dependency-only API change |
+
+## Public-service minimums
+
+Checklist IDs addressed this PR: N/A — dependency-only API change
+
+## Tests
+
+| Type | Command / path | Result |
+| --- | --- | --- |
+| Unit | N/A — no behavioural code change | Not run |
+| Acceptance / feature | `spec/features/dep-002-eol-netcore-packages.feature` (`@R-10.1`, `@R-10.2`) | Package-reference absence verified manually; API build run. |
+| Build | `dotnet build restitution-app/restitution-app.csproj` | Passed — 0 warnings, 0 errors |
+| A11y automation | N/A — dependency-only API change | |
+
+## Risks & follow-ups
+
+- No new package was introduced. Broader dependency upgrades remain out of scope.
+
+## Review receipt (checkpoint 3)
+
+Same shape as `REVIEW.md` — required before merge. Do not replace with a free-form sign-off.
+
+**Checked:** `@R-10.1` and `@R-10.2`; both specified EOL PackageReferences are absent and the API project builds on net10.0.
+
+**Could not check:** A live application run is unnecessary for this dependency-only change.
+
+**Residual risk:** None identified; the project continues to target net10.0.
+
+- Reviewer: _______________ Date: _______________
