@@ -8,6 +8,7 @@
         <BuildServerSideRenderer>false</BuildServerSideRenderer>
         <RootNamespace>Gov.Cscp.VictimServices.Public</RootNamespace>
         <UserSecretsId>76d21faa-788c-4a11-806e-5926d3169453</UserSecretsId>
+        <RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>
     </PropertyGroup>
     <ItemGroup>
         <PackageReference Include="Azure.Core" Version="1.52.0" />

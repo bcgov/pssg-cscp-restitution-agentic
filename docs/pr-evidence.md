@@ -639,3 +639,70 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 **Residual risk:** None identified; the project continues to target net10.0.
 
 - Reviewer: _______________ Date: _______________
+
+---
+
+# PR evidence — [RA DEP-003] No NuGet lock files; unpinned transitive dependencies
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/ra-dep-003-nuget-lock-files |
+| Spec refs | `spec/spec.md`; `spec/features/dep-003-nuget-lock-files.feature` (`@R-11.1`, `@R-11.2`) |
+| Constitution articles touched | J5 |
+| Tasks | TASK-001–TASK-004 |
+| Authoring agent | Copilot |
+| Generated | 2026-09-03T21:52:39.000Z |
+
+## Intent
+
+`RestorePackagesWithLockFile` was enabled on `restitution-app.csproj` and `Database.csproj`, and `packages.lock.json` was generated and committed for both projects so transitive NuGet dependencies resolve to a pinned, reproducible graph across developer workstations and CI/CD.
+
+## Spec traceability
+
+| Scenario / requirement | Implemented? | Notes |
+| --- | --- | --- |
+| `@R-11.1` Lock files are enabled and committed | Yes | Added `<RestorePackagesWithLockFile>true</RestorePackagesWithLockFile>` to both csproj files and committed `restitution-app/packages.lock.json` and `Database/packages.lock.json`. |
+| `@R-11.2` Restore and build succeed with locks present | Yes | `dotnet restore --locked-mode` and `dotnet build -c Release` both succeed with the committed locks. |
+
+## Refreshing locks
+
+Run `dotnet restore <project>.csproj --force-evaluate` (or delete the `packages.lock.json` and run `dotnet restore`) after intentionally changing a `PackageReference`, then commit the updated lock file.
+
+## Design system & accessibility
+
+| Check | Result |
+| --- | --- |
+| DS components used (list) | N/A — dependency-only change |
+| Tokens used (not hard-coded colour) | N/A — dependency-only change |
+| BC Sans imported | N/A — dependency-only change |
+| Manual a11y notes | N/A — dependency-only change |
+
+## Public-service minimums
+
+Checklist IDs addressed this PR: N/A — dependency-only change
+
+## Tests
+
+| Type | Command / path | Result |
+| --- | --- | --- |
+| Unit | N/A — no behavioural code change | Not run |
+| Acceptance / feature | `spec/features/dep-003-nuget-lock-files.feature` (`@R-11.1`, `@R-11.2`) | Verified manually: lock files present, restore/build succeed. |
+| Build | `dotnet restore restitution-app/restitution-app.csproj --locked-mode` then `dotnet build restitution-app/restitution-app.csproj -c Release` | Passed — 0 warnings, 0 errors |
+| A11y automation | N/A — dependency-only change | |
+
+## Risks & follow-ups
+
+- CI `RestoreLockedMode` enforcement is an optional follow-up (not required by this slice).
+- Test projects (`restitution-app.Tests`, `Database.Tests`) were left unchanged; they build via project references and are out of scope for this slice.
+
+## Review receipt (checkpoint 3)
+
+Same shape as `REVIEW.md` — required before merge. Do not replace with a free-form sign-off.
+
+**Checked:** `@R-11.1` and `@R-11.2`; both csproj files enable lock-file restore, both lock files are committed, and locked-mode restore plus build succeed.
+
+**Could not check:** CI enforcement of `RestoreLockedMode` was not added since it is explicitly out of scope for this slice.
+
+**Residual risk:** Lock files must be regenerated whenever a `PackageReference` is intentionally added, removed, or upgraded; this is a manual developer step with no automated check yet.
+
+- Reviewer: _______________ Date: _______________
