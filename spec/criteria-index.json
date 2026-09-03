@@ -1,6 +1,18 @@
 {
-  "generatedAt": "2026-09-03T18:51:57.138Z",
+  "generatedAt": "2026-09-03T19:12:19.728Z",
   "criteria": [
+    {
+      "id": "R-01.1",
+      "feature": "spec/features/config-001-trivy-gate.feature",
+      "scenario": "CRITICAL or HIGH findings fail the scan job",
+      "tier": "high"
+    },
+    {
+      "id": "R-01.2",
+      "feature": "spec/features/config-001-trivy-gate.feature",
+      "scenario": "Scan results are still published when the gate is configured",
+      "tier": null
+    },
     {
       "id": "R-00.1",
       "feature": "spec/features/example-happy-path.feature",
