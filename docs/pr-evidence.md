@@ -843,3 +843,69 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 **Residual risk:** Test execution covers only the .NET projects; front-end suites are still unguarded until the follow-up findings land.
 
 - Reviewer: _______________ Date: _______________
+
+# PR evidence — [RA F-TEST-002] All security-scanning quality gates configured as non-blocking
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/ra-f-test-002-fix-security-gates |
+| Spec refs | `spec/spec.md`; `spec/features/f-test-002-blocking-security-scans.feature` (`@R-14.1`, `@R-14.2`) |
+| Constitution articles touched | P5, J3, J5 |
+| Tasks | TASK-001–TASK-003 |
+| Authoring agent | unspecified |
+| Generated | 2026-09-03T22:34:26.000Z |
+
+## Intent
+
+The CI `gate` job in `ci-restitution.yml` now runs a Trivy filesystem vulnerability scan (`scan-type: fs`, `severity: CRITICAL,HIGH`, `exit-code: "1"`) after the CodeQL analyze step, with its SARIF output uploaded via `codeql-action/upload-sarif` (`if: always()`). CRITICAL or HIGH filesystem findings now fail the PR-time CI gate, not only the CD image scans.
+
+## Spec traceability
+
+| Scenario / requirement | Implemented? | Notes |
+| --- | --- | --- |
+| `@R-14.1` CI runs a blocking filesystem vulnerability scan | Yes | New `aquasecurity/trivy-action` step scans the repo (`scan-ref: .`) with `exit-code: "1"`; a CRITICAL/HIGH finding fails the job. |
+| `@R-14.2` CodeQL analysis is not `continue-on-error` | Yes (already true) | `github/codeql-action/analyze@v4` in `ci-restitution.yml` carries no `continue-on-error`; confirmed unchanged. |
+
+## Residual / already-fixed context
+
+- `development` already removed the `continue-on-error: true` from CodeQL/Sonar steps referenced in the original assessment finding, and SonarCloud is absent from the current workflow — it is intentionally **not** re-added.
+- CD image scans (`cd-restitution-api.yml`, `cd-restitution-ui.yml`) already run Trivy with `exit-code: "1"` (CONFIG-001, previously fixed); this slice closes the remaining gap by adding an equivalent **filesystem** gate to the PR-time CI workflow.
+- SEC-SECRETS-003 (dedicated Trivy secret-scanner exit code) is out of scope for this slice per `spec/spec.md`.
+
+## Design system & accessibility
+
+| Check | Result |
+| --- | --- |
+| DS components used (list) | N/A — workflow-only change |
+| Tokens used (not hard-coded colour) | N/A — workflow-only change |
+| BC Sans imported | N/A — workflow-only change |
+| Manual a11y notes | N/A — workflow-only change |
+
+## Public-service minimums
+
+Checklist IDs addressed this PR: N/A — workflow-only change
+
+## Tests
+
+| Type | Command / path | Result |
+| --- | --- | --- |
+| YAML validation | `python3 -c "import yaml; yaml.safe_load(open('.github/workflows/ci-restitution.yml'))"` | Passed |
+| Acceptance / feature | `spec/features/f-test-002-blocking-security-scans.feature` — workflow diff review | Passed |
+| A11y automation | N/A — workflow-only change | |
+
+## Risks & follow-ups
+
+- First live CI run may surface pre-existing CRITICAL/HIGH filesystem findings; per `spec/plan.md`, this is the intended gate behaviour and should not be disabled to force a green build.
+- SEC-SECRETS-003 (secret-specific exit code) remains a separate follow-up.
+
+## Review receipt (checkpoint 3)
+
+Same shape as `REVIEW.md` — required before merge. Do not replace with a free-form sign-off.
+
+**Checked:** `@R-14.1` and `@R-14.2` against the updated `.github/workflows/ci-restitution.yml`; confirmed CodeQL analyze has no `continue-on-error`; confirmed CD workflows already use `exit-code: "1"` for Trivy image scans; YAML syntax validated locally.
+
+**Could not check:** A live GitHub-hosted run of the new Trivy filesystem scan step against the current repository contents (sandbox has no outbound access to run `trivy-action`).
+
+**Residual risk:** The new blocking scan may surface pre-existing filesystem vulnerabilities on first run; this is the intended behaviour of the fix, not a regression.
+
+- Reviewer: _______________ Date: _______________

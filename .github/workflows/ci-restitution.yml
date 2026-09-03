@@ -39,7 +39,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 40
 
-    # [5] SETUP -> UI half (build) -> API half (compile) -> whole codebase (CodeQL)
+    # [5] SETUP -> UI half (build) -> API half (compile) -> whole codebase (CodeQL + Trivy FS)
     steps:
       - uses: actions/checkout@v7
       - uses: github/codeql-action/init@v4
@@ -69,3 +69,18 @@ jobs:
 
       # ── WHOLE CODEBASE: CodeQL writes its report — C# + TypeScript, one run ──
       - uses: github/codeql-action/analyze@v4
+
+      # ── WHOLE CODEBASE: Trivy filesystem scan — CRITICAL/HIGH fail the gate ──
+      - uses: aquasecurity/trivy-action@v0.36.0    # third-party — pin to commit SHA when hardening
+        with:
+          scan-type: fs
+          scan-ref: .
+          format: sarif
+          output: trivy-ci-restitution-fs.sarif
+          severity: CRITICAL,HIGH
+          exit-code: "1"
+      - uses: github/codeql-action/upload-sarif@v4
+        if: always()
+        with:
+          sarif_file: trivy-ci-restitution-fs.sarif
+          category: trivy-ci-restitution-fs
