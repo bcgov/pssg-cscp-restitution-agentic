@@ -4,53 +4,50 @@
 
 ## Upstream intent
 
-GitHub issue [#6](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/6) — rapid assessment **AUTH-001**.
+GitHub issue [#7](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/7) — rapid assessment **CONFIG-002**.
 
 ## Problem
 
-On-premise Dynamics token acquisition still uses the **resource-owner password** grant: a service-account username and password are posted to ADFS. That grant is deprecated, blocks MFA / phishing-resistant policies, and is removed from OAuth 2.1. Cloud (Entra) already uses client credentials.
+Every response gets a Content-Security-Policy that allows **`unsafe-eval` and `unsafe-inline` in script-src**. In non-development, a stricter CSP also exists, but the weak header is still sent, so browsers see a permissive policy and XSS hardening depends on the second header staying correct.
 
 ## Outcome
 
-ADFS token acquisition uses a **client-credentials** style grant (client id + client secret only). Username and password are **not** sent on the token request. A unit test proves the password grant is gone without calling a live ADFS host. Operators must ensure the ADFS application allows client credentials (app registration is outside this repo).
+Non-development responses **do not** advertise `unsafe-eval` or `unsafe-inline` in script-src via that always-on CSP middleware. Production continues to use the existing stricter CSP configuration. Reviewers can see the weak directives are gone from the production path.
 
 ## Users & personas
 
 | Persona | Goal |
 | --- | --- |
-| Security reviewer | No ROPC on the Dataverse integration path |
-| Platform / Dynamics admin | Clear residual: ADFS client must allow client credentials |
+| Security reviewer | No dual weak CSP in production |
+| Developer | Local Angular may still need a looser CSP in Development |
 
 ## Scope
 
 ### In scope (this release)
 
-- Change `ADFSTokenProvider` to stop calling password-token APIs
-- Use client id + client secret (+ resource/scope as already configured) instead
-- Stop documenting / requiring service-account username+password for the ADFS token path in README secrets template
-- Unit test with a mocked HTTP handler (no live ADFS)
+- Stop emitting the permissive always-on CSP (with unsafe-eval / unsafe-inline) on non-Development responses — preferred: Development-only for that middleware, or delete unsafe-* from it and rely on NWebsec in non-Development
+- Leave NWebsec `UseCsp` for non-Development intact unless a conflict requires a tiny fix
+- Evidence / note residual if Angular needs unsafe-* only in Development
 
 ### Out of scope
 
-- Changing Entra / cloud path (already client credentials)
-- Standing up or reconfiguring ADFS / Entra app registrations (constitution J2)
-- Live Dynamics smoke
-- CRYPTO-003 plaintext token cache
-- LOG-005 token URL logging
+- Full nonce/hash CSP redesign for Angular
+- Permissions-Policy (CONFIG-004)
+- Developer exception page (CONFIG-003)
 
 ## Journeys
 
-1. Password grant removed — `features/auth-001-adfs-client-credentials.feature` (@R-06.1)
-2. Client credentials used — same feature (@R-06.2)
+1. Production path — `features/config-002-csp-unsafe.feature` (@R-07.1)
+2. Development path — same feature (@R-07.2)
 
 ## Non-functional requirements
 
-- Privacy: tests use fake endpoints and secrets only
-- Residual risk: on-prem environments must be configured for client credentials before deploy; otherwise token acquire fails closed
+- Do not weaken the existing non-Development NWebsec CSP
+- Residual: Development may still use unsafe-* for local tooling
 
 ## Open questions
 
-- [x] Prefer IdentityModel `RequestClientCredentialsTokenAsync` (same pattern as Entra) over inventing a custom form post.
+- [x] Prefer gating the Append middleware to Development over deleting NWebsec.
 
 ## Sign-off (checkpoint 1)
 

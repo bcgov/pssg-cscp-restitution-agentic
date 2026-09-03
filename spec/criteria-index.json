@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T20:33:20.684Z",
+  "generatedAt": "2026-09-03T20:46:00.459Z",
   "criteria": [
     {
       "id": "R-06.1",
@@ -23,6 +23,18 @@
       "id": "R-01.2",
       "feature": "spec/features/config-001-trivy-gate.feature",
       "scenario": "Scan results are still published when the gate is configured",
+      "tier": null
+    },
+    {
+      "id": "R-07.1",
+      "feature": "spec/features/config-002-csp-unsafe.feature",
+      "scenario": "Non-development does not emit the weak always-on CSP",
+      "tier": "medium"
+    },
+    {
+      "id": "R-07.2",
+      "feature": "spec/features/config-002-csp-unsafe.feature",
+      "scenario": "Development may keep a looser CSP for local tooling",
       "tier": null
     },
     {
