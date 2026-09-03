@@ -4,51 +4,40 @@
 
 ## Upstream intent
 
-GitHub issue [#9](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/9) — rapid assessment **CRYPTO-001**.
+GitHub issue [#10](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/10) — rapid assessment **DEP-002**.
 
 ## Problem
 
-When a key-ring directory is configured, Data Protection keys are written to disk **without an at-rest protector**. On Linux/OpenShift that means plaintext key XML on the volume.
+The net10.0 API project still lists **EOL** `Microsoft.NETCore.App` 2.2.8 and `Microsoft.NETCore.Jit` 2.0.8 package references — leftover migration noise that confuses dependency review.
 
 ## Outcome
 
-Whenever keys are persisted to the filesystem, they are **also protected at rest** using an X.509 certificate (or equivalent ProtectKeysWith* provider suitable for OpenShift). Configuration documents the new certificate setting. Local Development without a key-ring directory remains unchanged (ephemeral keys).
+Those two PackageReferences are **removed**. The project still targets net10.0 and builds. Reviewers see no EOL meta-packages in the csproj.
 
 ## Users & personas
 
 | Persona | Goal |
 | --- | --- |
-| Security reviewer | No plaintext key material on the volume |
-| Platform operator | Clear config knobs for cert mount |
+| Security / dependency reviewer | Clean net10 graph without EOL meta-packages |
+| Developer | Build still succeeds |
 
 ## Scope
 
-### In scope (this release)
+### In scope
 
-- Chain `ProtectKeysWithCertificate` (or documented ProtectKeysWith*) when persisting keys to the filesystem
-- Add configuration key(s) for certificate path (and optional password) — no secrets committed
-- Update README secrets / env docs
-- Fail closed if persistence is enabled without a usable certificate in non-Development (preferred)
+- Remove both PackageReferences from `restitution-app.csproj`
+- Confirm `dotnet build` succeeds
 
 ### Out of scope
 
-- Standing up Azure Key Vault (unless already wired — it is not)
-- CRYPTO-002 Splunk TLS
-- Rotating existing production key rings (ops runbook residual)
+- DEP-003 lock files
+- DEP-006 OpenShift base image vs net10
+- Broader dependency upgrades
 
 ## Journeys
 
-1. Protected persist — `features/crypto-001-key-ring-protect.feature` (@R-09.1)
-2. Local without directory — same feature (@R-09.2)
-
-## Non-functional requirements
-
-- Privacy: certificate password only via secrets/env
-- Residual: ops must mount a cert before enabling KEY_RING_DIRECTORY in shared envs
-
-## Open questions
-
-- [x] Prefer filesystem X.509 over inventing Key Vault for this brownfield OpenShift app.
+1. Packages gone — `features/dep-002-eol-netcore-packages.feature` (@R-10.1)
+2. Build still works — same feature (@R-10.2)
 
 ## Sign-off (checkpoint 1)
 
