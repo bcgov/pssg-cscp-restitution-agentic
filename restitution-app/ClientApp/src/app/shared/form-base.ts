@@ -411,6 +411,17 @@ export class FormBase {
     return control1 + '-' + control2 + '-' + control3;
   }
 
+  public escapeHtml(value: string): string {
+    if (value === null || value === undefined) return '';
+
+    return String(value)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
   public displayMailingSubAddress(addressControl: any): string {
     let control = null;
 
@@ -418,12 +429,12 @@ export class FormBase {
 
     if (addressControl instanceof UntypedFormGroup) control = addressControl;
 
-    let line1 = control.value.line1 || '';
-    let line2 = control.value.line2 || '';
-    let city = control.value.city || '';
-    let postalCode = control.value.postalCode || '';
-    let province = control.value.province || '';
-    let country = control.value.country || '';
+    let line1 = this.escapeHtml(control.value.line1 || '');
+    let line2 = this.escapeHtml(control.value.line2 || '');
+    let city = this.escapeHtml(control.value.city || '');
+    let postalCode = this.escapeHtml(control.value.postalCode || '');
+    let province = this.escapeHtml(control.value.province || '');
+    let country = this.escapeHtml(control.value.country || '');
 
     let address = line1 + '<br />';
     if (line2 != '') address += line2 + '<br />';
@@ -444,12 +455,12 @@ export class FormBase {
 
     if (control == null || control === undefined) return '--';
 
-    let line1 = control.get('line1').value || '';
-    let line2 = control.get('line2').value || '';
-    let city = control.get('city').value || '';
-    let postalCode = control.get('postalCode').value || '';
-    let province = control.get('province').value || '';
-    let country = control.get('country').value || '';
+    let line1 = this.escapeHtml(control.get('line1').value || '');
+    let line2 = this.escapeHtml(control.get('line2').value || '');
+    let city = this.escapeHtml(control.get('city').value || '');
+    let postalCode = this.escapeHtml(control.get('postalCode').value || '');
+    let province = this.escapeHtml(control.get('province').value || '');
+    let country = this.escapeHtml(control.get('country').value || '');
 
     let address = line1 + '<br />';
     if (line2 != '') address += line2 + '<br />';
