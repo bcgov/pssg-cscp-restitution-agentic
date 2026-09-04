@@ -1651,3 +1651,64 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 **Residual risk:** None identified for this code path; operational risk remains if `ASPNETCORE_ENVIRONMENT` is mis-set to `Development` in a non-isolated deployment, but that no longer disables Splunk TLS certificate validation.
 
 - Reviewer: _______________ Date: _______________
+
+
+---
+
+# PR evidence — [RA DEP-004] ts-node bumped to ^10.x
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/ra-dep-004-update-ts-node-version |
+| Spec refs | `spec/spec.md`; `spec/features/dep-004-ts-node.feature` (`@R-30.1`) |
+| Constitution articles touched | P5 |
+| Tasks | TASK-001–TASK-003 |
+| Authoring agent | operator (Copilot quota insufficient) |
+| Generated | 2026-09-04T19:17:32.000Z |
+
+## Intent
+
+ClientApp `ts-node` moved from `~7.0.0` / lockfile 7.0.1 to `^10.9.2` with lockfile resolving a 10.x release. Dev-only tooling for TypeScript configs; no production runtime change.
+
+## Spec traceability
+
+| Scenario / requirement | Implemented? | Notes |
+| --- | --- | --- |
+| `@R-30.1` ts-node ^10.x with lockfile | Yes | package.json + package-lock.json |
+
+## Design system & accessibility
+
+| Check | Result |
+| --- | --- |
+| DS components used (list) | N/A — dependency bump |
+| Tokens used (not hard-coded colour) | N/A |
+| BC Sans imported | N/A |
+| Manual a11y notes | N/A |
+
+## Public-service minimums
+
+Checklist IDs addressed this PR: N/A — dependency bump
+
+## Tests
+
+| Type | Command / path | Result |
+| --- | --- | --- |
+| Lockfile | Inspect `node_modules/ts-node` version in package-lock.json | 10.x |
+| Acceptance / feature | `spec/features/dep-004-ts-node.feature` | Covered by package metadata |
+| CI | CI RESTITUTION npm + e2e after push | Pending |
+
+## Risks & follow-ups
+
+- Broader Angular/npm upgrades remain out of scope.
+
+## Review receipt (checkpoint 3)
+
+Same shape as `REVIEW.md` — required before merge. Do not replace with a free-form sign-off.
+
+**Checked:** `@R-30.1`; package.json range; lockfile 10.x resolve.
+
+**Could not check:** Copilot cloud session (quota blocked).
+
+**Residual risk:** None material for this slice beyond normal lockfile drift.
+
+- Reviewer: _______________ Date: _______________
