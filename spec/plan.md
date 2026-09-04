@@ -1,16 +1,16 @@
-# Plan — CONFIG-005 (AllowedHosts)
+# Plan — CRYPTO-002 (Splunk TLS bypass)
 
 ## Summary
 
-Replace `AllowedHosts: "*"` in `appsettings.json` with a specific default suitable for local boot (e.g. `localhost` and related loopback names) and document that production/OpenShift hosts must be supplied via environment / config overlay (`AllowedHosts` or `ASPNETCORE_*` / env var mapping). Add a config test asserting committed base config is not `*`. Document residual risk when route hostnames differ across environments. Append evidence. Do not invent real production hostnames in committed files.
+Prefer **removing** the Development-only `DangerousAcceptAnyServerCertificateValidator` assignment for Splunk HEC. If a local insecure path must remain, gate it solely on an explicit config/env flag (e.g. `SPLUNK_INSECURE_SSL=true` / configuration key), never on `env.IsDevelopment()` alone. Default path leaves `messageHandler` null / system validation. Add a unit/config test asserting Program does not enable the dangerous validator under Development without the opt-in. Append evidence.
 
 ## Key decisions
 
 | Decision | Choice | Rationale |
 | --- | --- | --- |
-| Base config | Specific hosts, not `*` | Enables host filtering |
-| Deploy hosts | Env / overlay | OpenShift hostnames stay out of repo |
-| Residual | Document in evidence | Multi-host route names may need ops overlay |
+| Preferred fix | Remove Dev bypass | Matches assessment intent |
+| Alternate | Explicit SPLUNK_INSECURE_SSL opt-in | Safer than IsDevelopment alone |
+| Live Splunk | Out of scope | No Dynamics/Splunk required |
 
 ## Approval (checkpoint 2)
 
