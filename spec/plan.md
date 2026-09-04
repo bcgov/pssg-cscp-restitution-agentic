@@ -1,21 +1,21 @@
-# Plan — SEC-SECRETS-001 (README secrets placeholders)
+# Plan — SEC-SECRETS-002 (ZAP_TARGET from repo vars)
 
 ## Summary
 
-Edit `restitution-app/README.md` user-secrets JSON template only: replace the five hardcoded Dynamics / ADFS / Entra endpoint and resource URLs with angle-bracket placeholders such as `<dynamics-api-endpoint-url>`, `<adfs-token-endpoint>`, `<dynamics-resource-url>`, `<cloud-dynamics-api-endpoint-url>`, and `<cloud-dynamics-resource-url>` (or equivalent clear names). Keep existing credential placeholders. Do **not** invent or paste real hostnames. Append a short evidence receipt. Optionally add a lightweight regression check (grep/script or docs-facing assertion) that the template block no longer contains known hostname patterns — not required if evidence documents a manual scan of the template.
+In `.github/workflows/zap-coast-restitution-dev-scan.yml`, replace the literal `ZAP_TARGET: https://coast-restitution-dev.silver.devops.bcgov` with `ZAP_TARGET: ${{ vars.ZAP_TARGET }}`. Add a short comment (or README/docs note adjacent to the workflow) stating that repository admins must set Actions variable `ZAP_TARGET` to the private development URL before `workflow_dispatch` scans can succeed. Confirm the YAML no longer contains that hostname (or any real silver.devops hostname). Append evidence. Do not invent a replacement hostname in the file.
 
 ## Key decisions
 
 | Decision | Choice | Rationale |
 | --- | --- | --- |
-| Change surface | README template only | Finding is documentation reconnaissance, not runtime |
-| Replacement values | Angle-bracket placeholders | Matches existing credential placeholder style; no fake hostnames |
-| Verification | Evidence + visual/grep of template | No app behaviour change; CI optional |
+| Source | `vars.ZAP_TARGET` | Finding asks for vars.*; not a secret (URL is env location, still private) |
+| Docs | Inline workflow comment + evidence | Operators need an explicit setup hint |
+| Live var value | Out of PR | Keep real hostname out of git |
 
 ## Residual
 
-- Developers need the real URLs from private runbooks / team channels (intentionally not in public README)
-- SEC-SECRETS-002 (ZAP workflow) remains separate
+- Scan fails until `ZAP_TARGET` is set in repo settings (expected)
+- Self-hosted runner / ZAP stack unchanged
 
 ## Approval (checkpoint 2)
 
