@@ -1,15 +1,16 @@
-# Plan — AUTH-002 (SameSite Lax)
+# Plan — AUTH-003 (anonymous health surface)
 
 ## Summary
 
-In `Program.cs` cookie policy, change `MinimumSameSitePolicy = SameSiteMode.None` to `SameSiteMode.Lax`. Prefer extracting a tiny testable constant/helper if that makes the unit assertion cleaner (optional). Add a unit/config test that fails if the policy is `None`. Append evidence. No documented reason found to keep `None` for this public restitution form app.
+Keep `/hc` anonymous for OpenShift probes, but Predicate (or separate `/hc/ready`) so anonymous responses only run/include checks tagged `self`/`process`. Dataverse (`dataverse`/`ready`) must not appear on the anonymous detailed payload. Prefer `HealthCheckOptions.Predicate` on `/hc` filtering to self/process; optionally map `/hc/ready` for Dataverse with auth or omit from this slice (AUTHZ-001 may cover remaining auth). Unit-test the predicate helper. Append evidence. Do not require auth on self liveness.
 
 ## Key decisions
 
 | Decision | Choice | Rationale |
 | --- | --- | --- |
-| Policy | `SameSiteMode.Lax` | Finding preference; no cross-site cookie need documented |
-| Test | Assert configured policy ≠ None / == Lax | CI without live browser |
+| Anonymous `/hc` | Predicate: tags contain `self` or `process` | Probes keep working; no Dataverse detail |
+| Dataverse | Not on anonymous `/hc` | Addresses disclosure; AUTHZ-001 may still want auth on ready |
+| Auth on self | No | Must not break OpenShift probes |
 
 ## Approval (checkpoint 2)
 

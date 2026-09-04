@@ -1,11 +1,12 @@
-# Tasks — AUTH-002
+# Tasks — AUTH-003
 
 ## Milestone 1
 
-- [x] **TASK-001** — Set `MinimumSameSitePolicy` to `SameSiteMode.Lax` in cookie policy. Covers `@R-23.1`.
-- [x] **TASK-002** — Unit/config test fails if policy is `SameSiteMode.None`. Covers `@R-23.2`.
-- [x] **TASK-003** — Append `docs/pr-evidence.md`. Covers both.
+- [ ] **TASK-001** — Restrict anonymous `/hc` to self/process tagged checks (predicate or equivalent). Covers `@R-24.1`.
+- [ ] **TASK-002** — Ensure self/process liveness remains anonymous (no RequireAuthorization on that surface). Covers `@R-24.2`.
+- [ ] **TASK-003** — Unit/config test for the anonymous predicate / mapping. Covers both.
+- [ ] **TASK-004** — Append `docs/pr-evidence.md`; note AUTHZ-001 may remain. Covers both.
 
 ## Backlog
 
-- [ ] AUTH-003 health endpoint — **not this slice**
+- [ ] AUTHZ-001 — authorize or further restrict ready/detailed health — **not this slice**
