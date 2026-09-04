@@ -1220,3 +1220,66 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 **Residual risk:** Extension spoofing without content sniffing remains; deferred to a later finding if filed.
 
 - Reviewer: _______________ Date: _______________
+
+---
+
+# PR evidence — [RA AUTH-002] Set cookie SameSite policy to Lax
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/ra-auth-002-fix-cookie-policy |
+| Spec refs | `spec/spec.md`; `spec/features/auth-002-samesite-lax.feature` (`@R-23.1`, `@R-23.2`) |
+| Constitution articles touched | P5, J5 |
+| Tasks | TASK-001–TASK-003 |
+| Authoring agent | unspecified |
+| Generated | 2026-09-04T17:44:29.810Z |
+
+## Intent
+
+The global ASP.NET Core cookie policy now sets its minimum SameSite value to Lax. This preserves the existing Secure and HttpOnly requirements while preventing framework-managed cookies from defaulting to broad cross-site use.
+
+## Spec traceability
+
+| Scenario / requirement | Implemented? | Notes |
+| --- | --- | --- |
+| `@R-23.1` Cookie minimum SameSite policy is Lax | Yes | `Program.cs` sets `MinimumSameSitePolicy = SameSiteMode.Lax`. |
+| `@R-23.2` Unsafe SameSite=None setting is detected | Yes | Focused configuration test asserts Lax is present and None is absent. |
+
+
+## Design system & accessibility
+
+| Check | Result |
+| --- | --- |
+| DS components used (list) | N/A — server cookie policy change |
+| Tokens used (not hard-coded colour) | N/A — server cookie policy change |
+| BC Sans imported | N/A — server cookie policy change |
+| Manual a11y notes | N/A — server cookie policy change |
+
+## Public-service minimums
+
+Checklist IDs addressed this PR: N/A — server cookie policy change.
+
+## Tests
+
+| Type | Command / path | Result |
+| --- | --- | --- |
+| Unit | `dotnet test restitution-app.Tests/restitution-app.Tests.csproj --no-restore` | Passed (41) |
+| Acceptance / feature | `spec/features/auth-002-samesite-lax.feature` | Covered by focused configuration test |
+| Build | `dotnet build restitution-app/restitution-app.csproj --no-restore` | Passed |
+| A11y automation | N/A — server cookie policy change | |
+
+## Risks & follow-ups
+
+- No documented cross-site cookie use requires `SameSite=None`.
+
+## Review receipt (checkpoint 3)
+
+Same shape as `REVIEW.md` — required before merge. Do not replace with a free-form sign-off.
+
+**Checked:** `@R-23.1` and `@R-23.2`; the global policy uses Lax and the regression test rejects None.
+
+**Could not check:** Browser-specific cookie behaviour against a deployed environment; this change only sets the framework policy minimum.
+
+**Residual risk:** An individual cookie explicitly configured with a less restrictive policy could require separate review.
+
+- Reviewer: _______________ Date: _______________
