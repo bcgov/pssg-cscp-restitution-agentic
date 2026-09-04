@@ -4,34 +4,34 @@
 
 ## Upstream intent
 
-GitHub issue [#30](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/30) — rapid assessment **DEP-004**.
+GitHub issue [#31](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/31) — rapid assessment **DEP-005**.
 
 ## Problem
 
-ClientApp pins `ts-node` to ~7.0.0 (resolves 7.0.1, 2018). Current stable is 10.x. It is a development-only dependency used to run TypeScript config (e.g. Playwright/Orval), but outdated tooling carries supply-chain risk in CI/build.
+ClientApp depends on moment.js (maintenance-mode / legacy) and `@angular/material-moment-adapter`, which pulls moment into the runtime bundle. Direct call sites are limited (date-field display/compare and form-base date formatting); Material date pickers are wired through MomentDateAdapter. No known CVEs at assessment time, but the library is no longer actively developed and inflates payload.
 
 ## Outcome
 
-Bump `ts-node` to a current major (`^10.x`) and refresh the lockfile so installs resolve a supported 10.x release. Confirm build/test tooling that invokes ts-node still works (or document no breakage). No production runtime change.
+Applicant date entry and display continue to work using native `Date` / `Intl` (or an equivalent maintained adapter). Direct moment imports are gone; Material date adapters no longer require moment. The `moment` and `@angular/material-moment-adapter` packages are removed from ClientApp dependencies when unused. No live Dynamics or broader UI rewrite.
 
 ## Scope
 
 ### In scope
 
-- Bump `ts-node` in ClientApp `package.json` to `^10.x`
-- Update `package-lock.json`
-- Light verification that configs still load / CI npm steps succeed
-- Evidence
+- Replace moment usage in `date-field` and `form-base` date formatting/compare with native `Date` / `Intl`
+- Switch Material `DateAdapter` providers from MomentDateAdapter to Angular native DateAdapter (adjust formats as needed for native)
+- Remove unused `moment` and `@angular/material-moment-adapter` (and related CommonJS allowlist) when no longer referenced
+- Light unit coverage and evidence
 
 ### Out of scope
 
-- Broader Angular/npm major upgrades
-- Production runtime dependency changes
-- Live Dynamics
+- Rewriting the entire Angular app or unrelated date UX redesign
+- Adding dayjs/luxon/date-fns unless native proves insufficient for the two call sites + Material adapter
+- Live Dynamics / OpenShift / broader npm major upgrades
 
 ## Journeys
 
-1. ts-node on supported major — `features/dep-004-ts-node.feature` (@R-30.1)
+1. Moment removed from ClientApp runtime — `features/dep-005-moment.feature` (@R-31.1, @R-31.2)
 
 ## Sign-off (checkpoint 1)
 
