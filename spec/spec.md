@@ -4,33 +4,35 @@
 
 ## Upstream intent
 
-GitHub issue [#21](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/21) — rapid assessment **VULN-001**.
+GitHub issue [#22](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/22) — rapid assessment **VULN-002**.
 
 ## Problem
 
-Mailing address helpers concatenate user-controlled form values with raw `<br />` tags and bind them via `[innerHTML]` on the review page. Markup-like input can render as live HTML.
+Document file-type checks exist only in the Angular uploader. `DocumentDto` and the restitution submit path do not enforce an extension allowlist, so a direct API caller can send any filename/extension to Dataverse.
 
 ## Outcome
 
-Address display on the review path is **XSS-safe**: user values are encoded or rendered as text (not unencoded `innerHTML` concatenation). Line breaks still appear. A unit test fails if script-like input is treated as live HTML.
+Server-side validation rejects documents whose filename extension is outside the client allowlist (`pdf`, `png`, `jpeg`, `jpg`, `doc`, `docx`, `ppt` from `ClientApp` `config.ts`) with **HTTP 400** before Dynamics is invoked. Unit tests cover allow/deny without live Dynamics.
 
 ## Scope
 
 ### In scope
 
-- Fix `displayMailingSubAddress` (and the same-pattern `displayMailingAddress` if still used with `innerHTML`)
-- Prefer encode + safe breaks, or template text bindings instead of raw `innerHTML`
-- Unit test covering script-like / markup-like address input
+- Validate `DocumentDto` / `DocumentCollection` filenames on the restitution submit path
+- Allowlist aligned with client `accepted_file_extensions`
+- Return 400 on disallowed extension
+- Unit tests without Dynamics
 
 ### Out of scope
 
-- Unrelated `[innerHTML]` usages (e.g. static alert icons) unless they take user input
-- VULN-002 server file validation
+- Full MIME/content sniffing beyond extension
+- Changing the Angular client allowlist itself
+- VULN-004 string length constraints
 
 ## Journeys
 
-1. No unencoded innerHTML address bind — `features/vuln-001-mailing-address-xss.feature` (@R-21.1)
-2. Script-like input not live HTML — same feature (@R-21.2)
+1. Disallowed extension → 400 — `features/vuln-002-server-file-extension.feature` (@R-22.1)
+2. Allowlist parity in unit tests — same feature (@R-22.2)
 
 ## Sign-off (checkpoint 1)
 
