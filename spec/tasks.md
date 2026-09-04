@@ -1,12 +1,12 @@
-# Tasks — AUTH-003
+# Tasks — AUTHZ-001
 
 ## Milestone 1
 
-- [x] **TASK-001** — Restrict anonymous `/hc` to self/process tagged checks (predicate or equivalent). Covers `@R-24.1`.
-- [x] **TASK-002** — Ensure self/process liveness remains anonymous (no RequireAuthorization on that surface). Covers `@R-24.2`.
-- [x] **TASK-003** — Unit/config test for the anonymous predicate / mapping. Covers both.
-- [x] **TASK-004** — Append `docs/pr-evidence.md`; note AUTHZ-001 may remain. Covers both.
+- [ ] **TASK-001** — Slim anonymous `/hc` ResponseWriter to status-only (no check names/descriptions). Covers `@R-25.1`.
+- [ ] **TASK-002** — Keep `/hc` anonymous (no RequireAuthorization on liveness). Covers `@R-25.2`.
+- [ ] **TASK-003** — Unit/config test for status-only anonymous writer / Program mapping. Covers both.
+- [ ] **TASK-004** — Append `docs/pr-evidence.md`. Covers both.
 
 ## Backlog
 
-- [ ] AUTHZ-001 — authorize or further restrict ready/detailed health — **not this slice**
+- [ ] AUTHZ-002 — `UseAuthorization()` middleware — **not this slice**
