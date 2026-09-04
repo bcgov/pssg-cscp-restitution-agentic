@@ -40,18 +40,18 @@ dotnet test restitution-app.sln
   "Dynamics": {
     "AuthenticationType": "OnPremise",
     "ADFS": {
-      "DynamicsApiEndpointUrl": "http://dev-coast-dataverse-proxy.silver.devops.bcgov/api/data/v9.0/",
-      "OAuth2TokenEndpoint": "https://ststest.gov.bc.ca/adfs/oauth2/token",
+      "DynamicsApiEndpointUrl": "<onpremise_dynamics_api_endpoint_url>",
+      "OAuth2TokenEndpoint": "<adfs_token_endpoint>",
       "ClientId": "<onpremise_client_id>",
       "ClientSecret": "<onpremise_client_secret>",
-      "ResourceName": "https://cscp-vs.dev.jag.gov.bc.ca/api/data/v9.0/"
+      "ResourceName": "<onpremise_dynamics_resource_name>"
     },
     "EntraId": {
-      "DynamicsApiEndpointUrl": "https://csvs-coast-dev.api.crm3.dynamics.com/api/data/v9.2/",
+      "DynamicsApiEndpointUrl": "<cloud_dynamics_api_endpoint_url>",
       "TenantId": "<cloud_tenant_id>",
       "ClientId": "<cloud_client_id>",
       "ClientSecret": "<cloud_client_secret>",
-      "ResourceName": "https://csvs-coast-dev.crm3.dynamics.com"
+      "ResourceName": "<cloud_dynamics_resource_url>"
     }
   }
 }

@@ -973,3 +973,65 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 - Checked: `RestitutionSubmitAuditTests` asserts `LogLevel.Information`, the three non-PII properties for each form type, the `unknown` fallback when no correlation id is available, and that no other state values (no form payload, no Dynamics `OrganizationResponse`) are logged; 6/6 new tests pass, 24/24 in the project.
 - Could not check: a live Dynamics/Dataverse submission and the resulting entry in the deployed Splunk/console sink; no outbound Dataverse access in this sandbox.
 - Residual risk: the failure-path `{@Response}` `OrganizationResponse` destructuring is unchanged and remains LOG-003 (#32).
+
+---
+
+# PR evidence — [RA SEC-SECRETS-001] Replace internal infrastructure URLs with placeholders
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/ra-sec-secrets-001-fix-hardcoded-urls |
+| Spec refs | `spec/spec.md`; `spec/features/sec-secrets-001-readme-placeholders.feature` (`@R-19.1`, `@R-19.2`) |
+| Constitution articles touched | P3, P5 |
+| Tasks | TASK-001, TASK-002, TASK-003 |
+| Authoring agent | copilot |
+| Generated | 2026-09-04T00:02:49.256Z |
+
+## Intent
+
+Replaced hardcoded internal BC Government service and authentication URLs in `restitution-app/README.md` user-secrets template with generic angle-bracket placeholders. All JSON configuration keys and existing credential placeholders are preserved.
+
+## Spec traceability
+
+| Scenario / requirement | Implemented? | Notes |
+| --- | --- | --- |
+| `@R-19.1` User-secrets template contains no real internal hostnames | Yes | Replaced Dataverse proxy, ADFS token endpoint, JAG Dataverse resource, and Dynamics cloud URLs with generic placeholders. |
+| `@R-19.2` Developers can still identify which secrets keys to set | Yes | JSON structure, key names, and credential placeholders (`<onpremise_client_id>`, etc.) remain intact. |
+
+
+## Design system & accessibility
+
+| Check | Result |
+| --- | --- |
+| DS components used (list) | N/A — documentation-only change |
+| Tokens used (not hard-coded colour) | N/A — documentation-only change |
+| BC Sans imported | N/A — documentation-only change |
+| Manual a11y notes | N/A — documentation-only change |
+
+## Public-service minimums
+
+Checklist IDs addressed this PR: N/A — documentation-only change
+
+## Tests
+
+| Type | Command / path | Result |
+| --- | --- | --- |
+| Unit | N/A — documentation-only change | |
+| Acceptance / feature | `spec/features/sec-secrets-001-readme-placeholders.feature` — manual review & grep verification of `restitution-app/README.md` | Passed — zero real internal hostnames remain in template |
+| A11y automation | N/A — documentation-only change | |
+
+## Risks & follow-ups
+
+- SEC-SECRETS-002 (ZAP workflow hostname) is out of scope for this slice and remains open as a separate ticket (#20).
+
+## Review receipt (checkpoint 3)
+
+Same shape as `REVIEW.md` — required before merge. Do not replace with a free-form sign-off.
+
+**Checked:** `@R-19.1` and `@R-19.2`; verified all 5 internal URLs in `restitution-app/README.md` were replaced with angle-bracket placeholders; verified JSON keys and existing credential placeholders are unchanged; ran grep for internal domain patterns.
+
+**Could not check:** N/A
+
+**Residual risk:** None. Documentation-only change.
+
+- Reviewer: _______________ Date: _______________
