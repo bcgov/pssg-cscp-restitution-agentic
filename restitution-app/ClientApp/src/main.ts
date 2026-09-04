@@ -11,7 +11,11 @@ import { environment } from './environments/environment';
 if (environment.production) {
   enableProdMode();
   if (window) {
+    // Suppress browser console noise in production (LOG-004).
     window.console.log = function () {};
+    window.console.error = function () {};
+    window.console.debug = function () {};
+    window.console.warn = function () {};
   }
 }
 

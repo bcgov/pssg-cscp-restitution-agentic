@@ -1813,3 +1813,33 @@ Dynamics submit failure no longer logs `{@Response}`. `RestitutionSubmitAudit.Wr
 **Residual risk:** ErrorCode value content depends on Dynamics; key names only otherwise.
 
 - Reviewer: _______________ Date: _______________
+
+---
+
+# PR evidence — [RA LOG-004] Production console suppression
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/ra-log-004-console-suppression |
+| Spec refs | `spec/spec.md`; `spec/features/log-004-console-suppression.feature` (`@R-33.1`) |
+| Tasks | TASK-001–TASK-002 |
+| Authoring agent | operator (Copilot quota insufficient) |
+| Generated | 2026-09-04T20:00:00.000Z |
+
+## Intent
+
+Production `main.ts` now no-ops `console.log`, `console.error`, `console.debug`, and `console.warn`.
+
+## Spec traceability
+
+| Scenario | Implemented? |
+| --- | --- |
+| `@R-33.1` | Yes |
+
+## Review receipt (checkpoint 3)
+
+**Checked:** main.ts production block.
+
+**Residual risk:** None material; call sites remain but are silent in production.
+
+- Reviewer: _______________ Date: _______________
