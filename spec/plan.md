@@ -1,20 +1,18 @@
-# Plan — LOG-003 (failure log without full response body)
+# Plan — LOG-004 (console suppression)
 
 ## Summary
 
-Replace the RestitutionsController failure path that logs `{@Response}` with a structured error log that records `IsSuccess` and error-code / result-key metadata only (no Serilog destructuring of the full OrganizationResponse). Prefer extending `RestitutionSubmitAudit` (or a tiny sibling helper) so the controller stays thin and unit tests can assert message templates and arguments without standing up Dynamics. Keep HTTP 500 behaviour unchanged.
+In production `main.ts`, assign no-op functions to `console.log`, `console.error`, `console.debug`, and `console.warn` (same pattern as existing log suppression). Leave existing call sites as-is — they become harmless under no-ops. Append evidence. Optional: tiny comment noting production-only.
 
 ## Key decisions
 
 | Decision | Choice | Rationale |
 | --- | --- | --- |
-| Approach | Structured scalars / keys, not `{@Response}` | Matches finding |
-| Helper | Extend RestitutionSubmitAudit | Same audit surface as LOG-002 |
-| Success path | Unchanged | Out of scope |
+| Scope | main.ts production block | Finding location |
+| Call sites | Leave; suppress | Proportionate |
 
 ## Approval (checkpoint 2)
 
 | Role | Name | Date |
 | --- | --- | --- |
 | Architect / tech lead | | |
-| Security (if required) | | |
