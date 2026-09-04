@@ -1,15 +1,15 @@
-# Plan — VULN-003 (Development-only exception page)
+# Plan — VULN-004 (DTO MaxLength)
 
 ## Summary
 
-Policy already uses `environment.IsDevelopment()` only. Expand unit tests to cover additional staging-like names (QA, UAT, PreProduction, Production) and add a lightweight source assertion that `Program.cs` calls `ExceptionPagePolicy.AllowDeveloperExceptionPage` before `UseDeveloperExceptionPage`. No policy change unless a gap appears.
+Add `[MaxLength]` to key string properties on `ParticipantDto`, `DocumentDto`, and `RestitutionApplicationDtoBase` (covers victim/offender application DTOs that inherit it). Use proportionate limits (e.g. names 100, address lines 200, email 254, phones 30, postal 20, filename 255, signature/body large but finite). Add unit tests using `Validator.TryValidateObject` proving overlong values fail. Leave ModelState behaviour in the controller unchanged.
 
 ## Key decisions
 
 | Decision | Choice | Rationale |
 | --- | --- | --- |
-| Policy | Keep Development-only | Already correct |
-| Proof | Expand regression tests | Twin of CONFIG-003/LOG-001 |
+| Surface | Main submit DTOs only | Proportionate |
+| Mechanism | DataAnnotations MaxLength | Already used for Required |
 
 ## Approval (checkpoint 2)
 
