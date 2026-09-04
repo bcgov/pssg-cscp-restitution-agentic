@@ -4,35 +4,33 @@
 
 ## Upstream intent
 
-GitHub issue [#22](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/22) — rapid assessment **VULN-002**.
+GitHub issue [#23](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/23) — rapid assessment **AUTH-002**.
 
 ## Problem
 
-Document file-type checks exist only in the Angular uploader. `DocumentDto` and the restitution submit path do not enforce an extension allowlist, so a direct API caller can send any filename/extension to Dataverse.
+Global cookie policy sets `MinimumSameSitePolicy = SameSiteMode.None`, which weakens default cross-site cookie protections unless a documented cross-site need exists.
 
 ## Outcome
 
-Server-side validation rejects documents whose filename extension is outside the client allowlist (`pdf`, `png`, `jpeg`, `jpg`, `doc`, `docx`, `ppt` from `ClientApp` `config.ts`) with **HTTP 400** before Dynamics is invoked. Unit tests cover allow/deny without live Dynamics.
+`MinimumSameSitePolicy` is **`SameSiteMode.Lax`** (preferred) unless a documented reason requires `None`. An automated check fails if the policy is still `None`.
 
 ## Scope
 
 ### In scope
 
-- Validate `DocumentDto` / `DocumentCollection` filenames on the restitution submit path
-- Allowlist aligned with client `accepted_file_extensions`
-- Return 400 on disallowed extension
-- Unit tests without Dynamics
+- Change cookie policy in `Program.cs` (or extracted helper) from `None` to `Lax`
+- Unit/config test asserting not `None` / equals `Lax`
+- Brief note in evidence if any residual cross-site cookie use remains
 
 ### Out of scope
 
-- Full MIME/content sniffing beyond extension
-- Changing the Angular client allowlist itself
-- VULN-004 string length constraints
+- Broader auth redesign (AUTH-001 already shipped)
+- AUTH-003 health endpoint anonymity
 
 ## Journeys
 
-1. Disallowed extension → 400 — `features/vuln-002-server-file-extension.feature` (@R-22.1)
-2. Allowlist parity in unit tests — same feature (@R-22.2)
+1. Policy is Lax — `features/auth-002-samesite-lax.feature` (@R-23.1)
+2. Automated regression check — same feature (@R-23.2)
 
 ## Sign-off (checkpoint 1)
 
