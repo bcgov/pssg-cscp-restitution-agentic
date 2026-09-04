@@ -1589,3 +1589,65 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 **Residual risk:** OpenShift deployments with custom route hostnames require environment configuration overlay (`AllowedHosts` or `ASPNETCORE_ALLOWEDHOSTS`) to match route hostnames.
 
 - Reviewer: _______________ Date: _______________
+
+---
+
+# PR evidence — [RA CRYPTO-002] Remove Splunk Development TLS certificate bypass
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/fix-tls-certificate-validation |
+| Spec refs | `spec/spec.md`; `spec/features/crypto-002-splunk-tls.feature` (`@R-29.1`) |
+| Constitution articles touched | P5, J3, J5 |
+| Tasks | TASK-001, TASK-002, TASK-003 |
+| Authoring agent | Copilot coding agent |
+| Generated | 2026-09-04T19:00:24.738Z |
+
+## Intent
+
+Removed the `env.IsDevelopment()`-gated `HttpClientHandler.DangerousAcceptAnyServerCertificateValidator` assignment used for the Serilog Splunk HTTP Event Collector sink. TLS certificate validation for the Splunk HEC connection is now always enforced by the default `HttpClient`/`HttpClientHandler` certificate validation, regardless of `ASPNETCORE_ENVIRONMENT`, closing the MITM risk if `Development` were mis-set in a non-isolated deployment. No opt-in insecure bypass flag was introduced since local Splunk connectivity is out of scope for this change; if a local dev Splunk instance uses a self-signed/internal CA certificate, that CA should be trusted in the local OS trust store instead.
+
+## Spec traceability
+
+| Scenario / requirement | Implemented? | Notes |
+| --- | --- | --- |
+| `@R-29.1` Certificate validation is not disabled solely because the environment is Development | Yes | Removed the `if (env.IsDevelopment())` block that built an `HttpClientHandler` with `DangerousAcceptAnyServerCertificateValidator` in `restitution-app/Program.cs`; `WriteTo.EventCollector(...)` no longer passes a custom `messageHandler`, so default TLS certificate validation applies in all environments. No remaining bypass exists, so no opt-in flag was needed. Added `SplunkTlsConfigurationTests.cs` asserting the source no longer references `DangerousAcceptAnyServerCertificateValidator`. |
+
+## Design system & accessibility
+
+| Check | Result |
+| --- | --- |
+| DS components used (list) | N/A — backend logging configuration change |
+| Tokens used (not hard-coded colour) | N/A |
+| BC Sans imported | N/A |
+| Manual a11y notes | N/A |
+
+## Public-service minimums
+
+Checklist IDs addressed this PR: N/A — backend security configuration change.
+
+## Tests
+
+| Type | Command / path | Result |
+| --- | --- | --- |
+| Unit | `dotnet test restitution-app.Tests/restitution-app.Tests.csproj --filter FullyQualifiedName~SplunkTlsConfiguration` | Passed (1) |
+| Build | `dotnet build` (restitution-app) | Succeeded, 0 warnings, 0 errors |
+| Acceptance / feature | `spec/features/crypto-002-splunk-tls.feature` | Covered by focused unit/config test |
+| A11y automation | N/A | Non-UI change |
+
+## Risks & follow-ups
+
+- If a local development Splunk instance requires a self-signed/internal CA certificate, that certificate should be installed into the OS trust store rather than reintroducing a code-level bypass.
+- Confirm `ASPNETCORE_ENVIRONMENT` is never set to `Development` in test, staging, or production deployments (deployment/ops responsibility, outside this code change).
+
+## Review receipt (checkpoint 3)
+
+Same shape as `REVIEW.md` — required before merge. Do not replace with a free-form sign-off.
+
+**Checked:** `@R-29.1`; `restitution-app/Program.cs` Splunk `EventCollector` sink configuration; verified no `DangerousAcceptAnyServerCertificateValidator` reference remains; unit test and build pass.
+
+**Could not check:** Live Splunk HEC connectivity (no Splunk instance available in this environment); OpenShift/production `ASPNETCORE_ENVIRONMENT` values (requires deployment environment).
+
+**Residual risk:** None identified for this code path; operational risk remains if `ASPNETCORE_ENVIRONMENT` is mis-set to `Development` in a non-isolated deployment, but that no longer disables Splunk TLS certificate validation.
+
+- Reviewer: _______________ Date: _______________

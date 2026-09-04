@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using System.Net.Http;
 using System.Reflection;
 using Database.Extensions;
 using Gov.Cscp.VictimServices.Public;
@@ -307,23 +306,16 @@ static void ConfigureLogging(IHostEnvironment env, IConfiguration configuration)
 
     if (!string.IsNullOrEmpty(splunkCollectorUrl) && !string.IsNullOrEmpty(splunkToken))
     {
-        HttpClientHandler handler = null;
-
-        if (env.IsDevelopment())
-        {
-            handler = new HttpClientHandler
-            {
-                ServerCertificateCustomValidationCallback =
-                    HttpClientHandler.DangerousAcceptAnyServerCertificateValidator,
-            };
-        }
-
+        // TLS certificate validation is always enforced for the Splunk HEC connection,
+        // including in Development, to prevent MITM attacks on the log transport channel.
+        // If a self-signed or internal CA certificate is used for a local/dev Splunk
+        // instance, install that CA certificate into the OS trust store instead of
+        // disabling certificate validation here.
         loggerConfiguration.WriteTo.EventCollector(
             splunkHost: splunkCollectorUrl,
             eventCollectorToken: splunkToken,
             sourceType: "coast:restitution:api",
             restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Information,
-            messageHandler: handler,
             batchSizeLimit: 100,
             batchIntervalInSeconds: 2
         );
