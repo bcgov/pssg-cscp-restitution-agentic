@@ -1,11 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ControlContainer, UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { MomentDateAdapter } from '@angular/material-moment-adapter';
-import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_NATIVE_DATE_FORMATS, NativeDateAdapter } from '@angular/material/core';
 import { MatStepper } from '@angular/material/stepper';
 import { RESTITUTION_PAGES } from '../../../restitution-application/restitution-application.component';
 import { AddressHelper } from '../../address/address.helper';
-import { CRMBoolean, CRMMultiBoolean, EnumHelper, IOptionSetVal, MY_FORMATS, ResitutionForm } from '../../enums-list';
+import { CRMBoolean, CRMMultiBoolean, EnumHelper, IOptionSetVal, ResitutionForm } from '../../enums-list';
 import { FormBase } from '../../form-base';
 
 @Component({
@@ -13,8 +12,8 @@ import { FormBase } from '../../form-base';
   templateUrl: './restitution-review.component.html',
   styleUrls: ['./restitution-review.component.scss'],
   providers: [
-    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
-    { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS }
+    { provide: DateAdapter, useClass: NativeDateAdapter },
+    { provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS }
   ],
   standalone: false
 })

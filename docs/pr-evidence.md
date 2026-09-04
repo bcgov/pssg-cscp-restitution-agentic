@@ -1712,3 +1712,65 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 **Residual risk:** None material for this slice beyond normal lockfile drift.
 
 - Reviewer: _______________ Date: _______________
+
+---
+
+# PR evidence — [RA DEP-005] Remove moment.js from ClientApp
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/ra-dep-005-remove-moment |
+| Spec refs | `spec/spec.md`; `spec/features/dep-005-moment.feature` (`@R-31.1`, `@R-31.2`) |
+| Constitution articles touched | P5 |
+| Tasks | TASK-001–TASK-005 |
+| Authoring agent | operator (Copilot quota insufficient) |
+| Generated | 2026-09-04T19:34:00.000Z |
+
+## Intent
+
+ClientApp no longer depends on maintenance-mode moment.js. Date field compare/patch and review formatting use native `Date` / `Intl`; Material date providers use `NativeDateAdapter` + `MAT_NATIVE_DATE_FORMATS`. Packages `moment` and `@angular/material-moment-adapter` removed.
+
+## Spec traceability
+
+| Scenario / requirement | Implemented? | Notes |
+| --- | --- | --- |
+| `@R-31.1` packages and imports removed | Yes | package.json + lockfile; no TS imports |
+| `@R-31.2` native Date compare/format | Yes | date-field + form-base.datesOrEmpty + unit tests |
+
+## Design system & accessibility
+
+| Check | Result |
+| --- | --- |
+| DS components used (list) | N/A — date library migration |
+| Tokens used (not hard-coded colour) | N/A |
+| BC Sans imported | N/A |
+| Manual a11y notes | N/A |
+
+## Public-service minimums
+
+Checklist IDs addressed this PR: N/A — dependency migration
+
+## Tests
+
+| Type | Command / path | Result |
+| --- | --- | --- |
+| Unit | `npx ng test --watch=false --include='**/form-base.spec.ts'` | 5 passed |
+| Build | `npm run buildprod` | Success |
+| Acceptance / feature | `spec/features/dep-005-moment.feature` | Covered by package + unit |
+
+## Risks & follow-ups
+
+- Review date display uses Intl + ordinal day approximating former moment `MMM Do, Y`; Material pickers use native formats (YYYY-MM-DD style may differ slightly from prior moment MY_FORMATS).
+- Unused `MY_FORMATS` export left in `enums-list.ts` (harmless).
+
+## Review receipt (checkpoint 3)
+
+Same shape as `REVIEW.md` — required before merge. Do not replace with a free-form sign-off.
+
+**Checked:** `@R-31.1`, `@R-31.2`; date-field/form-base; NativeDateAdapter providers; package removal; unit tests; production build.
+
+**Could not check:** Copilot cloud session (quota blocked); live browser date-picker smoke.
+
+**Residual risk:** Cosmetic date display token differences vs prior moment formats.
+
+- Reviewer: _______________ Date: _______________

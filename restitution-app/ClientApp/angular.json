@@ -19,7 +19,7 @@
             "progress": true,
             "baseHref": "/restwebforms/",
             "polyfills": ["src/polyfills.ts"],
-            "allowedCommonJsDependencies": ["moment"],
+            "allowedCommonJsDependencies": [],
             "assets": ["src/favicon.ico", "src/assets"],
             "styles": [
               "node_modules/bootstrap/dist/css/bootstrap.min.css",

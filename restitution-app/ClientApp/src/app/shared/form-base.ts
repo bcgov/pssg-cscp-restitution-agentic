@@ -7,7 +7,6 @@ import {
   ValidatorFn
 } from '@angular/forms';
 import { MatStepper } from '@angular/material/stepper';
-import _moment from 'moment';
 import { EnumHelper } from './enums-list';
 
 export class FormBase {
@@ -391,8 +390,27 @@ export class FormBase {
       var control = this.valueOrEmpty(values[i]);
 
       if (control !== '--') {
-        let formattedDate = _moment(control).format('MMM Do, Y');
-        output.push(formattedDate);
+        const raw: unknown = control;
+        const date = raw instanceof Date ? raw : new Date(String(raw));
+        if (!isNaN(date.getTime())) {
+          // Approx former moment "MMM Do, Y" (e.g. "Jan 3rd, 2020") via Intl + ordinal day.
+          const monthYear = new Intl.DateTimeFormat('en-US', {
+            month: 'short',
+            year: 'numeric'
+          }).formatToParts(date);
+          const month = monthYear.find((p) => p.type === 'month')?.value ?? '';
+          const year = monthYear.find((p) => p.type === 'year')?.value ?? '';
+          const dayNum = date.getDate();
+          const ordinal =
+            dayNum % 10 === 1 && dayNum % 100 !== 11
+              ? 'st'
+              : dayNum % 10 === 2 && dayNum % 100 !== 12
+                ? 'nd'
+                : dayNum % 10 === 3 && dayNum % 100 !== 13
+                  ? 'rd'
+                  : 'th';
+          output.push(`${month} ${dayNum}${ordinal}, ${year}`);
+        }
       }
     }
 

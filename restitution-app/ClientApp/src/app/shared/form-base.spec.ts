@@ -1,4 +1,4 @@
-import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup } from '@angular/forms';
 import { FormBase } from './form-base';
 
 describe('FormBase', () => {
@@ -56,6 +56,17 @@ describe('FormBase', () => {
 
       expect(result).not.toContain('<img');
       expect(result).toContain('&lt;img src=x onerror=alert(1)&gt;');
+    });
+  });
+
+  describe('datesOrEmpty', () => {
+    it('formats a Date control with month, ordinal day, and year without moment', () => {
+      const result = formBase.datesOrEmpty([new UntypedFormControl(new Date(2020, 0, 3))]);
+      expect(result).toBe('Jan 3rd, 2020');
+    });
+
+    it('returns -- when no dates are present', () => {
+      expect(formBase.datesOrEmpty([])).toBe('--');
     });
   });
 });
