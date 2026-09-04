@@ -1774,3 +1774,42 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 **Residual risk:** Cosmetic date display token differences vs prior moment formats.
 
 - Reviewer: _______________ Date: _______________
+
+---
+
+# PR evidence — [RA LOG-003] Failure log without full OrganizationResponse
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/ra-log-003-response-logging |
+| Spec refs | `spec/spec.md`; `spec/features/log-003-response-logging.feature` (`@R-32.1`) |
+| Constitution articles touched | P5, J5 |
+| Tasks | TASK-001–TASK-003 |
+| Authoring agent | operator (Copilot quota insufficient) |
+| Generated | 2026-09-04T19:55:00.000Z |
+
+## Intent
+
+Dynamics submit failure no longer logs `{@Response}`. `RestitutionSubmitAudit.WriteDynamicsFailure` records IsSuccess, ErrorCode (when present), and result key names only.
+
+## Spec traceability
+
+| Scenario / requirement | Implemented? | Notes |
+| --- | --- | --- |
+| `@R-32.1` no full OrganizationResponse destructuring | Yes | Controller + helper + unit tests |
+
+## Tests
+
+| Type | Command / path | Result |
+| --- | --- | --- |
+| Unit | `dotnet test --filter RestitutionSubmitAudit` | 8 passed |
+
+## Review receipt (checkpoint 3)
+
+**Checked:** `@R-32.1`; no `{@Response}` in Controllers; helper scalars only.
+
+**Could not check:** Live Dynamics failure payload shapes.
+
+**Residual risk:** ErrorCode value content depends on Dynamics; key names only otherwise.
+
+- Reviewer: _______________ Date: _______________

@@ -95,9 +95,21 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
 
                 if (response.Results["IsSuccess"] is not true)
                 {
-                    _logger.LogError(
-                        "Error while saving victim restitution. Response from Dynamics was:\n{@Response}",
-                        response
+                    object errorCode = null;
+                    foreach (var key in new[] { "ErrorCode", "errorCode", "ErrorCodes" })
+                    {
+                        if (response.Results.Contains(key))
+                        {
+                            errorCode = response.Results[key];
+                            break;
+                        }
+                    }
+
+                    RestitutionSubmitAudit.WriteDynamicsFailure(
+                        _logger,
+                        response.Results.Contains("IsSuccess") ? response.Results["IsSuccess"] : null,
+                        errorCode,
+                        response.Results.Keys.Cast<string>()
                     );
 
                     return StatusCode(500, "An error occurred while saving the restitution case.");
