@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-04T19:53:47.851Z",
+  "generatedAt": "2026-09-04T19:58:23.482Z",
   "criteria": [
     {
       "id": "R-06.1",
@@ -348,6 +348,12 @@
       "feature": "spec/features/sec-secrets-002-zap-target-var.feature",
       "scenario": "Operators are told to set ZAP_TARGET in repo settings",
       "tier": null
+    },
+    {
+      "id": "R-34.1",
+      "feature": "spec/features/sec-secrets-003-trivy-secret.feature",
+      "scenario": "CI runs Trivy secret scanner with exit-code 1",
+      "tier": "low"
     },
     {
       "id": "R-21.1",

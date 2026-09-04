@@ -4,33 +4,33 @@
 
 ## Upstream intent
 
-GitHub issue [#33](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/33) — rapid assessment **LOG-004**.
+GitHub issue [#34](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/34) — rapid assessment **SEC-SECRETS-003**.
 
 ## Problem
 
-In production bootstrap, only `console.log` is suppressed. `console.error`, `console.debug`, and `console.warn` remain active and can leak diagnostic detail to end-user browser consoles.
+Assessment noted Trivy secret scanning with non-enforcing exit codes. Current `development` already has enforcing Trivy **vulnerability** FS scans in CI (`exit-code: 1`), but secret scanning is not an enforcing gate. Stale assessment paths (`build-template.yml`) no longer apply.
 
 ## Outcome
 
-In production, console log/error/debug/warn are all no-ops (or equivalently suppressed). Existing call sites remain harmless under suppression. Non-production builds keep normal console behaviour.
+CI (and/or CD as proportionate) runs an enforcing Trivy **secret** scan (`scanners: secret`, `exit-code: 1`) so committed secrets fail the pipeline. Existing vuln FS enforcement remains. Do not disable Tier workflows.
 
 ## Scope
 
 ### In scope
 
-- Extend production console suppression in ClientApp `main.ts`
-- Confirm/adjust call sites if needed so they remain safe under no-ops
-- Light evidence (and optional unit/build check)
+- Add enforcing Trivy secret scan to CI restitution workflow (primary)
+- Optionally mirror on CD if images/fs paths support secret scanners without false-positive lockout
+- Evidence documenting assessment path drift
 
 ### Out of scope
 
-- Removing all console calls from the codebase
-- Introducing a full logging framework
+- Disabling CodeQL or other Tier gates
+- Broader secrets management / rotation
 - Live Dynamics
 
 ## Journeys
 
-1. Production console suppression — `features/log-004-console-suppression.feature` (@R-33.1)
+1. Enforcing secret scan — `features/sec-secrets-003-trivy-secret.feature` (@R-34.1)
 
 ## Sign-off (checkpoint 1)
 
