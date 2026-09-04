@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-04T18:07:22.636Z",
+  "generatedAt": "2026-09-04T18:18:42.364Z",
   "criteria": [
     {
       "id": "R-06.1",
@@ -47,6 +47,18 @@
       "id": "R-25.2",
       "feature": "spec/features/authz-001-health-status-only.feature",
       "scenario": "OpenShift-style self probe remains anonymous",
+      "tier": null
+    },
+    {
+      "id": "R-26.1",
+      "feature": "spec/features/authz-002-use-authorization.feature",
+      "scenario": "Pipeline registers and invokes authorization",
+      "tier": "low"
+    },
+    {
+      "id": "R-26.2",
+      "feature": "spec/features/authz-002-use-authorization.feature",
+      "scenario": "Anonymous health probe remains unauthenticated",
       "tier": null
     },
     {
