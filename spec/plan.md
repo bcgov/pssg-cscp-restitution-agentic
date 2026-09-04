@@ -1,16 +1,16 @@
-# Plan — CRYPTO-002 (Splunk TLS bypass)
+# Plan — DEP-004 (ts-node ^10.x)
 
 ## Summary
 
-Prefer **removing** the Development-only `DangerousAcceptAnyServerCertificateValidator` assignment for Splunk HEC. If a local insecure path must remain, gate it solely on an explicit config/env flag (e.g. `SPLUNK_INSECURE_SSL=true` / configuration key), never on `env.IsDevelopment()` alone. Default path leaves `messageHandler` null / system validation. Add a unit/config test asserting Program does not enable the dangerous validator under Development without the opt-in. Append evidence.
+In `restitution-app/ClientApp/package.json`, change `ts-node` from `~7.0.0` to `^10.9.0` (or equivalent `^10.x`). Regenerate/update `package-lock.json` so the resolved version is 10.x. Prefer `npm install` in ClientApp with existing legacy-peer-deps flags if the project already uses them. Append evidence noting this is a devDependency only. No production runtime change.
 
 ## Key decisions
 
 | Decision | Choice | Rationale |
 | --- | --- | --- |
-| Preferred fix | Remove Dev bypass | Matches assessment intent |
-| Alternate | Explicit SPLUNK_INSECURE_SSL opt-in | Safer than IsDevelopment alone |
-| Live Splunk | Out of scope | No Dynamics/Splunk required |
+| Target | ^10.x | Current stable major per finding |
+| Scope | ClientApp only | Finding location |
+| Broader upgrades | Out of scope | Keep slice tight |
 
 ## Approval (checkpoint 2)
 

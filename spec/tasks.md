@@ -1,10 +1,10 @@
-# Tasks — CRYPTO-002
+# Tasks — DEP-004
 
 ## Milestone 1
 
-- [x] **TASK-001** — Remove or re-gate Splunk DangerousAcceptAnyServerCertificateValidator (not bare IsDevelopment). Covers `@R-29.1`.
-- [x] **TASK-002** — Unit/config test for gating rule. Covers `@R-29.1`.
-- [x] **TASK-003** — Append `docs/pr-evidence.md`. Covers `@R-29.1`.
+- [ ] **TASK-001** — Bump `ts-node` to `^10.x` in ClientApp package.json. Covers `@R-30.1`.
+- [ ] **TASK-002** — Update package-lock.json to resolve 10.x. Covers `@R-30.1`.
+- [ ] **TASK-003** — Append `docs/pr-evidence.md`. Covers `@R-30.1`.
 
 ## Backlog
 
