@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-04T19:25:12.171Z",
+  "generatedAt": "2026-09-04T19:48:01.856Z",
   "criteria": [
     {
       "id": "R-06.1",
@@ -312,6 +312,12 @@
       "feature": "spec/features/log-002-submit-audit-log.feature",
       "scenario": "Success audit log excludes PII and Dynamics response body",
       "tier": null
+    },
+    {
+      "id": "R-32.1",
+      "feature": "spec/features/log-003-response-logging.feature",
+      "scenario": "Unsuccessful Dynamics response is logged without full body destructuring",
+      "tier": "low"
     },
     {
       "id": "R-19.1",
