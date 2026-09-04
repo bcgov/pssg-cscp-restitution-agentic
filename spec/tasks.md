@@ -1,10 +1,10 @@
-# Tasks — CONFIG-004
+# Tasks — CONFIG-005
 
 ## Milestone 1
 
-- [ ] **TASK-001** — Add restrictive Permissions-Policy to Caddyfile and/or API middleware. Covers `@R-27.1`.
-- [ ] **TASK-002** — Light verification (config or header assertion). Covers `@R-27.1`.
-- [ ] **TASK-003** — Append `docs/pr-evidence.md`. Covers `@R-27.1`.
+- [ ] **TASK-001** — Tighten AllowedHosts away from `*` (env-configurable). Covers `@R-28.1`.
+- [ ] **TASK-002** — Config/unit test that AllowedHosts is not `*`. Covers `@R-28.1`.
+- [ ] **TASK-003** — Document OpenShift residual in `docs/pr-evidence.md`. Covers `@R-28.1`.
 
 ## Backlog
 
