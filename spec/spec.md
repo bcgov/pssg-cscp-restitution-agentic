@@ -4,35 +4,34 @@
 
 ## Upstream intent
 
-GitHub issue [#19](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/19) — rapid assessment **SEC-SECRETS-001**.
+GitHub issue [#20](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/20) — rapid assessment **SEC-SECRETS-002**.
 
 ## Problem
 
-The developer README user-secrets template embeds real internal BC Government hostnames (Dataverse proxy, ADFS token endpoint, JAG Dataverse resource, Dynamics cloud endpoints). Credential values are already placeholders, but the hostnames themselves are reconnaissance material in a public `bcgov` repository.
+The OWASP ZAP development scan workflow hardcodes the development environment hostname as `ZAP_TARGET`. That hostname reveals a live internal OpenShift Silver Cluster deployment path in a public repository.
 
 ## Outcome
 
-The README secrets template uses **generic placeholders** for every Dynamics / ADFS / Entra endpoint URL and resource name (for example `<dynamics-api-endpoint-url>`, `<adfs-token-endpoint>`, `<dynamics-resource-url>`). No real internal hostname remains in that template. Developers still understand which keys to set locally.
+`ZAP_TARGET` is sourced from a repository variable (for example `${{ vars.ZAP_TARGET }}`), not a literal hostname in workflow YAML. Documentation states that operators must set the variable in repo settings before the scan can run. No real development hostname remains in the workflow file.
 
 ## Scope
 
 ### In scope
 
-- Replace hardcoded hostnames/URLs in `restitution-app/README.md` user-secrets template with angle-bracket placeholders
-- Keep credential placeholders as they are (`<onpremise_client_id>`, etc.)
+- Replace the hardcoded `ZAP_TARGET` value in `zap-coast-restitution-dev-scan.yml` with a `vars` (or secrets) reference
+- Document that `ZAP_TARGET` must be configured in GitHub repository settings
 - Evidence in `docs/pr-evidence.md`
 
 ### Out of scope
 
-- Changing runtime config, OpenShift secrets, or appsettings
-- Inventing or documenting new real hostnames
-- SEC-SECRETS-002 (ZAP workflow hostname) — separate issue
-- Rotating or inventing live credentials
+- Changing ZAP scan behaviour, schedule, or report upload
+- Setting the live variable value in this PR (operators configure privately)
+- SEC-SECRETS-001 (already shipped) or other workflows
 
 ## Journeys
 
-1. Template has no real hostnames — `features/sec-secrets-001-readme-placeholders.feature` (@R-19.1)
-2. Placeholder keys remain clear for local setup — same feature (@R-19.2)
+1. Workflow YAML has no real hostname — `features/sec-secrets-002-zap-target-var.feature` (@R-20.1)
+2. Operators know to set `ZAP_TARGET` — same feature (@R-20.2)
 
 ## Sign-off (checkpoint 1)
 
