@@ -20,6 +20,8 @@
 		Content-Security-Policy "default-src 'self'; script-src 'self' https://apis.google.com https://maxcdn.bootstrapcdn.com https://cdnjs.cloudflare.com https://code.jquery.com https://stackpath.bootstrapcdn.com https://use.fontawesome.com https://fonts.googleapis.com;  object-src 'self' data:; style-src 'self' 'unsafe-inline' https://use.fontawesome.com https://stackpath.bootstrapcdn.com https://fonts.googleapis.com;img-src 'self' data:; frame-src 'self' data:;font-src 'self' https://use.fontawesome.com https://fonts.gstatic.com; form-action 'self'; frame-ancestors 'self'; block-all-mixed-content"
 		# Set referrer policy
 		Referrer-Policy "same-origin"
+		# Restrict unused browser features
+		Permissions-Policy "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
   	}
 
 	encode zstd gzip

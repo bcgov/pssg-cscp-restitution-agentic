@@ -1469,3 +1469,63 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 **Residual risk:** Authentication design (scheme, token validation, per-endpoint policies) remains a separate future slice.
 
 - Reviewer: _______________ Date: _______________
+
+---
+
+# PR evidence — [RA CONFIG-004] Missing Permissions-Policy header
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/ra-config-004-missing-permissions-policy-header |
+| Spec refs | `spec/spec.md`; `spec/features/config-004-permissions-policy.feature` (`@R-27.1`) |
+| Constitution articles touched | P5, J5 |
+| Tasks | TASK-001, TASK-002, TASK-003 |
+| Authoring agent | Copilot coding agent |
+| Generated | 2026-09-04T18:35:54.198Z |
+
+## Intent
+
+Configured a restrictive `Permissions-Policy` HTTP response header denying unused powerful browser features (`accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()`) in both the Caddy static file server config (`Caddyfile`) and the ASP.NET Core middleware pipeline (`Program.cs`).
+
+## Spec traceability
+
+| Scenario / requirement | Implemented? | Notes |
+| --- | --- | --- |
+| `@R-27.1` Permissions-Policy header is configured | Yes | Added `Permissions-Policy` header to `Caddyfile` and `Program.cs`; verified presence in both configurations via unit tests in `PermissionsPolicyConfigurationTests.cs`. |
+
+## Design system & accessibility
+
+| Check | Result |
+| --- | --- |
+| DS components used (list) | N/A — server / reverse proxy security header change |
+| Tokens used (not hard-coded colour) | N/A |
+| BC Sans imported | N/A |
+| Manual a11y notes | N/A |
+
+## Public-service minimums
+
+Checklist IDs addressed this PR: N/A — security header configuration change.
+
+## Tests
+
+| Type | Command / path | Result |
+| --- | --- | --- |
+| Unit | `dotnet test restitution-app.Tests/restitution-app.Tests.csproj --filter FullyQualifiedName~PermissionsPolicyConfiguration` | Passed (2) |
+| Acceptance / feature | `spec/features/config-004-permissions-policy.feature` | Covered by focused unit/config tests |
+| A11y automation | N/A | Non-UI change |
+
+## Risks & follow-ups
+
+- None. Unused powerful browser features are denied by default without impacting existing functionality.
+
+## Review receipt (checkpoint 3)
+
+Same shape as `REVIEW.md` — required before merge. Do not replace with a free-form sign-off.
+
+**Checked:** `@R-27.1`; `Program.cs` and `Caddyfile` security header configuration; verified restrictive directives deny unused features; unit tests pass.
+
+**Could not check:** Live HTTP response headers from a running Caddy instance or OpenShift deployment (sandbox lacks running deployment).
+
+**Residual risk:** None.
+
+- Reviewer: _______________ Date: _______________
