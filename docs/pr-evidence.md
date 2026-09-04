@@ -1408,3 +1408,64 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 **Residual risk:** Detailed/ready health endpoint design remains a separate future slice if product requires authenticated readiness detail.
 
 - Reviewer: _______________ Date: _______________
+
+---
+
+# PR evidence — [RA AUTHZ-002] UseAuthorization middleware in pipeline
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/ra-authz-002-fix-useauthorization-middleware |
+| Spec refs | `spec/spec.md`; `spec/features/authz-002-use-authorization.feature` (`@R-26.1`, `@R-26.2`) |
+| Constitution articles touched | P5, J5 |
+| Tasks | TASK-001–TASK-005 |
+| Authoring agent | Copilot coding agent |
+| Generated | 2026-09-04T18:25:05.097Z |
+
+## Intent
+
+Authorization services are now registered (`services.AddAuthorization()`) and `app.UseAuthorization()` runs after `UseRouting()` and before `MapControllers()`. Any future `[Authorize]` attribute on a controller or action is therefore enforced instead of silently ignored. No authentication scheme is added, no existing endpoint is protected, and anonymous `/hc` liveness is unchanged.
+
+## Spec traceability
+
+| Scenario / requirement | Implemented? | Notes |
+| --- | --- | --- |
+| `@R-26.1` Pipeline registers and invokes authorization | Yes | `services.AddAuthorization()` in service registration; `app.UseAuthorization()` between `UseRouting()` and `MapControllers()`; `AuthorizationPipelineTests` asserts registration and ordering in `Program.cs`. |
+| `@R-26.2` Anonymous health probe remains unauthenticated | Yes | `/hc` is still mapped without `RequireAuthorization`, and no fallback authorization policy is configured; asserted by `AuthorizationPipelineTests`. |
+
+## Design system & accessibility
+
+| Check | Result |
+| --- | --- |
+| DS components used (list) | N/A — API middleware change |
+| Tokens used (not hard-coded colour) | N/A |
+| BC Sans imported | N/A |
+| Manual a11y notes | N/A |
+
+## Public-service minimums
+
+Checklist IDs addressed this PR: N/A — non-UI middleware pipeline change.
+
+## Tests
+
+| Type | Command / path | Result |
+| --- | --- | --- |
+| Unit | `dotnet test restitution-app.Tests/restitution-app.Tests.csproj --filter FullyQualifiedName~AuthorizationPipeline` | Passed (3) |
+| Acceptance / feature | `spec/features/authz-002-use-authorization.feature` | Covered by focused unit/config tests |
+| A11y automation | N/A | Non-UI change |
+
+## Risks & follow-ups
+
+- Authentication schemes (`AddAuthentication`) and protecting specific endpoints remain out of scope; `[Authorize]` without a scheme would fail closed with a 401/500 until authentication is designed.
+
+## Review receipt (checkpoint 3)
+
+Same shape as `REVIEW.md` — required before merge. Do not replace with a free-form sign-off.
+
+**Checked:** `@R-26.1` and `@R-26.2`; `Program.cs` service registration and middleware order; anonymous `/hc` mapping unchanged; focused tests pass.
+
+**Could not check:** End-to-end enforcement of a real `[Authorize]` endpoint, since no authentication scheme exists in this slice.
+
+**Residual risk:** Authentication design (scheme, token validation, per-endpoint policies) remains a separate future slice.
+
+- Reviewer: _______________ Date: _______________

@@ -52,6 +52,10 @@ services.AddScoped<ILookupQueryService, LookupQueryService>();
 // Routing
 services.AddRouting(options => options.LowercaseUrls = true);
 
+// Authorization services so [Authorize] attributes are enforced rather than
+// silently ignored when controllers or actions are annotated in future.
+services.AddAuthorization();
+
 // MVC + security headers (NWebsec filters)
 services
     .AddControllers(opts =>
@@ -257,6 +261,7 @@ app.UseCookiePolicy(
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
