@@ -1,9 +1,10 @@
-# Tasks — SEC-SECRETS-003
+# Tasks — VULN-003
 
 ## Milestone 1
 
-- [x] **TASK-001** — Add CI Trivy secret scan step (`scanners: secret`, `exit-code: 1`). Covers `@R-34.1`.
-- [x] **TASK-002** — Append evidence noting assessment path drift. Covers `@R-34.1`.
+- [ ] **TASK-001** — Expand ExceptionPagePolicyTests for staging-like env names. Covers `@R-35.1`.
+- [ ] **TASK-002** — Assert Program.cs gates via ExceptionPagePolicy. Covers `@R-35.1`.
+- [ ] **TASK-003** — Append evidence. Covers `@R-35.1`.
 
 ## Backlog
 

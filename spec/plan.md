@@ -1,16 +1,15 @@
-# Plan — SEC-SECRETS-003 (enforcing Trivy secret scan)
+# Plan — VULN-003 (Development-only exception page)
 
 ## Summary
 
-Add a dedicated Trivy filesystem step in `.github/workflows/ci-restitution.yml` with `scanners: secret` and `exit-code: "1"`. Prefer a separate step from the existing vuln FS scan so severity filters for vulns are unchanged. Run with `if: always()` after CodeQL when practical so a CodeQL residual does not skip the secret gate. Document that assessment `build-template.yml` / exit-code 0 comments are stale. Skip CD image secret scan unless trivially safe — CI FS is the proportionate enforce point.
+Policy already uses `environment.IsDevelopment()` only. Expand unit tests to cover additional staging-like names (QA, UAT, PreProduction, Production) and add a lightweight source assertion that `Program.cs` calls `ExceptionPagePolicy.AllowDeveloperExceptionPage` before `UseDeveloperExceptionPage`. No policy change unless a gap appears.
 
 ## Key decisions
 
 | Decision | Choice | Rationale |
 | --- | --- | --- |
-| Primary gate | CI FS secret scanner | Always runs on PRs |
-| Separate step | Yes | Keep vuln CRITICAL,HIGH filter intact |
-| CD | Optional / skip if noisy | Prefer CI enforce |
+| Policy | Keep Development-only | Already correct |
+| Proof | Expand regression tests | Twin of CONFIG-003/LOG-001 |
 
 ## Approval (checkpoint 2)
 
