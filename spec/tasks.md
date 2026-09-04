@@ -1,13 +1,11 @@
-# Tasks — AUTHZ-002
+# Tasks — CONFIG-004
 
 ## Milestone 1
 
-- [x] **TASK-001** — `services.AddAuthorization()` (or equivalent). Covers `@R-26.1`.
-- [x] **TASK-002** — `app.UseAuthorization()` after `UseRouting`, before `MapControllers`. Covers `@R-26.1`.
-- [x] **TASK-003** — Keep `/hc` anonymous. Covers `@R-26.2`.
-- [x] **TASK-004** — Unit/config test documenting UseAuthorization in Program. Covers both.
-- [x] **TASK-005** — Append `docs/pr-evidence.md`. Covers both.
+- [ ] **TASK-001** — Add restrictive Permissions-Policy to Caddyfile and/or API middleware. Covers `@R-27.1`.
+- [ ] **TASK-002** — Light verification (config or header assertion). Covers `@R-27.1`.
+- [ ] **TASK-003** — Append `docs/pr-evidence.md`. Covers `@R-27.1`.
 
 ## Backlog
 
-- (none for this finding)
+- (none)
