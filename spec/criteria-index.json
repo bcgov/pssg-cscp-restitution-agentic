@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-04T18:30:44.494Z",
+  "generatedAt": "2026-09-04T18:43:40.779Z",
   "criteria": [
     {
       "id": "R-06.1",
@@ -101,6 +101,12 @@
       "id": "R-27.1",
       "feature": "spec/features/config-004-permissions-policy.feature",
       "scenario": "Permissions-Policy header is configured",
+      "tier": "low"
+    },
+    {
+      "id": "R-28.1",
+      "feature": "spec/features/config-005-allowed-hosts.feature",
+      "scenario": "AllowedHosts is specific and configurable",
       "tier": "low"
     },
     {
