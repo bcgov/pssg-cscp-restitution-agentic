@@ -115,7 +115,8 @@ namespace Gov.Cscp.VictimServices.Public.Tests
                 .Where(m => m.Name == nameof(RestitutionSubmitAudit.WriteDynamicsFailure));
             Assert.All(
                 methods,
-                m => Assert.DoesNotContain(m.GetParameters(), p => p.ParameterType.Name.Contains("OrganizationResponse"))
+                m =>
+                    Assert.DoesNotContain(m.GetParameters(), p => p.ParameterType.Name.Contains("OrganizationResponse"))
             );
         }
     }

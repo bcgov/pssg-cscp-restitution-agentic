@@ -1843,3 +1843,30 @@ Production `main.ts` now no-ops `console.log`, `console.error`, `console.debug`,
 **Residual risk:** None material; call sites remain but are silent in production.
 
 - Reviewer: _______________ Date: _______________
+
+---
+
+# PR evidence — [RA SEC-SECRETS-003] Enforcing Trivy secret scan
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/ra-sec-secrets-003-trivy-secret |
+| Spec refs | `spec/features/sec-secrets-003-trivy-secret.feature` (`@R-34.1`) |
+| Authoring agent | operator (Copilot quota insufficient) |
+| Generated | 2026-09-04T20:05:00.000Z |
+
+## Intent
+
+CI gate adds Trivy FS `scanners: secret` with `exit-code: 1` and SARIF upload. Assessment `build-template.yml` / non-enforcing secret exit-code comments are stale; vuln FS was already enforcing.
+
+## Spec traceability
+
+| `@R-34.1` | Yes — ci-restitution.yml |
+
+## Review receipt (checkpoint 3)
+
+**Checked:** workflow YAML secret scanners + exit-code 1.
+
+**Residual risk:** False positives could fail gate — keep enforcement; scope scanners to secret only.
+
+- Reviewer: _______________ Date: _______________
