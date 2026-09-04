@@ -1,17 +1,17 @@
-# Plan — AUTHZ-001 (anonymous /hc status-only)
+# Plan — AUTHZ-002 (UseAuthorization middleware)
 
 ## Summary
 
-Keep `/hc` anonymous for OpenShift probes. Change the anonymous ResponseWriter so the JSON body carries only an overall **status** signal (no `checks` array with names/descriptions). Retain AUTH-003 `Predicate` filtering to self/process so Dataverse checks still do not run on this surface. Unit/config test asserts the writer shape (and that RequireAuthorization is not applied to `/hc`). Append evidence. Do not add UseAuthorization in this slice (AUTHZ-002).
+Register `AddAuthorization()` in DI and call `UseAuthorization()` after `UseRouting()` and before `MapControllers()` so `[Authorize]` attributes become enforceable. Do not add authentication schemes or protect existing controllers. Keep `/hc` anonymous (AUTHZ-001 status-only writer and AUTH-003 predicate unchanged). Add a unit/config test that Program source (or equivalent host composition assertion) contains `UseAuthorization`. Append `docs/pr-evidence.md`.
 
 ## Key decisions
 
 | Decision | Choice | Rationale |
 | --- | --- | --- |
-| Anonymous body | Status-only JSON | Removes residual disclosure after AUTH-003 |
-| Auth on `/hc` | Still none | Must not break OpenShift probes |
-| `/hc/ready` | Not required this slice | Disclosure fixed without new authenticated surface |
-| AUTHZ-002 | Separate | Middleware is a different finding |
+| Middleware order | After UseRouting, before MapControllers | ASP.NET Core requirement for endpoint auth |
+| Auth redesign | None | Finding is missing middleware only |
+| `/hc` | Remain anonymous | OpenShift probes |
+| Test approach | Source/config assertion on Program | No live auth needed |
 
 ## Approval (checkpoint 2)
 
