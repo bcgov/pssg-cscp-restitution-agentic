@@ -1,6 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
-import moment from 'moment';
 
 @Component({
   selector: 'app-date-field',
@@ -25,11 +24,12 @@ export class DateFieldComponent implements OnInit {
   constructor() {}
 
   ngOnInit() {
-    let date: moment.Moment = this.control.value;
-    if (date) {
-      this.year = date.year();
-      this.month = date.month();
-      this.day = date.date();
+    const value = this.control.value;
+    const date = value instanceof Date ? value : value ? new Date(value) : null;
+    if (date && !isNaN(date.getTime())) {
+      this.year = date.getFullYear();
+      this.month = date.getMonth();
+      this.day = date.getDate();
     }
 
     for (let i = 1; i <= 31; ++i) {
@@ -52,9 +52,9 @@ export class DateFieldComponent implements OnInit {
     let hasMinError = false;
     let hasMaxError = false;
 
-    let date = moment(new Date(this.year, this.month, this.day));
+    const date = new Date(this.year, this.month, this.day);
     if (this.min) {
-      if (date.isBefore(moment(this.min))) {
+      if (date < this.min) {
         hasMinError = true;
         setTimeout(() => {
           this.control.setErrors({ incorrect: true });
@@ -63,7 +63,7 @@ export class DateFieldComponent implements OnInit {
     }
 
     if (this.max) {
-      if (date.isAfter(moment(this.max))) {
+      if (date > this.max) {
         hasMaxError = true;
         setTimeout(() => {
           this.control.setErrors({ incorrect: true });

@@ -7,9 +7,8 @@ import {
   UntypedFormGroup,
   Validators
 } from '@angular/forms';
-import { MomentDateAdapter } from '@angular/material-moment-adapter';
-import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
-import { CRMBoolean, CRMMultiBoolean, IOptionSetVal, MY_FORMATS, ResitutionForm } from '../../enums-list';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_NATIVE_DATE_FORMATS, NativeDateAdapter } from '@angular/material/core';
+import { CRMBoolean, CRMMultiBoolean, IOptionSetVal, ResitutionForm } from '../../enums-list';
 import { FormBase } from '../../form-base';
 import { RestitutionInfoHelper } from '../restitution-information/restitution-information.helper';
 
@@ -18,8 +17,8 @@ import { RestitutionInfoHelper } from '../restitution-information/restitution-in
   templateUrl: './contact-information.component.html',
   styleUrls: ['./contact-information.component.scss'],
   providers: [
-    { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
-    { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS }
+    { provide: DateAdapter, useClass: NativeDateAdapter },
+    { provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS }
   ],
   standalone: false
 })

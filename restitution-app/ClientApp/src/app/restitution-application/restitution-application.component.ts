@@ -8,8 +8,7 @@ import {
   UntypedFormBuilder,
   UntypedFormGroup
 } from '@angular/forms';
-import { MomentDateAdapter } from '@angular/material-moment-adapter';
-import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_NATIVE_DATE_FORMATS, NativeDateAdapter } from '@angular/material/core';
 import { MatDialog } from '@angular/material/dialog';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatStepper } from '@angular/material/stepper';
@@ -23,7 +22,7 @@ import {
 import { iRestitutionApplication } from '../interfaces/restitution.interface';
 import { StateService } from '../services/state.service';
 import { CancelDialog } from '../shared/dialogs/cancel/cancel.dialog';
-import { ApplicationType, IOptionSetVal, MY_FORMATS, ResitutionForm } from '../shared/enums-list';
+import { ApplicationType, IOptionSetVal, ResitutionForm } from '../shared/enums-list';
 import { FormBase } from '../shared/form-base';
 import { OffenderRestitutionForm } from '../shared/restitution/restitution-information/offender-form.component';
 import { RestitutionInfoHelper } from '../shared/restitution/restitution-information/restitution-information.helper';
@@ -38,8 +37,8 @@ export enum RESTITUTION_PAGES {
 }
 
 export const RESTITUTION_APPLICATION_PROVIDERS = [
-  { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
-  { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS },
+  { provide: DateAdapter, useClass: NativeDateAdapter },
+  { provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS },
   { provide: STEPPER_GLOBAL_OPTIONS, useValue: { showError: true } }
 ];
 

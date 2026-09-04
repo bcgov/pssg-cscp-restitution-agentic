@@ -1,20 +1,19 @@
 import { Component, inject, Input, OnInit } from '@angular/core';
 import { ControlContainer, UntypedFormArray, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
-import { MomentDateAdapter } from '@angular/material-moment-adapter';
-import { DateAdapter, MAT_DATE_FORMATS, MAT_DATE_LOCALE } from '@angular/material/core';
+import { DateAdapter, MAT_DATE_FORMATS, MAT_NATIVE_DATE_FORMATS, NativeDateAdapter } from '@angular/material/core';
 import { MatDialog, MatDialogConfig } from '@angular/material/dialog';
 import { LookupsService as ApiLookupsService } from '../../../../api/lookups/lookups.service';
 import { SignPadDialog } from '../../../sign-dialog/sign-dialog.component';
 import { LookupsStore } from '../../../store/lookups/lookups.store';
 import { AddressHelper } from '../../address/address.helper';
-import { CRMMultiBoolean, IOptionSetVal, MY_FORMATS, ResitutionForm } from '../../enums-list';
+import { CRMMultiBoolean, IOptionSetVal, ResitutionForm } from '../../enums-list';
 import { FormBase } from '../../form-base';
 import { POSTAL_CODE } from '../../regex.constants';
 import { RestitutionInfoHelper } from './restitution-information.helper';
 
 export const RESTITUTION_INFORMATION_PROVIDERS = [
-  { provide: DateAdapter, useClass: MomentDateAdapter, deps: [MAT_DATE_LOCALE] },
-  { provide: MAT_DATE_FORMATS, useValue: MY_FORMATS }
+  { provide: DateAdapter, useClass: NativeDateAdapter },
+  { provide: MAT_DATE_FORMATS, useValue: MAT_NATIVE_DATE_FORMATS }
 ];
 
 @Component({
