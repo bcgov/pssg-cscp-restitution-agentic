@@ -1,22 +1,16 @@
-# Plan — DEP-005 (remove moment.js)
+# Plan — LOG-003 (failure log without full response body)
 
 ## Summary
 
-Migrate ClientApp date handling off moment.js without rewriting the Angular app.
-
-1. In `date-field.component.ts`, replace moment construction/compare with native `Date` (`getFullYear` / `getMonth` / `getDate`, `<` / `>` vs min/max). Patch form controls with `Date` (not moment).
-2. In `form-base.ts` `datesOrEmpty`, format with `Intl.DateTimeFormat` (or equivalent) approximating the prior “MMM Do, Y” style for review display.
-3. Replace `MomentDateAdapter` providers with Angular Material `NativeDateAdapter` in restitution-application and the four restitution shared components that currently provide MomentDateAdapter. Adjust `MY_FORMATS` so native adapter display tokens work (or use `MAT_NATIVE_DATE_FORMATS` if formats are incompatible).
-4. Remove `moment` and `@angular/material-moment-adapter` from `package.json`, refresh lockfile, drop `moment` from `angular.json` `allowedCommonJsDependencies`.
-5. Add/extend a small unit test for date formatting or date-field bounds; append `docs/pr-evidence.md`.
+Replace the RestitutionsController failure path that logs `{@Response}` with a structured error log that records `IsSuccess` and error-code / result-key metadata only (no Serilog destructuring of the full OrganizationResponse). Prefer extending `RestitutionSubmitAudit` (or a tiny sibling helper) so the controller stays thin and unit tests can assert message templates and arguments without standing up Dynamics. Keep HTTP 500 behaviour unchanged.
 
 ## Key decisions
 
 | Decision | Choice | Rationale |
 | --- | --- | --- |
-| Replacement | Native `Date` / `Intl` + `NativeDateAdapter` | Avoid new date library; Material ships native adapter |
-| dayjs/luxon | Out unless blocked | Spec prefers native first |
-| Blast radius | Date providers + two call sites + package removal | Proportionate to finding |
+| Approach | Structured scalars / keys, not `{@Response}` | Matches finding |
+| Helper | Extend RestitutionSubmitAudit | Same audit surface as LOG-002 |
+| Success path | Unchanged | Out of scope |
 
 ## Approval (checkpoint 2)
 
