@@ -1,16 +1,15 @@
-# Plan — VULN-002 (server file extension validation)
+# Plan — AUTH-002 (SameSite Lax)
 
 ## Summary
 
-Add a small server-side helper that checks each `DocumentDto.Filename` extension against the same allowlist as `ClientApp` `config.ts` (`pdf`, `png`, `jpeg`, `jpg`, `doc`, `docx`, `ppt`). Call it from `RestitutionsController.SubmitRestitutionInternal` (or shared submit entry) after model-state validation and **before** Dynamics `ExecuteAsync`. On failure return **400**. Unit-test the helper (and optionally controller with a fake org service) without live Dynamics. Append evidence.
+In `Program.cs` cookie policy, change `MinimumSameSitePolicy = SameSiteMode.None` to `SameSiteMode.Lax`. Prefer extracting a tiny testable constant/helper if that makes the unit assertion cleaner (optional). Add a unit/config test that fails if the policy is `None`. Append evidence. No documented reason found to keep `None` for this public restitution form app.
 
 ## Key decisions
 
 | Decision | Choice | Rationale |
 | --- | --- | --- |
-| Check | Filename extension only | Matches finding; MIME sniff out of scope |
-| Allowlist | Mirror client config.ts | Avoid client/server drift for this slice |
-| Placement | Shared helper + submit path | Testable without Dynamics |
+| Policy | `SameSiteMode.Lax` | Finding preference; no cross-site cookie need documented |
+| Test | Assert configured policy ≠ None / == Lax | CI without live browser |
 
 ## Approval (checkpoint 2)
 
