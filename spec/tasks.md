@@ -1,11 +1,11 @@
-# Tasks — SEC-SECRETS-001
+# Tasks — SEC-SECRETS-002
 
 ## Milestone 1
 
-- [x] **TASK-001** — In `restitution-app/README.md` user-secrets template, replace all real Dynamics/ADFS/Entra hostnames and URLs with angle-bracket placeholders; keep JSON keys and credential placeholders. Covers `@R-19.1` `@R-19.2`.
-- [x] **TASK-002** — Confirm the template has no remaining real internal hostnames (manual review or simple grep of the secrets template block). Covers `@R-19.1`.
-- [x] **TASK-003** — Append `docs/pr-evidence.md`. Covers both.
+- [ ] **TASK-001** — Replace hardcoded `ZAP_TARGET` in `zap-coast-restitution-dev-scan.yml` with `${{ vars.ZAP_TARGET }}`; ensure no real hostname remains in that YAML. Covers `@R-20.1`.
+- [ ] **TASK-002** — Document that repository admins must set Actions variable `ZAP_TARGET` (workflow comment and/or short ops note). Covers `@R-20.2`.
+- [ ] **TASK-003** — Append `docs/pr-evidence.md`. Covers both.
 
 ## Backlog
 
-- [ ] SEC-SECRETS-002 ZAP workflow hostname — later (#20)
+- [ ] Operators set `ZAP_TARGET` in GitHub repo settings (human, private)
