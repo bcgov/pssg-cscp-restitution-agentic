@@ -1895,3 +1895,28 @@ ExceptionPagePolicy already Development-only (CONFIG-003/LOG-001). Expanded regr
 **Checked:** policy + tests; no policy change required.
 
 - Reviewer: _______________ Date: _______________
+
+---
+
+# PR evidence — [RA VULN-004] MaxLength on submission DTO strings
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/ra-vuln-004-dto-maxlength |
+| Spec refs | `vuln-004-dto-maxlength.feature` (`@R-36.1`) |
+| Authoring agent | operator (Copilot quota insufficient) |
+| Generated | 2026-09-04T20:20:00.000Z |
+
+## Intent
+
+Proportionate `[MaxLength]` on ParticipantDto, DocumentDto, RestitutionApplicationDtoBase, and VictimApplicationDto name fields. Unit tests prove overlong values fail `Validator.TryValidateObject`.
+
+## Spec traceability
+
+| `@R-36.1` | Yes |
+
+## Review receipt (checkpoint 3)
+
+**Checked:** attributes + SubmissionDtoMaxLengthTests.
+
+- Reviewer: _______________ Date: _______________
