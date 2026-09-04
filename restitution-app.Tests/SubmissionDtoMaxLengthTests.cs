@@ -48,7 +48,7 @@ public class SubmissionDtoMaxLengthTests
             PrimaryPostalCode = "V8V1V1",
             PrimaryCountry = "Canada",
             Signature = "sig",
-            Email = new string('e', 255)
+            Email = new string('e', 255),
         };
 
         var ok = TryValidate(dto, out var results);
@@ -65,7 +65,7 @@ public class SubmissionDtoMaxLengthTests
             FirstName = "Jane",
             LastName = "Doe",
             Email = "jane@example.com",
-            PostalCode = "V8V1V1"
+            PostalCode = "V8V1V1",
         };
 
         var ok = TryValidate(dto, out _);
