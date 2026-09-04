@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-03T23:58:43.249Z",
+  "generatedAt": "2026-09-04T00:15:16.358Z",
   "criteria": [
     {
       "id": "R-06.1",
@@ -239,6 +239,18 @@
       "id": "R-19.2",
       "feature": "spec/features/sec-secrets-001-readme-placeholders.feature",
       "scenario": "Developers can still identify which secrets keys to set",
+      "tier": null
+    },
+    {
+      "id": "R-20.1",
+      "feature": "spec/features/sec-secrets-002-zap-target-var.feature",
+      "scenario": "ZAP workflow YAML contains no hardcoded development hostname",
+      "tier": "medium"
+    },
+    {
+      "id": "R-20.2",
+      "feature": "spec/features/sec-secrets-002-zap-target-var.feature",
+      "scenario": "Operators are told to set ZAP_TARGET in repo settings",
       "tier": null
     }
   ]
