@@ -1,16 +1,16 @@
-# Plan — CONFIG-004 (Permissions-Policy header)
+# Plan — CONFIG-005 (AllowedHosts)
 
 ## Summary
 
-Add a restrictive `Permissions-Policy` header on browser-facing surfaces. Prefer Caddyfile for the Angular static server (where other security headers already live) and optionally API middleware for JSON/API responses. Use a proportionate deny-by-default policy for unused features (e.g. camera, microphone, geolocation, payment, usb). Do not change CSP or other existing headers. Verify via config presence test and/or response header assertion. Append evidence.
+Replace `AllowedHosts: "*"` in `appsettings.json` with a specific default suitable for local boot (e.g. `localhost` and related loopback names) and document that production/OpenShift hosts must be supplied via environment / config overlay (`AllowedHosts` or `ASPNETCORE_*` / env var mapping). Add a config test asserting committed base config is not `*`. Document residual risk when route hostnames differ across environments. Append evidence. Do not invent real production hostnames in committed files.
 
 ## Key decisions
 
 | Decision | Choice | Rationale |
 | --- | --- | --- |
-| Policy shape | Restrictive defaults (disable unused features) | App does not need camera/mic/geo |
-| Surfaces | Caddy and/or API middleware | Finding cites both gaps |
-| CSP / others | Unchanged | Out of scope |
+| Base config | Specific hosts, not `*` | Enables host filtering |
+| Deploy hosts | Env / overlay | OpenShift hostnames stay out of repo |
+| Residual | Document in evidence | Multi-host route names may need ops overlay |
 
 ## Approval (checkpoint 2)
 
