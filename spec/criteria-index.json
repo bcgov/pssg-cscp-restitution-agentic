@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-04T20:08:44.579Z",
+  "generatedAt": "2026-09-04T20:15:33.581Z",
   "criteria": [
     {
       "id": "R-06.1",
@@ -383,6 +383,12 @@
       "id": "R-35.1",
       "feature": "spec/features/vuln-003-exception-page.feature",
       "scenario": "Staging-like environments do not allow the developer exception page",
+      "tier": "low"
+    },
+    {
+      "id": "R-36.1",
+      "feature": "spec/features/vuln-004-dto-maxlength.feature",
+      "scenario": "Overlong key string fields fail model validation",
       "tier": "low"
     }
   ]

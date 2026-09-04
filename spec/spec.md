@@ -4,32 +4,33 @@
 
 ## Upstream intent
 
-GitHub issue [#35](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/35) — rapid assessment **VULN-003**.
+GitHub issue [#36](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/36) — rapid assessment **VULN-004**.
 
 ## Problem
 
-Assessment claimed the developer exception page was enabled for all non-Production environments. CONFIG-003 / LOG-001 already introduced `ExceptionPagePolicy` that allows the page only in Development. Residual risk: staging-like environment names might still be treated as Development-equivalent if the policy were loose.
+Submission API DTO string fields lack length constraints, so overlong payloads can pass model binding before business validation.
 
 ## Outcome
 
-Prove (and keep) that only Development enables the developer exception page. Staging-like names (Staging, Test, QA, UAT, Production, etc.) must not. Tighten policy only if tests show a gap.
+Key submission DTO string fields (ParticipantDto, DocumentDto, and main application DTO strings) carry proportionate `[MaxLength]` (or equivalent) attributes. Overlong strings fail model validation. Not every field in the universe — main submit surface only.
 
 ## Scope
 
 ### In scope
 
-- Regression tests for staging-like environment names
-- Confirm Program.cs still gates via ExceptionPagePolicy
+- MaxLength on key strings in ParticipantDto, DocumentDto, RestitutionApplicationDtoBase / related application DTOs
+- Unit tests that overlong strings fail validation
 - Evidence
 
 ### Out of scope
 
-- Changing generic error page UX
-- Live Dynamics / OpenShift env naming ops beyond documenting policy
+- Validating every nested Dynamics field
+- Changing HTTP error shape beyond existing ModelState behaviour
+- Live Dynamics
 
 ## Journeys
 
-1. Development-only exception page — `features/vuln-003-exception-page.feature` (@R-35.1)
+1. Overlong strings fail validation — `features/vuln-004-dto-maxlength.feature` (@R-36.1)
 
 ## Sign-off (checkpoint 1)
 
