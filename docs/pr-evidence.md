@@ -1035,3 +1035,64 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 **Residual risk:** None. Documentation-only change.
 
 - Reviewer: _______________ Date: _______________
+
+---
+
+# PR evidence — [RA SEC-SECRETS-002] ZAP_TARGET sourced from repository variable
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/ra-sec-secrets-002-zap-target-var |
+| Spec refs | `spec/spec.md`; `spec/features/sec-secrets-002-zap-target-var.feature` (`@R-20.1`, `@R-20.2`) |
+| Constitution articles touched | P3, P5 |
+| Tasks | TASK-001, TASK-002, TASK-003 |
+| Authoring agent | copilot |
+| Generated | 2026-09-04T00:17:49.181Z |
+
+## Intent
+
+Replaced the hardcoded development environment hostname (`https://coast-restitution-dev.silver.devops.bcgov`) in the OWASP ZAP dynamic scan workflow with a reference to the repository Actions variable `${{ vars.ZAP_TARGET }}`. Added an inline workflow comment documenting that repository admins must configure the `ZAP_TARGET` variable before the scan can run.
+
+## Spec traceability
+
+| Scenario / requirement | Implemented? | Notes |
+| --- | --- | --- |
+| `@R-20.1` ZAP workflow YAML contains no hardcoded development hostname | Yes | `ZAP_TARGET` now reads from `${{ vars.ZAP_TARGET }}`; grep confirms no `silver.devops.bcgov` literal remains in the workflow file. |
+| `@R-20.2` Operators are told to set `ZAP_TARGET` in repo settings | Yes | Added an inline comment above `ZAP_TARGET` in the workflow stating that repository admins must set the Actions variable before running the scan. |
+
+## Design system & accessibility
+
+| Check | Result |
+| --- | --- |
+| DS components used (list) | N/A — CI workflow-only change |
+| Tokens used (not hard-coded colour) | N/A — CI workflow-only change |
+| BC Sans imported | N/A — CI workflow-only change |
+| Manual a11y notes | N/A — CI workflow-only change |
+
+## Public-service minimums
+
+Checklist IDs addressed this PR: N/A — CI workflow-only change
+
+## Tests
+
+| Type | Command / path | Result |
+| --- | --- | --- |
+| Unit | N/A — CI workflow-only change | |
+| Acceptance / feature | `spec/features/sec-secrets-002-zap-target-var.feature` — manual review of `.github/workflows/zap-coast-restitution-dev-scan.yml`; YAML parsed with `python3 -c "import yaml; yaml.safe_load(...)"`; grep verified no real hostname literal remains | Passed |
+| A11y automation | N/A — CI workflow-only change | |
+
+## Risks & follow-ups
+
+- The scan will fail at `workflow_dispatch` time until a repository admin sets the `ZAP_TARGET` Actions variable in repo settings (expected — out of scope for this PR per `spec/spec.md`).
+
+## Review receipt (checkpoint 3)
+
+Same shape as `REVIEW.md` — required before merge. Do not replace with a free-form sign-off.
+
+**Checked:** `@R-20.1` and `@R-20.2`; verified `ZAP_TARGET` is sourced from `${{ vars.ZAP_TARGET }}`; verified no real `silver.devops.bcgov` hostname literal remains anywhere in `.github/workflows/zap-coast-restitution-dev-scan.yml`; verified an inline comment documents the required Actions variable setup; validated workflow YAML syntax.
+
+**Could not check:** Live scan execution against a real `ZAP_TARGET` value (no repository variable configured in this sandbox; setting the live value is explicitly out of scope per `spec/spec.md`).
+
+**Residual risk:** None beyond the expected/documented scan failure until an operator sets `ZAP_TARGET`.
+
+- Reviewer: _______________ Date: _______________

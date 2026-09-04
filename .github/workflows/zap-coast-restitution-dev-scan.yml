@@ -12,7 +12,10 @@ jobs:
     env:
       ZAP_API: http://zaproxy:8080
       ZAP_API_KEY: ${{ secrets.ZAP_API_KEY }}
-      ZAP_TARGET: https://coast-restitution-dev.silver.devops.bcgov
+      # Repository admins must set the Actions variable ZAP_TARGET
+      # (Settings > Secrets and variables > Actions > Variables) to the
+      # development environment URL before running this scan.
+      ZAP_TARGET: ${{ vars.ZAP_TARGET }}
 
     steps:
       - name: Wait for ZAP to be ready
