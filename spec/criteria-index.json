@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-04T19:06:58.283Z",
+  "generatedAt": "2026-09-04T19:25:12.171Z",
   "criteria": [
     {
       "id": "R-06.1",
@@ -167,6 +167,18 @@
       "id": "R-30.1",
       "feature": "spec/features/dep-004-ts-node.feature",
       "scenario": "ts-node is bumped to ^10.x with lockfile updated",
+      "tier": "low"
+    },
+    {
+      "id": "R-31.1",
+      "feature": "spec/features/dep-005-moment.feature",
+      "scenario": "Direct moment imports and packages are removed",
+      "tier": "low"
+    },
+    {
+      "id": "R-31.2",
+      "feature": "spec/features/dep-005-moment.feature",
+      "scenario": "Date field compare and display formatting use native Date",
       "tier": "low"
     },
     {
