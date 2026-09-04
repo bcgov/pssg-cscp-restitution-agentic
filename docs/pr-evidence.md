@@ -1157,3 +1157,66 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 **Residual risk:** None beyond the existing use of `[innerHTML]` itself, which is now fed only entity-encoded text plus literal `<br />` separators.
 
 - Reviewer: _______________ Date: _______________
+
+
+---
+
+# PR evidence — [RA VULN-002] Server-side document file extension validation
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/ra-vuln-002-client-side-file-validation |
+| Spec refs | `spec/spec.md`; `spec/features/vuln-002-server-file-extension.feature` (`@R-22.1`, `@R-22.2`) |
+| Constitution articles touched | P3, P5 |
+| Tasks | TASK-001–TASK-004 |
+| Authoring agent | operator (Copilot stalled after initial plan) |
+| Generated | 2026-09-04T17:36:00.000Z |
+
+## Intent
+
+`DocumentDto` / restitution submit previously accepted any filename extension. Server now validates extensions against the ClientApp `config.ts` allowlist (`pdf`, `png`, `jpeg`, `jpg`, `doc`, `docx`, `ppt`) via `DocumentFileExtensionValidation` before Dynamics `ExecuteAsync`, returning HTTP 400 on failure.
+
+## Spec traceability
+
+| Scenario / requirement | Implemented? | Notes |
+| --- | --- | --- |
+| `@R-22.1` Disallowed extension → 400 before Dynamics | Yes | `RestitutionsController.SubmitRestitutionInternal` calls `TryValidateDocuments` and returns `BadRequest` |
+| `@R-22.2` Allowlist parity unit tests | Yes | `DocumentFileExtensionValidationTests` covers allow/deny without Dynamics |
+
+## Design system & accessibility
+
+| Check | Result |
+| --- | --- |
+| DS components used (list) | N/A — API validation only |
+| Tokens used (not hard-coded colour) | N/A |
+| BC Sans imported | N/A |
+| Manual a11y notes | N/A |
+
+## Public-service minimums
+
+Checklist IDs addressed this PR: N/A — API validation
+
+## Tests
+
+| Type | Command / path | Result |
+| --- | --- | --- |
+| Unit | `dotnet test … --filter FullyQualifiedName~DocumentFileExtensionValidation` | Passed (16) |
+| Acceptance / feature | `spec/features/vuln-002-server-file-extension.feature` | Covered by unit tests |
+| A11y automation | N/A | |
+
+## Risks & follow-ups
+
+- Extension-only check (no MIME sniffing) — deferred per spec out of scope.
+- Copilot initial checklist proposed magic-byte / size validation; operator shipped the signed extension-only scope.
+
+## Review receipt (checkpoint 3)
+
+Same shape as `REVIEW.md` — required before merge. Do not replace with a free-form sign-off.
+
+**Checked:** `@R-22.1` and `@R-22.2`; helper allowlist matches client config; controller rejects before Dynamics; unit tests pass.
+
+**Could not check:** Live Dynamics submit path end-to-end (no Dataverse in CI).
+
+**Residual risk:** Extension spoofing without content sniffing remains; deferred to a later finding if filed.
+
+- Reviewer: _______________ Date: _______________

@@ -63,6 +63,7 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
             System.Func<TModel, VSd_CreateRestitutionCaseRequest> dynamicsRequestFactory,
             string formType
         )
+            where TModel : RestitutionCaseRequestDtoBase
         {
             try
             {
@@ -78,6 +79,15 @@ namespace Gov.Cscp.VictimServices.Public.Controllers
                         string.Join("\n", errors)
                     );
                     return BadRequest(ModelState);
+                }
+
+                if (!DocumentFileExtensionValidation.TryValidateDocuments(model.DocumentCollection, out var fileError))
+                {
+                    _logger.LogWarning(
+                        "API call to 'SubmitRestitution' rejected unsupported document extension: {Error}",
+                        fileError
+                    );
+                    return BadRequest(fileError);
                 }
 
                 var request = dynamicsRequestFactory(model);
