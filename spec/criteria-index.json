@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-04T17:26:19.866Z",
+  "generatedAt": "2026-09-04T17:41:27.098Z",
   "criteria": [
     {
       "id": "R-06.1",
@@ -11,6 +11,18 @@
       "id": "R-06.2",
       "feature": "spec/features/auth-001-adfs-client-credentials.feature",
       "scenario": "Client credentials grant is used instead",
+      "tier": null
+    },
+    {
+      "id": "R-23.1",
+      "feature": "spec/features/auth-002-samesite-lax.feature",
+      "scenario": "MinimumSameSitePolicy is Lax",
+      "tier": "low"
+    },
+    {
+      "id": "R-23.2",
+      "feature": "spec/features/auth-002-samesite-lax.feature",
+      "scenario": "Change is covered by an automated check",
       "tier": null
     },
     {
