@@ -1,17 +1,16 @@
-# Plan — AUTHZ-002 (UseAuthorization middleware)
+# Plan — CONFIG-004 (Permissions-Policy header)
 
 ## Summary
 
-Register `AddAuthorization()` in DI and call `UseAuthorization()` after `UseRouting()` and before `MapControllers()` so `[Authorize]` attributes become enforceable. Do not add authentication schemes or protect existing controllers. Keep `/hc` anonymous (AUTHZ-001 status-only writer and AUTH-003 predicate unchanged). Add a unit/config test that Program source (or equivalent host composition assertion) contains `UseAuthorization`. Append `docs/pr-evidence.md`.
+Add a restrictive `Permissions-Policy` header on browser-facing surfaces. Prefer Caddyfile for the Angular static server (where other security headers already live) and optionally API middleware for JSON/API responses. Use a proportionate deny-by-default policy for unused features (e.g. camera, microphone, geolocation, payment, usb). Do not change CSP or other existing headers. Verify via config presence test and/or response header assertion. Append evidence.
 
 ## Key decisions
 
 | Decision | Choice | Rationale |
 | --- | --- | --- |
-| Middleware order | After UseRouting, before MapControllers | ASP.NET Core requirement for endpoint auth |
-| Auth redesign | None | Finding is missing middleware only |
-| `/hc` | Remain anonymous | OpenShift probes |
-| Test approach | Source/config assertion on Program | No live auth needed |
+| Policy shape | Restrictive defaults (disable unused features) | App does not need camera/mic/geo |
+| Surfaces | Caddy and/or API middleware | Finding cites both gaps |
+| CSP / others | Unchanged | Out of scope |
 
 ## Approval (checkpoint 2)
 
