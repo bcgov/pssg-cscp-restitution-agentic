@@ -1096,3 +1096,64 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 **Residual risk:** None beyond the expected/documented scan failure until an operator sets `ZAP_TARGET`.
 
 - Reviewer: _______________ Date: _______________
+
+---
+
+# PR evidence — [RA VULN-001] Mailing address XSS via unencoded innerHTML
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/fix-vuln-001-mailing-address-xss |
+| Spec refs | `spec/spec.md`; `spec/features/vuln-001-mailing-address-xss.feature` (`@R-21.1`, `@R-21.2`) |
+| Constitution articles touched | P3, P5 |
+| Tasks | TASK-001, TASK-002, TASK-003, TASK-004 |
+| Authoring agent | copilot |
+| Generated | 2026-09-04T17:18:53.903Z |
+
+## Intent
+
+`displayMailingSubAddress` and `displayMailingAddress` in `form-base.ts` concatenated raw, user-controlled reactive form values (`line1`, `line2`, `city`, `province`, `country`, `postalCode`) with literal `<br />` tags and returned the result for an Angular `[innerHTML]` binding on the review page, allowing HTML structural markup entered in address fields to render as live HTML. Both helpers now HTML-entity-encode each field (`&`, `<`, `>`, `"`, `'`) via a new `escapeHtml` helper before joining with `<br />`, so line breaks are preserved but markup-like input is rendered as inert text.
+
+## Spec traceability
+
+| Scenario / requirement | Implemented? | Notes |
+| --- | --- | --- |
+| `@R-21.1` No unencoded innerHTML address bind | Yes | `displayMailingSubAddress` and `displayMailingAddress` now escape each field with `escapeHtml` before concatenation; normal address values still render with `<br />` line breaks (`form-base.spec.ts`). |
+| `@R-21.2` Script-like input is not live HTML | Yes | `form-base.spec.ts` asserts `<img src=x onerror=alert(1)>` input produces `&lt;img src=x onerror=alert(1)&gt;` in the returned string, not a raw `<img` tag. |
+
+## Design system & accessibility
+
+| Check | Result |
+| --- | --- |
+| DS components used (list) | N/A — no template/UI markup changed, only string-building logic in `form-base.ts` |
+| Tokens used (not hard-coded colour) | N/A |
+| BC Sans imported | N/A |
+| Manual a11y notes | No visual change; address still displays with the same line breaks as before. |
+
+## Public-service minimums
+
+Checklist IDs addressed this PR: N/A — backend-of-UI string encoding fix, no new UI surface
+
+## Tests
+
+| Type | Command / path | Result |
+| --- | --- | --- |
+| Unit | `npx ng test --include='**/form-base.spec.ts'` (`restitution-app/ClientApp/src/app/shared/form-base.spec.ts`) | Passed (3/3) |
+| Acceptance / feature | `spec/features/vuln-001-mailing-address-xss.feature` — covered by the unit tests above | Passed |
+| A11y automation | N/A — no template change | |
+
+## Risks & follow-ups
+
+- None noted; both address-building helpers now share the same encoding approach.
+
+## Review receipt (checkpoint 3)
+
+Same shape as `REVIEW.md` — required before merge. Do not replace with a free-form sign-off.
+
+**Checked:** `@R-21.1` and `@R-21.2`; verified `displayMailingSubAddress` and `displayMailingAddress` HTML-encode `line1`, `line2`, `city`, `province`, `country`, `postalCode` before building the `<br />`-joined string; verified `<img src=x onerror=alert(1)>` is returned as `&lt;img src=x onerror=alert(1)&gt;`, not live markup; ran the new `form-base.spec.ts` unit tests (3 passed).
+
+**Could not check:** End-to-end rendering in a live browser via the `restitution-review.component.html` `[innerHTML]` binding (no running app/backend in this sandbox); relied on unit-level verification of the encoded string returned to that binding.
+
+**Residual risk:** None beyond the existing use of `[innerHTML]` itself, which is now fed only entity-encoded text plus literal `<br />` separators.
+
+- Reviewer: _______________ Date: _______________
