@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-04T17:51:50.406Z",
+  "generatedAt": "2026-09-04T18:07:22.636Z",
   "criteria": [
     {
       "id": "R-06.1",
@@ -34,6 +34,18 @@
     {
       "id": "R-24.2",
       "feature": "spec/features/auth-003-health-check-surface.feature",
+      "scenario": "OpenShift-style self probe remains anonymous",
+      "tier": null
+    },
+    {
+      "id": "R-25.1",
+      "feature": "spec/features/authz-001-health-status-only.feature",
+      "scenario": "Anonymous /hc returns overall status without check inventory",
+      "tier": "low"
+    },
+    {
+      "id": "R-25.2",
+      "feature": "spec/features/authz-001-health-status-only.feature",
       "scenario": "OpenShift-style self probe remains anonymous",
       "tier": null
     },
