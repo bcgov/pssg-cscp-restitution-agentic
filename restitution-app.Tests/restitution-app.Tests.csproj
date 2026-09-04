@@ -27,6 +27,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <None Include="..\restitution-app\Program.cs" Link="Program.cs" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
+    <ItemGroup>
         <Using Include="Xunit" />
     </ItemGroup>
 </Project>
