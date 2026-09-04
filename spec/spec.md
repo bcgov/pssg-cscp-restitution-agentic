@@ -4,33 +4,32 @@
 
 ## Upstream intent
 
-GitHub issue [#34](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/34) — rapid assessment **SEC-SECRETS-003**.
+GitHub issue [#35](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/35) — rapid assessment **VULN-003**.
 
 ## Problem
 
-Assessment noted Trivy secret scanning with non-enforcing exit codes. Current `development` already has enforcing Trivy **vulnerability** FS scans in CI (`exit-code: 1`), but secret scanning is not an enforcing gate. Stale assessment paths (`build-template.yml`) no longer apply.
+Assessment claimed the developer exception page was enabled for all non-Production environments. CONFIG-003 / LOG-001 already introduced `ExceptionPagePolicy` that allows the page only in Development. Residual risk: staging-like environment names might still be treated as Development-equivalent if the policy were loose.
 
 ## Outcome
 
-CI (and/or CD as proportionate) runs an enforcing Trivy **secret** scan (`scanners: secret`, `exit-code: 1`) so committed secrets fail the pipeline. Existing vuln FS enforcement remains. Do not disable Tier workflows.
+Prove (and keep) that only Development enables the developer exception page. Staging-like names (Staging, Test, QA, UAT, Production, etc.) must not. Tighten policy only if tests show a gap.
 
 ## Scope
 
 ### In scope
 
-- Add enforcing Trivy secret scan to CI restitution workflow (primary)
-- Optionally mirror on CD if images/fs paths support secret scanners without false-positive lockout
-- Evidence documenting assessment path drift
+- Regression tests for staging-like environment names
+- Confirm Program.cs still gates via ExceptionPagePolicy
+- Evidence
 
 ### Out of scope
 
-- Disabling CodeQL or other Tier gates
-- Broader secrets management / rotation
-- Live Dynamics
+- Changing generic error page UX
+- Live Dynamics / OpenShift env naming ops beyond documenting policy
 
 ## Journeys
 
-1. Enforcing secret scan — `features/sec-secrets-003-trivy-secret.feature` (@R-34.1)
+1. Development-only exception page — `features/vuln-003-exception-page.feature` (@R-35.1)
 
 ## Sign-off (checkpoint 1)
 

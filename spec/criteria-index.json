@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-04T19:58:23.482Z",
+  "generatedAt": "2026-09-04T20:08:44.579Z",
   "criteria": [
     {
       "id": "R-06.1",
@@ -378,6 +378,12 @@
       "feature": "spec/features/vuln-002-server-file-extension.feature",
       "scenario": "Allowed extensions from the client allowlist are accepted by validation",
       "tier": null
+    },
+    {
+      "id": "R-35.1",
+      "feature": "spec/features/vuln-003-exception-page.feature",
+      "scenario": "Staging-like environments do not allow the developer exception page",
+      "tier": "low"
     }
   ]
 }
