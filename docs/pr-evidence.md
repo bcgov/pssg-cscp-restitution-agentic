@@ -1870,3 +1870,28 @@ CI gate adds Trivy FS `scanners: secret` with `exit-code: 1` and SARIF upload. A
 **Residual risk:** False positives could fail gate — keep enforcement; scope scanners to secret only.
 
 - Reviewer: _______________ Date: _______________
+
+---
+
+# PR evidence — [RA VULN-003] Development-only exception page proof
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/ra-vuln-003-exception-page |
+| Spec refs | `vuln-003-exception-page.feature` (`@R-35.1`) |
+| Authoring agent | operator (Copilot quota insufficient) |
+| Generated | 2026-09-04T20:15:00.000Z |
+
+## Intent
+
+ExceptionPagePolicy already Development-only (CONFIG-003/LOG-001). Expanded regression coverage for QA/UAT/PreProduction/Staging/Test/Production and Program.cs gate assertion.
+
+## Spec traceability
+
+| `@R-35.1` | Yes — tests prove staging-like names denied |
+
+## Review receipt (checkpoint 3)
+
+**Checked:** policy + tests; no policy change required.
+
+- Reviewer: _______________ Date: _______________
