@@ -89,5 +89,34 @@ namespace Gov.Cscp.VictimServices.Public.Tests
             );
             Assert.DoesNotContain("OrganizationResponse", entry.Message);
         }
+
+        [Fact]
+        public void WriteDynamicsFailure_LogsIsSuccessAndErrorCodeWithoutResponseBody()
+        {
+            var logger = new FakeLogger();
+
+            RestitutionSubmitAudit.WriteDynamicsFailure(logger, false, 42, new[] { "IsSuccess", "ErrorCode" });
+
+            var entry = Assert.Single(logger.Entries);
+            Assert.Equal(LogLevel.Error, entry.Level);
+            Assert.Contains(new KeyValuePair<string, object?>("IsSuccess", false), entry.State);
+            Assert.Contains(new KeyValuePair<string, object?>("ErrorCode", 42), entry.State);
+            Assert.Contains(new KeyValuePair<string, object?>("ResultKeys", "IsSuccess,ErrorCode"), entry.State);
+            Assert.DoesNotContain("{@Response}", entry.Message);
+            Assert.DoesNotContain("OrganizationResponse", entry.Message);
+        }
+
+        [Fact]
+        public void WriteDynamicsFailure_DoesNotAcceptOrganizationResponseParameter()
+        {
+            // Guard: method signature is scalars/keys only — no OrganizationResponse overload.
+            var methods = typeof(RestitutionSubmitAudit)
+                .GetMethods()
+                .Where(m => m.Name == nameof(RestitutionSubmitAudit.WriteDynamicsFailure));
+            Assert.All(
+                methods,
+                m => Assert.DoesNotContain(m.GetParameters(), p => p.ParameterType.Name.Contains("OrganizationResponse"))
+            );
+        }
     }
 }
