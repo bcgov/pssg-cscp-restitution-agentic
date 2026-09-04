@@ -1,22 +1,21 @@
-# Plan — LOG-002 (success-path submit audit log)
+# Plan — SEC-SECRETS-001 (README secrets placeholders)
 
 ## Summary
 
-Add a small testable audit helper (e.g. `RestitutionSubmitAudit.WriteSuccess`) that calls `ILogger.LogInformation` with **non-PII** fields: form type (`victim` / `victim-entity` / `offender`), correlation id (`HttpContext.TraceIdentifier` or equivalent), and success=`true`. Call it from `RestitutionsController.SubmitRestitutionInternal` immediately before `return Ok(response)` on the Dynamics success path. Pass form type from each public submit action. Unit-test with a fake/mock `ILogger` asserting `LogInformation` / audit invocation and that message/state does not include the Dynamics `OrganizationResponse` or form PII payload. Append evidence. Do **not** change LOG-003 failure-path body logging in this slice.
+Edit `restitution-app/README.md` user-secrets JSON template only: replace the five hardcoded Dynamics / ADFS / Entra endpoint and resource URLs with angle-bracket placeholders such as `<dynamics-api-endpoint-url>`, `<adfs-token-endpoint>`, `<dynamics-resource-url>`, `<cloud-dynamics-api-endpoint-url>`, and `<cloud-dynamics-resource-url>` (or equivalent clear names). Keep existing credential placeholders. Do **not** invent or paste real hostnames. Append a short evidence receipt. Optionally add a lightweight regression check (grep/script or docs-facing assertion) that the template block no longer contains known hostname patterns — not required if evidence documents a manual scan of the template.
 
 ## Key decisions
 
 | Decision | Choice | Rationale |
 | --- | --- | --- |
-| API | `ILogger` `LogInformation` (MEL) via helper | Testable with fake/mock logger; matches finding “application-level” audit |
-| Fields | form type + correlation id + success | Non-PII operational trail; no case PII |
-| Scope | Success path only | Finding is success-path gap; failure body logging is LOG-003 |
-| Dynamics in tests | Not required | Mock logger + helper (or controller with stubbed org service if needed) |
+| Change surface | README template only | Finding is documentation reconnaissance, not runtime |
+| Replacement values | Angle-bracket placeholders | Matches existing credential placeholder style; no fake hostnames |
+| Verification | Evidence + visual/grep of template | No app behaviour change; CI optional |
 
 ## Residual
 
-- Existing Serilog `Error` paths that destructure `OrganizationResponse` remain LOG-003
-- No Splunk / sink changes
+- Developers need the real URLs from private runbooks / team channels (intentionally not in public README)
+- SEC-SECRETS-002 (ZAP workflow) remains separate
 
 ## Approval (checkpoint 2)
 
