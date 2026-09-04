@@ -4,34 +4,34 @@
 
 ## Upstream intent
 
-GitHub issue [#29](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/29) — rapid assessment **CRYPTO-002**.
+GitHub issue [#30](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/30) — rapid assessment **DEP-004**.
 
 ## Problem
 
-When the host runs as Development, Splunk HEC client configuration disables TLS certificate validation via `DangerousAcceptAnyServerCertificateValidator`. That gate is only `IsDevelopment()`, so a mis-set environment name in a non-isolated deployment would allow MITM on the log transport.
+ClientApp pins `ts-node` to ~7.0.0 (resolves 7.0.1, 2018). Current stable is 10.x. It is a development-only dependency used to run TypeScript config (e.g. Playwright/Orval), but outdated tooling carries supply-chain risk in CI/build.
 
 ## Outcome
 
-The Splunk TLS bypass is removed or gated behind an **explicit opt-in** configuration flag (e.g. `SPLUNK_INSECURE_SSL=true`), not bare `IsDevelopment()`. Prefer removing the Dev bypass entirely if local Splunk is not required; otherwise require the explicit opt-in. Default behaviour validates certificates.
+Bump `ts-node` to a current major (`^10.x`) and refresh the lockfile so installs resolve a supported 10.x release. Confirm build/test tooling that invokes ts-node still works (or document no breakage). No production runtime change.
 
 ## Scope
 
 ### In scope
 
-- Remove or re-gate DangerousAcceptAnyServerCertificateValidator
-- Explicit opt-in config if a bypass must remain for local debugging
-- Unit/config test documenting the gating rule
+- Bump `ts-node` in ClientApp `package.json` to `^10.x`
+- Update `package-lock.json`
+- Light verification that configs still load / CI npm steps succeed
 - Evidence
 
 ### Out of scope
 
-- Adding Splunk CA to trust stores in CI
-- Live Splunk connectivity
-- Changing other TLS paths
+- Broader Angular/npm major upgrades
+- Production runtime dependency changes
+- Live Dynamics
 
 ## Journeys
 
-1. No ambient Development TLS bypass — `features/crypto-002-splunk-tls.feature` (@R-29.1)
+1. ts-node on supported major — `features/dep-004-ts-node.feature` (@R-30.1)
 
 ## Sign-off (checkpoint 1)
 
