@@ -1529,3 +1529,63 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 **Residual risk:** None.
 
 - Reviewer: _______________ Date: _______________
+
+---
+
+# PR evidence — [RA CONFIG-005] AllowedHosts set to wildcard — host header filtering disabled
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/ra-config-005-fix-allowed-hosts |
+| Spec refs | `spec/spec.md`; `spec/features/config-005-allowed-hosts.feature` (`@R-28.1`) |
+| Constitution articles touched | P5, J5 |
+| Tasks | TASK-001, TASK-002, TASK-003 |
+| Authoring agent | Copilot coding agent |
+| Generated | 2026-09-04T18:48:38.489Z |
+
+## Intent
+
+Replaced `AllowedHosts: "*"` in `restitution-app/appsettings.json` with a specific loopback default (`localhost;127.0.0.1;[::1]`) so ASP.NET Core host header filtering is active. Added unit/config test to ensure committed base config is not set to `*`. Production/OpenShift hostnames remain environment-configurable via ASP.NET Core `AllowedHosts` or `ASPNETCORE_ALLOWEDHOSTS` environment variable settings without hardcoding hostnames in repo files.
+
+## Spec traceability
+
+| Scenario / requirement | Implemented? | Notes |
+| --- | --- | --- |
+| `@R-28.1` AllowedHosts is specific and configurable | Yes | Tightened `AllowedHosts` in `appsettings.json` away from `*` to `localhost;127.0.0.1;[::1]`. Added config unit test in `AllowedHostsConfigurationTests.cs`. Env-configurable for deployment via standard ASP.NET Core configuration environment variable overlay. |
+
+## Design system & accessibility
+
+| Check | Result |
+| --- | --- |
+| DS components used (list) | N/A — backend configuration change |
+| Tokens used (not hard-coded colour) | N/A |
+| BC Sans imported | N/A |
+| Manual a11y notes | N/A |
+
+## Public-service minimums
+
+Checklist IDs addressed this PR: N/A — backend security configuration change.
+
+## Tests
+
+| Type | Command / path | Result |
+| --- | --- | --- |
+| Unit | `dotnet test restitution-app.Tests/restitution-app.Tests.csproj --filter FullyQualifiedName~AllowedHostsConfiguration` | Passed (1) |
+| Acceptance / feature | `spec/features/config-005-allowed-hosts.feature` | Covered by focused unit/config tests |
+| A11y automation | N/A | Non-UI change |
+
+## Risks & follow-ups
+
+- When deploying to OpenShift or staging/production environments, operations/deployment manifests must supply the appropriate environment overlay (`AllowedHosts` or `ASPNETCORE_ALLOWEDHOSTS`) matching the environment route hostnames if they differ from localhost loopback addresses.
+
+## Review receipt (checkpoint 3)
+
+Same shape as `REVIEW.md` — required before merge. Do not replace with a free-form sign-off.
+
+**Checked:** `@R-28.1`; `restitution-app/appsettings.json` configuration; verified AllowedHosts is not `*`; unit tests pass.
+
+**Could not check:** Deployment environment runtime behavior across multi-host OpenShift routes (requires OpenShift deployment environment).
+
+**Residual risk:** OpenShift deployments with custom route hostnames require environment configuration overlay (`AllowedHosts` or `ASPNETCORE_ALLOWEDHOSTS`) to match route hostnames.
+
+- Reviewer: _______________ Date: _______________
