@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-04T18:43:40.779Z",
+  "generatedAt": "2026-09-04T18:56:20.907Z",
   "criteria": [
     {
       "id": "R-06.1",
@@ -120,6 +120,12 @@
       "feature": "spec/features/crypto-001-key-ring-protect.feature",
       "scenario": "Local Development without a key-ring directory is unchanged",
       "tier": null
+    },
+    {
+      "id": "R-29.1",
+      "feature": "spec/features/crypto-002-splunk-tls.feature",
+      "scenario": "Splunk certificate bypass requires explicit opt-in or is removed",
+      "tier": "low"
     },
     {
       "id": "R-02.1",

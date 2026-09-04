@@ -4,34 +4,34 @@
 
 ## Upstream intent
 
-GitHub issue [#28](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/28) — rapid assessment **CONFIG-005**.
+GitHub issue [#29](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/29) — rapid assessment **CRYPTO-002**.
 
 ## Problem
 
-`AllowedHosts` is set to `*`, which disables ASP.NET Core host filtering. The app accepts any Host header value, leaving a protective control unused.
+When the host runs as Development, Splunk HEC client configuration disables TLS certificate validation via `DangerousAcceptAnyServerCertificateValidator`. That gate is only `IsDevelopment()`, so a mis-set environment name in a non-isolated deployment would allow MITM on the log transport.
 
 ## Outcome
 
-`AllowedHosts` is tightened away from the wildcard: use env-configurable specific host values (or a documented comma-separated list) suitable for local/dev and OpenShift. Residual risk for multi-host OpenShift routing is documented in evidence. Do not invent production hostnames in committed config beyond placeholders/env wiring.
+The Splunk TLS bypass is removed or gated behind an **explicit opt-in** configuration flag (e.g. `SPLUNK_INSECURE_SSL=true`), not bare `IsDevelopment()`. Prefer removing the Dev bypass entirely if local Splunk is not required; otherwise require the explicit opt-in. Default behaviour validates certificates.
 
 ## Scope
 
 ### In scope
 
-- Replace `AllowedHosts: "*"` with specific / env-driven hosts
-- Document residual OpenShift / multi-host concerns in evidence
-- Config/unit assertion that AllowedHosts is not `*`
-- Keep app bootable locally without Dynamics
+- Remove or re-gate DangerousAcceptAnyServerCertificateValidator
+- Explicit opt-in config if a bypass must remain for local debugging
+- Unit/config test documenting the gating rule
+- Evidence
 
 ### Out of scope
 
-- Live Dynamics tests
-- Inventing real production hostnames in repo secrets
-- Changing authentication
+- Adding Splunk CA to trust stores in CI
+- Live Splunk connectivity
+- Changing other TLS paths
 
 ## Journeys
 
-1. Host filtering enabled — `features/config-005-allowed-hosts.feature` (@R-28.1)
+1. No ambient Development TLS bypass — `features/crypto-002-splunk-tls.feature` (@R-29.1)
 
 ## Sign-off (checkpoint 1)
 
