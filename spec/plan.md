@@ -1,15 +1,16 @@
-# Plan — VULN-001 (mailing address XSS)
+# Plan — VULN-002 (server file extension validation)
 
 ## Summary
 
-Encode each address field (e.g. replace `& < > " '`) before joining with `<br />`, **or** change the review template to text/`innerText` with CSS line breaks. Fix both `displayMailingSubAddress` and `displayMailingAddress` if both build HTML. Add Jasmine/Karma (or pure TS) unit test that markup like `<img src=x onerror=alert(1)>` does not produce an unescaped tag in the return value / DOM. Append evidence.
+Add a small server-side helper that checks each `DocumentDto.Filename` extension against the same allowlist as `ClientApp` `config.ts` (`pdf`, `png`, `jpeg`, `jpg`, `doc`, `docx`, `ppt`). Call it from `RestitutionsController.SubmitRestitutionInternal` (or shared submit entry) after model-state validation and **before** Dynamics `ExecuteAsync`. On failure return **400**. Unit-test the helper (and optionally controller with a fake org service) without live Dynamics. Append evidence.
 
 ## Key decisions
 
 | Decision | Choice | Rationale |
 | --- | --- | --- |
-| Fix | HTML-encode fields then keep `<br />` separators | Minimal UI change |
-| Also fix | `displayMailingAddress` | Same bug pattern |
+| Check | Filename extension only | Matches finding; MIME sniff out of scope |
+| Allowlist | Mirror client config.ts | Avoid client/server drift for this slice |
+| Placement | Shared helper + submit path | Testable without Dynamics |
 
 ## Approval (checkpoint 2)
 
