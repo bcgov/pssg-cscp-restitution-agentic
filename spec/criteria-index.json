@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-04T00:15:16.358Z",
+  "generatedAt": "2026-09-04T17:13:54.122Z",
   "criteria": [
     {
       "id": "R-06.1",
@@ -251,6 +251,18 @@
       "id": "R-20.2",
       "feature": "spec/features/sec-secrets-002-zap-target-var.feature",
       "scenario": "Operators are told to set ZAP_TARGET in repo settings",
+      "tier": null
+    },
+    {
+      "id": "R-21.1",
+      "feature": "spec/features/vuln-001-mailing-address-xss.feature",
+      "scenario": "Mailing address display does not bind unencoded values via innerHTML",
+      "tier": "medium"
+    },
+    {
+      "id": "R-21.2",
+      "feature": "spec/features/vuln-001-mailing-address-xss.feature",
+      "scenario": "Script-like address input is not interpreted as HTML",
       "tier": null
     }
   ]
