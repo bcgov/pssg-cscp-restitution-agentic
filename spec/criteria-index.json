@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-04T17:41:27.098Z",
+  "generatedAt": "2026-09-04T17:51:50.406Z",
   "criteria": [
     {
       "id": "R-06.1",
@@ -23,6 +23,18 @@
       "id": "R-23.2",
       "feature": "spec/features/auth-002-samesite-lax.feature",
       "scenario": "Change is covered by an automated check",
+      "tier": null
+    },
+    {
+      "id": "R-24.1",
+      "feature": "spec/features/auth-003-health-check-surface.feature",
+      "scenario": "Anonymous /hc only includes self or process tagged checks",
+      "tier": "low"
+    },
+    {
+      "id": "R-24.2",
+      "feature": "spec/features/auth-003-health-check-surface.feature",
+      "scenario": "OpenShift-style self probe remains anonymous",
       "tier": null
     },
     {
