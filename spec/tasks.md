@@ -1,12 +1,13 @@
-# Tasks — AUTHZ-001
+# Tasks — AUTHZ-002
 
 ## Milestone 1
 
-- [x] **TASK-001** — Slim anonymous `/hc` ResponseWriter to status-only (no check names/descriptions). Covers `@R-25.1`.
-- [x] **TASK-002** — Keep `/hc` anonymous (no RequireAuthorization on liveness). Covers `@R-25.2`.
-- [x] **TASK-003** — Unit/config test for status-only anonymous writer / Program mapping. Covers both.
-- [x] **TASK-004** — Append `docs/pr-evidence.md`. Covers both.
+- [ ] **TASK-001** — `services.AddAuthorization()` (or equivalent). Covers `@R-26.1`.
+- [ ] **TASK-002** — `app.UseAuthorization()` after `UseRouting`, before `MapControllers`. Covers `@R-26.1`.
+- [ ] **TASK-003** — Keep `/hc` anonymous. Covers `@R-26.2`.
+- [ ] **TASK-004** — Unit/config test documenting UseAuthorization in Program. Covers both.
+- [ ] **TASK-005** — Append `docs/pr-evidence.md`. Covers both.
 
 ## Backlog
 
-- [ ] AUTHZ-002 — `UseAuthorization()` middleware — **not this slice**
+- (none for this finding)
