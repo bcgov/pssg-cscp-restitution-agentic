@@ -4,33 +4,34 @@
 
 ## Upstream intent
 
-GitHub issue [#27](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/27) — rapid assessment **CONFIG-004**.
+GitHub issue [#28](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/28) — rapid assessment **CONFIG-005**.
 
 ## Problem
 
-Standard security headers are present (HSTS, X-Frame-Options, X-Content-Type-Options, Referrer-Policy, XSS protection, CSP) but **Permissions-Policy** is missing from both the API response path and the static UI server. Browsers therefore lack an explicit deny/allow list for powerful features (camera, microphone, geolocation, etc.).
+`AllowedHosts` is set to `*`, which disables ASP.NET Core host filtering. The app accepts any Host header value, leaving a protective control unused.
 
 ## Outcome
 
-Responses include a proportionate restrictive **Permissions-Policy** header (deny unused powerful features by default). Apply via API middleware and/or the static file server config so UI and API surfaces are covered. Do not redesign CSP or other existing headers.
+`AllowedHosts` is tightened away from the wildcard: use env-configurable specific host values (or a documented comma-separated list) suitable for local/dev and OpenShift. Residual risk for multi-host OpenShift routing is documented in evidence. Do not invent production hostnames in committed config beyond placeholders/env wiring.
 
 ## Scope
 
 ### In scope
 
-- Add Permissions-Policy (restrictive defaults for unused browser features)
-- API middleware and/or Caddyfile (whichever surfaces serve browsers)
-- Evidence / light verification (config presence or response header assertion where practical)
+- Replace `AllowedHosts: "*"` with specific / env-driven hosts
+- Document residual OpenShift / multi-host concerns in evidence
+- Config/unit assertion that AllowedHosts is not `*`
+- Keep app bootable locally without Dynamics
 
 ### Out of scope
 
-- Reworking CSP / HSTS / other headers
-- Feature allowlists for camera/mic (app does not need them)
 - Live Dynamics tests
+- Inventing real production hostnames in repo secrets
+- Changing authentication
 
 ## Journeys
 
-1. Permissions-Policy present — `features/config-004-permissions-policy.feature` (@R-27.1)
+1. Host filtering enabled — `features/config-005-allowed-hosts.feature` (@R-28.1)
 
 ## Sign-off (checkpoint 1)
 
