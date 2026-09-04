@@ -4,33 +4,35 @@
 
 ## Upstream intent
 
-GitHub issue [#23](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/23) — rapid assessment **AUTH-002**.
+GitHub issue [#24](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/24) — rapid assessment **AUTH-003**.
 
 ## Problem
 
-Global cookie policy sets `MinimumSameSitePolicy = SameSiteMode.None`, which weakens default cross-site cookie protections unless a documented cross-site need exists.
+`/hc` is anonymously reachable and returns detailed JSON including named checks (API, Dataverse) and connectivity descriptions, disclosing backend readiness to unauthenticated callers.
 
 ## Outcome
 
-`MinimumSameSitePolicy` is **`SameSiteMode.Lax`** (preferred) unless a documented reason requires `None`. An automated check fails if the policy is still `None`.
+Anonymous access is limited to **self/process liveness** (OpenShift probes keep working). Dataverse/ready details are **not** on the anonymous detailed payload (filter by tag, or expose ready on a separate non-anonymous `/hc/ready`). Do **not** require full auth that breaks probes. AUTHZ-001 overlap may remain for later; fix AUTH-003 proportionately.
 
 ## Scope
 
 ### In scope
 
-- Change cookie policy in `Program.cs` (or extracted helper) from `None` to `Lax`
-- Unit/config test asserting not `None` / equals `Lax`
-- Brief note in evidence if any residual cross-site cookie use remains
+- Restrict anonymous `/hc` (or equivalent) to `self`/`process` tagged checks
+- Keep OpenShift liveness working without auth
+- Unit/config test for the predicate / mapping
+- Note AUTHZ-001 may remain open
 
 ### Out of scope
 
-- Broader auth redesign (AUTH-001 already shipped)
-- AUTH-003 health endpoint anonymity
+- Full authorization redesign for all health endpoints (AUTHZ-001)
+- Requiring auth on the self liveness probe
+- Live Dynamics connectivity tests
 
 ## Journeys
 
-1. Policy is Lax — `features/auth-002-samesite-lax.feature` (@R-23.1)
-2. Automated regression check — same feature (@R-23.2)
+1. Anonymous surface excludes Dataverse details — `features/auth-003-health-check-surface.feature` (@R-24.1)
+2. Self probe stays anonymous — same feature (@R-24.2)
 
 ## Sign-off (checkpoint 1)
 
