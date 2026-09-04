@@ -1,9 +1,7 @@
 using System;
 using System.IO;
-using System.Linq;
 using System.Net.Http;
 using System.Reflection;
-using System.Text.Json;
 using Database.Extensions;
 using Gov.Cscp.VictimServices.Public;
 using Gov.Cscp.VictimServices.Public.HealthChecks;
@@ -161,8 +159,8 @@ app.UseSerilogRequestLogging(options =>
     };
 });
 
-// Anonymous /hc is limited to self/process tagged checks so OpenShift probes work
-// without disclosing Dataverse/ready details (AUTH-003). AUTHZ-001 may further restrict ready later.
+// Anonymous /hc is limited to a status-only self/process liveness response so
+// OpenShift probes work without disclosing Dataverse/ready details.
 app.MapHealthChecks(
     "/hc",
     new HealthCheckOptions
@@ -175,30 +173,7 @@ app.MapHealthChecks(
             [HealthStatus.Degraded] = 200,
             [HealthStatus.Unhealthy] = 200,
         },
-        ResponseWriter = async (context, report) =>
-        {
-            // Overall status from the API self-check when present (only self/process run here).
-            var overallStatus = report.Entries.TryGetValue("API", out var apiEntry) ? apiEntry.Status : report.Status;
-
-            context.Response.StatusCode = overallStatus == HealthStatus.Unhealthy ? 503 : 200;
-            context.Response.ContentType = "application/json";
-
-            var result = JsonSerializer.Serialize(
-                new
-                {
-                    status = overallStatus.ToString(),
-                    checks = report.Entries.Select(e => new
-                    {
-                        name = e.Key,
-                        status = e.Value.Status.ToString(),
-                        description = e.Value.Description,
-                    }),
-                },
-                new JsonSerializerOptions { WriteIndented = true }
-            );
-
-            await context.Response.WriteAsync(result);
-        },
+        ResponseWriter = HealthCheckStatusResponseWriter.WriteStatusOnlyAsync,
     }
 );
 

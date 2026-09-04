@@ -1346,3 +1346,65 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 **Residual risk:** AUTHZ-001 overlap remains for ready/authZ hardening.
 
 - Reviewer: _______________ Date: _______________
+
+---
+
+# PR evidence — [RA AUTHZ-001] Health check status-only anonymous response
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/ra-authz-001-fix-health-check-access |
+| Spec refs | `spec/spec.md`; `spec/features/authz-001-health-status-only.feature` (`@R-25.1`, `@R-25.2`) |
+| Constitution articles touched | P5, P7, J5 |
+| Tasks | TASK-001–TASK-004 |
+| Authoring agent | Copilot coding agent |
+| Generated | 2026-09-04T18:12:29.347Z |
+
+## Intent
+
+Anonymous `/hc` remains available for OpenShift-style liveness probes, but its JSON body is now status-only. The response no longer serializes health-check names, a checks array, or description strings, and the existing AUTH-003 predicate continues to limit the anonymous surface to self/process checks.
+
+## Spec traceability
+
+| Scenario / requirement | Implemented? | Notes |
+| --- | --- | --- |
+| `@R-25.1` Anonymous `/hc` returns overall status without check inventory | Yes | `HealthCheckStatusResponseWriter.WriteStatusOnlyAsync` serializes only `{ status }`; tests assert no check names/descriptions are present. |
+| `@R-25.2` OpenShift-style self probe remains anonymous | Yes | `/hc` remains mapped without `RequireAuthorization`; the existing self/process predicate is preserved. |
+
+## Design system & accessibility
+
+| Check | Result |
+| --- | --- |
+| DS components used (list) | N/A — API health endpoint |
+| Tokens used (not hard-coded colour) | N/A |
+| BC Sans imported | N/A |
+| Manual a11y notes | N/A |
+
+## Public-service minimums
+
+Checklist IDs addressed this PR: N/A — non-UI health endpoint response hardening.
+
+## Tests
+
+| Type | Command / path | Result |
+| --- | --- | --- |
+| Unit | `dotnet test restitution-app.Tests/restitution-app.Tests.csproj --filter FullyQualifiedName~HealthCheckEndpointPolicy` | Passed (4) |
+| Acceptance / feature | `spec/features/authz-001-health-status-only.feature` | Covered by focused unit/config tests |
+| A11y automation | N/A | Non-UI change |
+
+## Risks & follow-ups
+
+- Live OpenShift probe verification is deferred to environment CI/deployment because this local sandbox lacks a deployed pod.
+- AUTHZ-002 (`UseAuthorization`) remains explicitly out of scope for this slice.
+
+## Review receipt (checkpoint 3)
+
+Same shape as `REVIEW.md` — required before merge. Do not replace with a free-form sign-off.
+
+**Checked:** `@R-25.1` and `@R-25.2`; Program keeps anonymous `/hc`, preserves the AUTH-003 predicate, and uses the status-only response writer.
+
+**Could not check:** Live OpenShift probe against a deployed pod.
+
+**Residual risk:** Detailed/ready health endpoint design remains a separate future slice if product requires authenticated readiness detail.
+
+- Reviewer: _______________ Date: _______________
