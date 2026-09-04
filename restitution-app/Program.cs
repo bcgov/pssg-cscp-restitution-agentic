@@ -204,6 +204,10 @@ app.Use(
             );
         }
         ctx.Response.Headers.Append("Strict-Transport-Security", "max-age=31536000; includeSubDomains; preload");
+        ctx.Response.Headers.Append(
+            "Permissions-Policy",
+            "accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=()"
+        );
         await next();
     }
 );
