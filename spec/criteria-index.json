@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-04T18:56:20.907Z",
+  "generatedAt": "2026-09-04T19:06:58.283Z",
   "criteria": [
     {
       "id": "R-06.1",
@@ -162,6 +162,12 @@
       "feature": "spec/features/dep-003-nuget-lock-files.feature",
       "scenario": "Restore and build succeed with locks present",
       "tier": null
+    },
+    {
+      "id": "R-30.1",
+      "feature": "spec/features/dep-004-ts-node.feature",
+      "scenario": "ts-node is bumped to ^10.x with lockfile updated",
+      "tier": "low"
     },
     {
       "id": "R-12.1",
