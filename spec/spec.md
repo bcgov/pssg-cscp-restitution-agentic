@@ -4,34 +4,33 @@
 
 ## Upstream intent
 
-GitHub issue [#32](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/32) — rapid assessment **LOG-003**.
+GitHub issue [#33](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/33) — rapid assessment **LOG-004**.
 
 ## Problem
 
-On Dynamics submit failure, the API logs the full OrganizationResponse with Serilog `{@Response}` destructuring. That can serialize internal Dataverse fields, entity identifiers, and operation metadata beyond what operators need for diagnostics.
+In production bootstrap, only `console.log` is suppressed. `console.error`, `console.debug`, and `console.warn` remain active and can leak diagnostic detail to end-user browser consoles.
 
 ## Outcome
 
-When a restitution submit fails because Dynamics reports unsuccessful, the error log records IsSuccess and any error code / result keys needed for diagnosis — not the full destructured OrganizationResponse body. Successful submits and HTTP behaviour are unchanged.
+In production, console log/error/debug/warn are all no-ops (or equivalently suppressed). Existing call sites remain harmless under suppression. Non-production builds keep normal console behaviour.
 
 ## Scope
 
 ### In scope
 
-- Change failure logging in RestitutionsController (and any thin helper) off `{@Response}`
-- Log IsSuccess and error-code-like result metadata only
-- Unit test(s) asserting no full response body destructuring in the failure log path
-- Evidence
+- Extend production console suppression in ClientApp `main.ts`
+- Confirm/adjust call sites if needed so they remain safe under no-ops
+- Light evidence (and optional unit/build check)
 
 ### Out of scope
 
-- Changing Dynamics request/response contracts
-- Broader Serilog configuration overhaul
+- Removing all console calls from the codebase
+- Introducing a full logging framework
 - Live Dynamics
 
 ## Journeys
 
-1. Failure log without full response body — `features/log-003-response-logging.feature` (@R-32.1)
+1. Production console suppression — `features/log-004-console-suppression.feature` (@R-33.1)
 
 ## Sign-off (checkpoint 1)
 

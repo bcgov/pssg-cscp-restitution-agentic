@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-04T19:48:01.856Z",
+  "generatedAt": "2026-09-04T19:53:47.851Z",
   "criteria": [
     {
       "id": "R-06.1",
@@ -317,6 +317,12 @@
       "id": "R-32.1",
       "feature": "spec/features/log-003-response-logging.feature",
       "scenario": "Unsuccessful Dynamics response is logged without full body destructuring",
+      "tier": "low"
+    },
+    {
+      "id": "R-33.1",
+      "feature": "spec/features/log-004-console-suppression.feature",
+      "scenario": "Production bootstrap suppresses console log error debug and warn",
       "tier": "low"
     },
     {
