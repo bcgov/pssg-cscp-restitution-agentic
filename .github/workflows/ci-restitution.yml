@@ -85,6 +85,22 @@ jobs:
           sarif_file: trivy-ci-restitution-fs.sarif
           category: trivy-ci-restitution-fs
 
+      # ── WHOLE CODEBASE: Trivy secret scan — findings fail the gate (SEC-SECRETS-003) ──
+      - uses: aquasecurity/trivy-action@v0.36.0
+        if: always()
+        with:
+          scan-type: fs
+          scan-ref: .
+          scanners: secret
+          format: sarif
+          output: trivy-ci-restitution-secret.sarif
+          exit-code: "1"
+      - uses: github/codeql-action/upload-sarif@v4
+        if: always()
+        with:
+          sarif_file: trivy-ci-restitution-secret.sarif
+          category: trivy-ci-restitution-secret
+
   # Separate from gate so CodeQL/Trivy residuals do not skip Playwright
   e2e:
     runs-on: ubuntu-latest
