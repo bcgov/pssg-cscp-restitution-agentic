@@ -161,13 +161,13 @@ app.UseSerilogRequestLogging(options =>
     };
 });
 
-// Health check – returns JSON with API + Dataverse status.
-// Overall status (and HTTP status code) is driven solely by the API self-check so that
-// a Dataverse outage does not cause a pod crash-restart loop.
+// Anonymous /hc is limited to self/process tagged checks so OpenShift probes work
+// without disclosing Dataverse/ready details (AUTH-003). AUTHZ-001 may further restrict ready later.
 app.MapHealthChecks(
     "/hc",
     new HealthCheckOptions
     {
+        Predicate = HealthCheckEndpointPolicy.IsAnonymousLivenessCheck,
         // Allow the endpoint to be reached even when the aggregate status is Unhealthy.
         ResultStatusCodes =
         {
@@ -177,9 +177,7 @@ app.MapHealthChecks(
         },
         ResponseWriter = async (context, report) =>
         {
-            // Determine overall status from the API self-check only.
-            // Dataverse failures are surfaced in the per-check details but do not
-            // flip the overall status to Unhealthy (which would restart the pod).
+            // Overall status from the API self-check when present (only self/process run here).
             var overallStatus = report.Entries.TryGetValue("API", out var apiEntry) ? apiEntry.Status : report.Status;
 
             context.Response.StatusCode = overallStatus == HealthStatus.Unhealthy ? 503 : 200;

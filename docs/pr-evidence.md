@@ -1283,3 +1283,66 @@ Same shape as `REVIEW.md` — required before merge. Do not replace with a free-
 **Residual risk:** An individual cookie explicitly configured with a less restrictive policy could require separate review.
 
 - Reviewer: _______________ Date: _______________
+
+
+---
+
+# PR evidence — [RA AUTH-003] Anonymous /hc limited to self/process
+
+| Field | Value |
+| --- | --- |
+| PR / branch | copilot/ra-auth-003-fix-health-check-authorization |
+| Spec refs | `spec/spec.md`; `spec/features/auth-003-health-check-surface.feature` (`@R-24.1`, `@R-24.2`) |
+| Constitution articles touched | P5, J5 |
+| Tasks | TASK-001–TASK-004 |
+| Authoring agent | operator (Copilot stalled after initial plan) |
+| Generated | 2026-09-04T17:56:00.000Z |
+
+## Intent
+
+Anonymous `/hc` now uses `HealthCheckOptions.Predicate = HealthCheckEndpointPolicy.IsAnonymousLivenessCheck`, so only checks tagged `self`/`process` run and appear in the JSON. Dataverse (`dataverse`/`ready`) is excluded from the anonymous detailed payload. No `RequireAuthorization` was added to `/hc`, preserving OpenShift liveness probes. AUTHZ-001 may still address authorizing a ready/detailed endpoint later.
+
+## Spec traceability
+
+| Scenario / requirement | Implemented? | Notes |
+| --- | --- | --- |
+| `@R-24.1` Anonymous surface excludes Dataverse details | Yes | Predicate filters to self/process tags |
+| `@R-24.2` Self probe remains anonymous | Yes | `/hc` still mapped without RequireAuthorization; covered by Program.cs assertion |
+
+## Design system & accessibility
+
+| Check | Result |
+| --- | --- |
+| DS components used (list) | N/A — health endpoint |
+| Tokens used (not hard-coded colour) | N/A |
+| BC Sans imported | N/A |
+| Manual a11y notes | N/A |
+
+## Public-service minimums
+
+Checklist IDs addressed this PR: N/A — health endpoint
+
+## Tests
+
+| Type | Command / path | Result |
+| --- | --- | --- |
+| Unit | `dotnet test … --filter FullyQualifiedName~HealthCheckEndpointPolicy` | Passed (3) |
+| Acceptance / feature | `spec/features/auth-003-health-check-surface.feature` | Covered by unit tests |
+| A11y automation | N/A | |
+
+## Risks & follow-ups
+
+- AUTHZ-001 (#25) may still require auth or network restriction for any ready/detailed health surface.
+- No separate `/hc/ready` added in this slice.
+
+## Review receipt (checkpoint 3)
+
+Same shape as `REVIEW.md` — required before merge. Do not replace with a free-form sign-off.
+
+**Checked:** `@R-24.1` and `@R-24.2`; predicate excludes Dataverse tags; Program keeps anonymous MapHealthChecks for `/hc`.
+
+**Could not check:** Live OpenShift probe against a deployed pod.
+
+**Residual risk:** AUTHZ-001 overlap remains for ready/authZ hardening.
+
+- Reviewer: _______________ Date: _______________
