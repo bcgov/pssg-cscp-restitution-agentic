@@ -4,39 +4,38 @@
 
 ## Upstream intent
 
-GitHub issue [#20](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/20) — rapid assessment **SEC-SECRETS-002**.
+GitHub issue [#21](https://github.com/bcgov/pssg-cscp-restitution-agentic/issues/21) — rapid assessment **VULN-001**.
 
 ## Problem
 
-The OWASP ZAP development scan workflow hardcodes the development environment hostname as `ZAP_TARGET`. That hostname reveals a live internal OpenShift Silver Cluster deployment path in a public repository.
+Mailing address helpers concatenate user-controlled form values with raw `<br />` tags and bind them via `[innerHTML]` on the review page. Markup-like input can render as live HTML.
 
 ## Outcome
 
-`ZAP_TARGET` is sourced from a repository variable (for example `${{ vars.ZAP_TARGET }}`), not a literal hostname in workflow YAML. Documentation states that operators must set the variable in repo settings before the scan can run. No real development hostname remains in the workflow file.
+Address display on the review path is **XSS-safe**: user values are encoded or rendered as text (not unencoded `innerHTML` concatenation). Line breaks still appear. A unit test fails if script-like input is treated as live HTML.
 
 ## Scope
 
 ### In scope
 
-- Replace the hardcoded `ZAP_TARGET` value in `zap-coast-restitution-dev-scan.yml` with a `vars` (or secrets) reference
-- Document that `ZAP_TARGET` must be configured in GitHub repository settings
-- Evidence in `docs/pr-evidence.md`
+- Fix `displayMailingSubAddress` (and the same-pattern `displayMailingAddress` if still used with `innerHTML`)
+- Prefer encode + safe breaks, or template text bindings instead of raw `innerHTML`
+- Unit test covering script-like / markup-like address input
 
 ### Out of scope
 
-- Changing ZAP scan behaviour, schedule, or report upload
-- Setting the live variable value in this PR (operators configure privately)
-- SEC-SECRETS-001 (already shipped) or other workflows
+- Unrelated `[innerHTML]` usages (e.g. static alert icons) unless they take user input
+- VULN-002 server file validation
 
 ## Journeys
 
-1. Workflow YAML has no real hostname — `features/sec-secrets-002-zap-target-var.feature` (@R-20.1)
-2. Operators know to set `ZAP_TARGET` — same feature (@R-20.2)
+1. No unencoded innerHTML address bind — `features/vuln-001-mailing-address-xss.feature` (@R-21.1)
+2. Script-like input not live HTML — same feature (@R-21.2)
 
 ## Sign-off (checkpoint 1)
 
 | Role | Name | Date |
 | --- | --- | --- |
-| Product / PM | | |
-| BA | | |
+| Product / PM | Alex Rivera (simulated) | 2026-09-04 |
+| BA | Alex Rivera (simulated) | 2026-09-04 |
 | QA (acceptance ownership) | | |
